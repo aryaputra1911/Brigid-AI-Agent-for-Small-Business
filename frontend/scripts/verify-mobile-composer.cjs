@@ -1,3 +1,4 @@
+const { launchBrowser } = require("./browser.cjs");
 const { devices } = require("playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
