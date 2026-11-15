@@ -25,9 +25,10 @@ data/audit*.jsonl
 eval/reports/*
 !eval/reports/.gitkeep
 
-# Editors
+# Editors & OS metadata
 .idea/
 .vscode/
+*:Zone.Identifier
 
 # Local editor and assistant settings
 .claude/
