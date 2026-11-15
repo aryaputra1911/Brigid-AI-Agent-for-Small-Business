@@ -14,14 +14,14 @@ const messages = [
     text: "Help me review outstanding invoices.",
   },
   {
-    role: "Wali",
+    role: "Brigid",
     start: 2300,
     duration: 2700,
     text: "Let’s review due dates and payment details before deciding what to do.",
   },
   { role: "You", start: 6500, duration: 0, text: "Can I set spending rules?" },
   {
-    role: "Wali",
+    role: "Brigid",
     start: 8500,
     duration: 3900,
     text: "Draft them in Mandate. The Owner reviews the draft before the rules take effect.",
@@ -75,7 +75,7 @@ export function WorkflowDemo() {
       className="wl-demo"
       ref={root}
       role="region"
-      aria-label="Illustrative conversation with Wali"
+      aria-label="Illustrative conversation with Brigid"
       data-elapsed={Math.round(elapsed)}
       data-running={running}
     >
@@ -85,7 +85,7 @@ export function WorkflowDemo() {
             decorative
             state={processing && running ? "processing" : "idle"}
           />
-          <span>Wali</span>
+          <span>Brigid</span>
         </div>
         <span className="wl-demo-label">Illustrative conversation</span>
       </div>
@@ -137,7 +137,7 @@ export function WorkflowDemo() {
       <div className="wl-demo-processing" aria-hidden="true">
         {processing && (
           <span>
-            Wali is reviewing
+            Brigid is reviewing
             <span className={running ? "wl-demo-dots" : ""}>…</span>
           </span>
         )}

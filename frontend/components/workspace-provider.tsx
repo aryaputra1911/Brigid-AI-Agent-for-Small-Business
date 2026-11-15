@@ -339,6 +339,6 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
 export function useWorkspace(): WorkspaceContextValue {
   const context = useContext(WorkspaceContext);
-  if (!context) throw new Error("Wali workspace is missing its provider.");
+  if (!context) throw new Error("Brigid workspace is missing its provider.");
   return context;
 }

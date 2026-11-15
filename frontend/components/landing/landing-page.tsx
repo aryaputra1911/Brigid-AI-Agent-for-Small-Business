@@ -54,7 +54,7 @@ const steps = [
   {
     title: "Start with a conversation",
     description:
-      "Ask Wali about transactions, invoices or cash flow. Keep the questions and their context together in Chat.",
+      "Ask Brigid about transactions, invoices or cash flow. Keep the questions and their context together in Chat.",
     label: "Chat",
     icon: MessageSquare,
   },
@@ -94,11 +94,11 @@ export function LandingPage() {
             </h1>
             <p className="wl-hero-description" data-landing-enter>
               Reconcile transactions, explore cash flow, and review financial
-              requests with Wali.
+              requests with Brigid.
             </p>
             <div className="wl-hero-actions" data-landing-enter>
               <Link className="wl-button wl-button-primary" href="/chat">
-                Open Wali
+                Open Brigid
               </Link>
               <a className="wl-button wl-button-secondary" href="#how-it-works">
                 Explore the workflow
@@ -107,7 +107,7 @@ export function LandingPage() {
           </section>
           <section
             className="wl-showcase wl-container"
-            aria-label="Wali workspace preview"
+            aria-label="Brigid workspace preview"
             data-landing-enter
           >
             <LandingHeroVisual>
@@ -222,22 +222,22 @@ export function LandingPage() {
                 With simulated data.
               </h2>
               <p>
-                Wali currently runs on synthetic business data. There are no
+                Brigid currently runs on synthetic business data. There are no
                 real bank connections and no real money is moved. Role selection
                 is part of the demo.
               </p>
             </div>
             <Link className="wl-button wl-button-primary" href="/chat">
-              Open Wali
+              Open Brigid
             </Link>
           </div>
         </section>
       </main>
       <footer className="wl-footer">
         <div className="wl-container wl-footer-inner">
-          <Link className="wl-brand" href="/" aria-label="Wali home">
+          <Link className="wl-brand" href="/" aria-label="Brigid home">
             <Image src="/brand/brigid.svg" alt="" width={28} height={28} />
-            <span>Wali</span>
+            <span>Brigid</span>
           </Link>
           <p>A conversational finance assistant. Simulation only.</p>
           <nav aria-label="Footer navigation">

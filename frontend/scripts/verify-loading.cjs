@@ -44,7 +44,7 @@ async function main() {
       });
       await page.goto(`${origin}/chat`);
       await page.locator(".paper-welcome").waitFor();
-      const input = page.getByRole("textbox", { name: "Message Wali" });
+      const input = page.getByRole("textbox", { name: "Message Brigid" });
       const waiting = page.locator('.paper-message[role="status"]');
       const request = nextChat();
       await input.fill("Review invoices");

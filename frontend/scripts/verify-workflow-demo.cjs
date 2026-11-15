@@ -243,7 +243,7 @@ async function main() {
     });
     contrast.forEach((item) => assert(item.ratio >= 4.5, JSON.stringify(item)));
     check(
-      "44px controls, complete no-JavaScript transcript, no live-region chatter, zero Wali API calls and no runtime errors",
+      "44px controls, complete no-JavaScript transcript, no live-region chatter, zero Brigid API calls and no runtime errors",
     );
     await fs.writeFile(
       path.join(output, "workflow-demo-results.json"),

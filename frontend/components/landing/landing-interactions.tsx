@@ -48,7 +48,7 @@ export function LandingHeader() {
   return (
     <header className="wl-header">
       <div className="wl-container wl-header-inner">
-        <Link className="wl-brand" href="/" aria-label="Wali home">
+        <Link className="wl-brand" href="/" aria-label="Brigid home">
           <Image
             src="/brand/brigid.svg"
             alt=""
@@ -56,7 +56,7 @@ export function LandingHeader() {
             height={28}
             priority
           />
-          <span>Wali</span>
+          <span>Brigid</span>
         </Link>
         <nav className="wl-desktop-nav" aria-label="Main navigation">
           {links.map((link) => (
@@ -67,7 +67,7 @@ export function LandingHeader() {
         </nav>
         <div className="wl-header-actions">
           <Link className="wl-button wl-button-primary" href="/chat">
-            Open Wali
+            Open Brigid
           </Link>
           <details
             className="wl-mobile-menu"

@@ -35,7 +35,7 @@ export function MandatePage() {
         kicker="Spending rules"
         icon="rules"
         role={role}
-        description="Set the boundaries for Wali's financial actions. Draft the rules, then review them before they take effect."
+        description="Set the boundaries for Brigid's financial actions. Draft the rules, then review them before they take effect."
       >
         <span className="paper-finance-pill">Owner approval</span>
       </FinanceHeading>
@@ -56,7 +56,7 @@ export function MandatePage() {
             <div>
               <h3>Draft a mandate</h3>
               <p>
-                Wali creates a request for the owner to review. Drafting does
+                Brigid creates a request for the owner to review. Drafting does
                 not confirm the rules.
               </p>
             </div>
@@ -103,7 +103,7 @@ export function MandatePage() {
           </FinanceState>
         ) : !info ? (
           <FinanceState
-            title="Connecting to Wali"
+            title="Connecting to Brigid"
             description="Loading your simulation role before drafting is available."
             icon="rules"
             role="status"

@@ -211,7 +211,7 @@ async function main() {
           .evaluate((el) => el === document.activeElement),
       );
     }
-    const input = page.getByRole("textbox", { name: "Message Wali" });
+    const input = page.getByRole("textbox", { name: "Message Brigid" });
     await input.fill("Review invoices");
     await input.press("Shift+Enter");
     assert.equal(await input.inputValue(), "Review invoices\n");

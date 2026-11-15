@@ -58,7 +58,7 @@ async function main() {
         `${process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000"}/chat`,
         { waitUntil: "domcontentloaded" },
       );
-      await page.getByRole("heading", { name: "Connecting to Wali" }).waitFor();
+      await page.getByRole("heading", { name: "Connecting to Brigid" }).waitFor();
       releaseInfo();
       await page.locator(".paper-welcome").waitFor();
       if (!reduced) {

@@ -259,9 +259,9 @@ async function main() {
         .locator("main")
         .evaluate((el) => el === document.activeElement),
     );
-    assert.equal(calls.length, 0, "Landing must never request Wali API");
+    assert.equal(calls.length, 0, "Landing must never request Brigid API");
     check(
-      "Mobile menu keyboard, Escape, focus return, selection, outside dismissal and skip link; zero Wali calls",
+      "Mobile menu keyboard, Escape, focus return, selection, outside dismissal and skip link; zero Brigid calls",
     );
     for (const cta of [
       ".wl-header-actions > a",
