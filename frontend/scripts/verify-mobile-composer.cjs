@@ -1,4 +1,4 @@
-const { chromium, devices } = require("playwright");
+const { devices } = require("playwright");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -6,7 +6,7 @@ const path = require("node:path");
 async function main() {
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser();
   try {
     const page = await browser.newPage({
       ...devices["Pixel 7"],
