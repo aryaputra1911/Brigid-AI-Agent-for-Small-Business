@@ -19,3 +19,6 @@ To update antislop later: `npx antislop-ai --update`, or run `npx antislop-ai` a
 - Jika perbaikan mengubah perilaku yang tampak pengguna, berhenti dan tanya dulu.
 - Satu perbaikan = satu commit kecil beserta tes.
 - Hasil tiap tahap ditulis ke docs/audit/.
+
+## File Restrictions
+- JANGAN PERNAH membaca, membuka, atau memeriksa file berekstensi `.ico` (seperti `favicon.ico`) menggunakan tool pembaca file mana pun, karena format `image/x-icon` menyebabkan error API.
