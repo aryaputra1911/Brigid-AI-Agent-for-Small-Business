@@ -33,3 +33,6 @@ eval/reports/*
 # Local editor and assistant settings
 .claude/
 wali-agent/
+
+# Browser automation captures (runtime artifacts)
+.playwright-mcp/

@@ -2,183 +2,145 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { animate } from "motion/react";
 import { Menu, X } from "lucide-react";
-import { useWebGlSupport } from "@/lib/use-webgl-support";
+import { useEffect, useRef, useState } from "react";
 
-const LandingMesh = dynamic(() => import("./landing-mesh"), { ssr: false });
-const links = [
-  { href: "#capabilities", label: "Capabilities" },
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#simulation", label: "Simulation" },
+const navItems = [
+  { href: "/chat", label: "CHAT" },
+  { href: "/approvals", label: "APPROVALS" },
+  { href: "/mandate", label: "MANDATE" },
 ];
 
 export function LandingHeader() {
-  const menuRef = useRef<HTMLDetailsElement>(null);
-  const summaryRef = useRef<HTMLElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
-    function close(event: KeyboardEvent) {
-      if (event.key === "Escape" && menuRef.current?.open) {
-        menuRef.current.open = false;
-        summaryRef.current?.focus();
-      }
-    }
-    function outside(event: PointerEvent) {
-      if (
-        menuRef.current?.open &&
-        !menuRef.current.contains(event.target as Node)
-      )
-        menuRef.current.open = false;
-    }
-    const wide = window.matchMedia("(min-width: 900px)");
-    const resize = () => {
-      if (wide.matches && menuRef.current) menuRef.current.open = false;
+    const onScroll = () => {
+      setScrolled(window.scrollY > 40);
     };
-    document.addEventListener("keydown", close);
-    document.addEventListener("pointerdown", outside);
-    wide.addEventListener("change", resize);
-    return () => {
-      document.removeEventListener("keydown", close);
-      document.removeEventListener("pointerdown", outside);
-      wide.removeEventListener("change", resize);
-    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    closeRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+    triggerRef.current?.focus();
+  };
+
   return (
-    <header className="wl-header">
-      <div className="wl-container wl-header-inner">
-        <Link className="wl-brand" href="/" aria-label="Brigid home">
+    <header
+      className={`rre-header ${scrolled ? "is-scrolled" : ""}`}
+      role="banner"
+    >
+      <div className="rre-header__inner">
+        <Link href="#top" className="rre-brand" aria-label="Brigid home">
           <Image
             src="/brand/brigid.svg"
             alt=""
             width={28}
             height={28}
-            priority
+            className="rre-brand__mark"
           />
-          <span>Brigid</span>
+          <span className="rre-brand__name">BRIGID</span>
         </Link>
-        <nav className="wl-desktop-nav" aria-label="Main navigation">
-          {links.map((link) => (
-            <a key={link.href} href={link.href}>
-              {link.label}
-            </a>
+
+        <nav className="rre-nav" aria-label="Primary navigation">
+          {navItems.map((item) => (
+            <Link key={item.href} href={item.href} className="rre-nav__link">
+              {item.label}
+            </Link>
           ))}
         </nav>
-        <div className="wl-header-actions">
-          <Link className="wl-button wl-button-primary" href="/chat">
-            Open Brigid
-          </Link>
-          <details
-            className="wl-mobile-menu"
-            ref={menuRef}
-            onBlur={(event) => {
-              if (
-                event.relatedTarget &&
-                !event.currentTarget.contains(event.relatedTarget)
-              )
-                event.currentTarget.open = false;
-            }}
-          >
-            <summary ref={summaryRef} aria-label="Navigation menu">
-              <span className="wl-menu-open-icon">
-                <Menu size={20} strokeWidth={1.75} aria-hidden="true" />
-              </span>
-              <span className="wl-menu-close-icon">
-                <X size={20} strokeWidth={1.75} aria-hidden="true" />
-              </span>
-            </summary>
-            <nav aria-label="Mobile navigation">
-              {links.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => {
-                    if (menuRef.current) menuRef.current.open = false;
-                    requestAnimationFrame(() =>
-                      summaryRef.current?.focus({ preventScroll: true }),
-                    );
-                  }}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
-          </details>
+
+        <button
+          ref={triggerRef}
+          type="button"
+          className="rre-menu-btn"
+          aria-expanded={menuOpen}
+          aria-controls="rre-mobile-drawer"
+          onClick={() => setMenuOpen(true)}
+        >
+          <Menu size={18} strokeWidth={1.75} aria-hidden="true" />
+          <span>Menu</span>
+        </button>
+      </div>
+
+      {menuOpen && (
+        <div
+          id="rre-mobile-drawer"
+          className="rre-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site navigation"
+        >
+          <div className="rre-drawer__top">
+            <Link
+              href="#top"
+              className="rre-brand"
+              onClick={() => setMenuOpen(false)}
+            >
+              <Image
+                src="/brand/brigid.svg"
+                alt=""
+                width={28}
+                height={28}
+                className="rre-brand__mark"
+              />
+              <span className="rre-brand__name">BRIGID</span>
+            </Link>
+            <button
+              ref={closeRef}
+              type="button"
+              className="rre-menu-btn"
+              onClick={closeMenu}
+              aria-label="Close navigation menu"
+            >
+              <X size={18} strokeWidth={1.75} aria-hidden="true" />
+              <span>Close</span>
+            </button>
+          </div>
+
+          <nav className="rre-drawer__nav" aria-label="Mobile navigation">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rre-drawer__link"
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <p className="rre-drawer__note">
+            Local finance simulation workspace using synthetic business data.
+          </p>
         </div>
-      </div>
+      )}
     </header>
-  );
-}
-
-export function LandingEntrance({ children }: { children: ReactNode }) {
-  const root = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const node = root.current;
-    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (!node || preference.matches) return;
-    const controls: Array<ReturnType<typeof animate>> = [];
-    const finish = () => controls.forEach((control) => control.complete());
-    const frame = requestAnimationFrame(() => {
-      if (preference.matches) return;
-      node
-        .querySelectorAll<HTMLElement>("[data-landing-enter]")
-        .forEach((element, index) =>
-          controls.push(
-            animate(
-              element,
-              {
-                opacity: [0, 1],
-                transform: ["translateY(12px)", "translateY(0px)"],
-              },
-              {
-                duration: 0.45,
-                delay: Math.min(index * 0.08, 0.24),
-                ease: [0.22, 1, 0.36, 1],
-              },
-            ),
-          ),
-        );
-    });
-    const onPreference = () => {
-      if (preference.matches) finish();
-    };
-    node.addEventListener("focusin", finish);
-    node.addEventListener("pointerdown", finish);
-    preference.addEventListener("change", onPreference);
-    return () => {
-      cancelAnimationFrame(frame);
-      finish();
-      node.removeEventListener("focusin", finish);
-      node.removeEventListener("pointerdown", finish);
-      preference.removeEventListener("change", onPreference);
-    };
-  }, []);
-  return <div ref={root}>{children}</div>;
-}
-
-export function LandingHeroVisual({ children }: { children: ReactNode }) {
-  const supported = useWebGlSupport();
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
-  return (
-    <div
-      className="wl-hero-visual"
-      onPointerEnter={(event) => {
-        if (event.pointerType === "mouse") setHovered(true);
-      }}
-      onPointerLeave={() => setHovered(false)}
-      onPointerCancel={() => setHovered(false)}
-      onFocusCapture={() => setFocused(true)}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget))
-          setFocused(false);
-      }}
-    >
-      <div className="wl-mesh-layer" aria-hidden="true">
-        {supported && <LandingMesh active={hovered || focused} />}
-      </div>
-      {children}
-    </div>
   );
 }
