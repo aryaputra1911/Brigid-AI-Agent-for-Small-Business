@@ -123,6 +123,28 @@ def test_logout_ends_the_session(world):
     assert client.get("/api/me").status_code == 401
 
 
+def test_the_csrf_guard_covers_login_and_logout(world):
+    client, _ = client_for(world)
+
+    as_form = client.post(
+        "/api/login",
+        content='{"email": "owner@brigid.demo", "password": "brigid123"}',
+        headers={"Content-Type": "text/plain"},
+    )
+    foreign_origin = client.post(
+        "/api/login",
+        json={"email": EMAILS["owner"], "password": PASSWORD},
+        headers={"Origin": "https://evil.example"},
+    )
+    logout_as_text = client.post(
+        "/api/logout", content="{}", headers={"Content-Type": "text/plain"}
+    )
+    logout_foreign = client.post("/api/logout", json={}, headers={"Origin": "https://evil.example"})
+
+    assert as_form.status_code == foreign_origin.status_code == 403
+    assert logout_as_text.status_code == logout_foreign.status_code == 403
+
+
 # --- Older endpoints with a session -------------------------------------------------------------
 
 
@@ -292,6 +314,19 @@ def test_a_receivable_detail_has_no_supplier_and_an_unknown_id_is_not_found(worl
 
     assert detail["supplier"] is None
     assert client.get("/api/invoices/no-such-invoice").status_code == 404
+
+
+def test_the_flagged_invoice_detail_is_marked_for_review(world):
+    client, _ = client_for(world)
+    login(client, "owner")
+
+    body = client.get("/api/invoices/inv-0094").json()
+
+    assert body["invoice"]["needs_review"] is True
+    assert body["invoice"]["document_text"]
+    assert body["invoice"]["stated_account"] == "•••• 0111"
+    assert body["supplier"]["id"] == "sup-gula"
+    assert body["supplier"]["verified_account"].startswith("••••")
 
 
 def test_a_payable_whose_supplier_is_unknown_still_returns_the_invoice(world, owner):
