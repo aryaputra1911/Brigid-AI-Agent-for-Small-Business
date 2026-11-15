@@ -169,8 +169,9 @@ def test_a_role_missing_from_the_business_is_not_found_and_not_listed(world):
 def test_an_unknown_role_in_the_query_is_refused(world):
     client, _ = web(world)
 
+    # An unknown role is a validation error; no role at all now asks for a session.
     assert client.get("/api/pending", params={"role": "admin"}).status_code == 422
-    assert client.get("/api/pending").status_code == 422
+    assert client.get("/api/pending").status_code == 401
 
 
 @pytest.mark.parametrize("path", ["/api/confirm", "/api/cancel"])
@@ -256,11 +257,11 @@ def test_the_web_page_listens_on_this_computer_by_default(served, capsys):
     assert "WARNING" not in capsys.readouterr().err
 
 
-def test_listening_on_another_address_prints_a_warning_about_the_missing_login(served, capsys):
+def test_listening_on_another_address_prints_a_warning_about_the_demo_login(served, capsys):
     assert web_app.main(["--host", "0.0.0.0", "--port", "9000"]) == 0
 
     assert served == {"host": "0.0.0.0", "port": 9000}
-    assert "anyone who can reach it can act as the owner" in capsys.readouterr().err
+    assert "anyone who can reach it can act as any role" in capsys.readouterr().err
 
 
 @pytest.mark.parametrize("host", ["127.0.0.1", "localhost", "::1"])
