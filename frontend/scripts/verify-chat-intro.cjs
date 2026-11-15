@@ -1,10 +1,10 @@
-const { chromium } = require("playwright");
+const { launchBrowser } = require("./browser.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
 async function main() {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser();
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
   try {

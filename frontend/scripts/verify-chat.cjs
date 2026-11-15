@@ -1,4 +1,4 @@
-const { chromium } = require("playwright");
+const { launchBrowser } = require("./browser.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -28,7 +28,7 @@ function contrast(foreground, background) {
 
 async function main() {
   await fs.mkdir(output, { recursive: true });
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser();
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
     permissions: ["clipboard-read", "clipboard-write"],

@@ -1,16 +1,7 @@
-const { chromium } = require("playwright");
+const { launchBrowser } = require("./browser.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
-
-async function launchBrowser() {
-  try {
-    return await chromium.launch({ channel: "chrome", headless: true });
-  } catch {
-    // Some machines have no Chrome channel; Playwright's bundled chromium behaves the same.
-    return await chromium.launch({ headless: true });
-  }
-}
 
 async function main() {
   const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
