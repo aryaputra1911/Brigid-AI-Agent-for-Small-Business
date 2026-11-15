@@ -403,7 +403,9 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                   // focus really left the dialog (Tab past its last focusable must
                   // still close it).
                   requestAnimationFrame(() => {
-                    if (!settingsRef.current?.contains(document.activeElement)) {
+                    if (
+                      !settingsRef.current?.contains(document.activeElement)
+                    ) {
                       setSettingsOpen(false);
                       settingsTriggerRef.current = null;
                     }
