@@ -1,250 +1,322 @@
 import Image from "next/image";
 import Link from "next/link";
-import { WorkflowDemo } from "./workflow-demo";
-import {
-  ArrowLeftRight,
-  ChartLine,
-  ClipboardCheck,
-  FlaskConical,
-  Lightbulb,
-  MessageSquare,
-  ReceiptText,
-  SlidersHorizontal,
-  type LucideIcon,
-} from "lucide-react";
-import {
-  LandingEntrance,
-  LandingHeader,
-  LandingHeroVisual,
-} from "./landing-interactions";
+import { AmbientVideoBg } from "./ambient-video-bg";
+import { CornerButton } from "./corner-button";
+import { FooterLauncher } from "./footer-launcher";
+import { LandingHeader } from "./landing-interactions";
+import { RreAccordions } from "./rre-accordions";
+import { RreScenarioSlider } from "./rre-scenario-slider";
 import "./landing.css";
 
-const capabilities: {
-  title: string;
-  description: string;
-  icon: LucideIcon;
-}[] = [
+const guardrails = [
   {
-    title: "Transaction reconciliation",
-    description:
-      "Compare transactions and identify records that need a closer look.",
-    icon: ArrowLeftRight,
+    kicker: "01 / TOOL BOUNDARY",
+    title: "Narrow tool surface",
+    detail:
+      "The assistant has ten read, calculate, and proposal tools. None can execute a payment, confirm a request, or change a role.",
   },
   {
-    title: "Cash-flow forecasting",
-    description:
-      "Explore your cash position over the coming weeks with the records available.",
-    icon: ChartLine,
+    kicker: "02 / POLICY ENGINE",
+    title: "Deterministic policy guard",
+    detail:
+      "Every proposed payment is checked against fixed mandate rules, cash buffer limits, duplicate checks, and registered supplier accounts.",
   },
   {
-    title: "Invoice review",
-    description:
-      "Review outstanding invoices, due dates and details before making a decision.",
-    icon: ReceiptText,
-  },
-  {
-    title: "Financial recommendations",
-    description:
-      "Discuss practical next steps in the context of your business finances.",
-    icon: Lightbulb,
+    kicker: "03 / HUMAN CONTROL",
+    title: "Out-of-band owner approval",
+    detail:
+      "Requests above the threshold wait in Approvals with a one-time confirmation token that never passes through the language model.",
   },
 ];
 
-const steps = [
+const capabilityLinks = [
+  { label: "RECONCILIATION", href: "/chat" },
+  { label: "CASH FORECASTING", href: "/chat" },
+  { label: "INVOICE REVIEW", href: "/chat" },
+  { label: "RECOMMENDATIONS", href: "/chat" },
+  { label: "MANDATE DRAFTING", href: "/mandate" },
+  { label: "OWNER APPROVALS", href: "/approvals" },
+  { label: "POLICY CHECKS", href: "/mandate" },
+  { label: "SYNTHETIC LEDGER", href: "/chat" },
+];
+
+const workspaceRows = [
   {
-    title: "Start with a conversation",
-    description:
-      "Ask Brigid about transactions, invoices or cash flow. Keep the questions and their context together in Chat.",
-    label: "Chat",
-    icon: MessageSquare,
+    title: "Interactive Chat Workspace & Ledger Walkthrough",
+    tag: "CHAT",
+    href: "/chat",
+    hasPreview: true,
   },
   {
-    title: "Set the boundaries",
-    description:
-      "Draft spending rules in Mandate. A draft needs the owner’s review before the rules take effect.",
-    label: "Mandate",
-    icon: SlidersHorizontal,
+    title: "Review Pending Payment Requests & Risk Warnings",
+    tag: "APPROVALS",
+    href: "/approvals",
+    hasPreview: false,
   },
   {
-    title: "Review the requests",
-    description:
-      "Requests that need a decision appear in Approvals. Inspect the details and warnings, then confirm or decline.",
-    label: "Approvals",
-    icon: ClipboardCheck,
+    title: "Draft Spending Rules & Owner-Reviewed Mandates",
+    tag: "MANDATE",
+    href: "/mandate",
+    hasPreview: false,
+  },
+  {
+    title: "Explore Synthetic Business Data Without Financial Risk",
+    tag: "SIMULATION",
+    href: "/chat",
+    hasPreview: false,
   },
 ];
 
 export function LandingPage() {
   return (
-    <div className="wl-landing" id="top">
-      <a className="wl-skip" href="#landing-main">
+    <div className="rre-landing" id="top">
+      <a className="rre-skip" href="#landing-main">
         Skip to content
       </a>
+
+      <AmbientVideoBg />
       <LandingHeader />
-      <main id="landing-main" tabIndex={-1}>
-        <LandingEntrance>
-          <section
-            className="wl-hero wl-container"
-            aria-labelledby="landing-title"
-          >
-            <h1 id="landing-title" data-landing-enter>
+
+      <main id="landing-main" className="rre-main" tabIndex={-1}>
+        {/* Section 1: Hero */}
+        <section className="rre-hero" aria-labelledby="landing-title">
+          <div className="rre-hero__grid">
+            <h1 id="landing-title" className="rre-hero__title">
               Clearer finances.
               <br />
-              <span>One conversation.</span>
+              Protected by rules.
             </h1>
-            <p className="wl-hero-description" data-landing-enter>
-              Reconcile transactions, explore cash flow, and review financial
-              requests with Brigid.
-            </p>
-            <div className="wl-hero-actions" data-landing-enter>
-              <Link className="wl-button wl-button-primary" href="/chat">
-                Open Brigid
+
+            <div className="rre-hero__copy">
+              <p>
+                Running a business means tracking every bank entry, supplier
+                invoice, and cash forecast. Raising questions in plain language
+                is only the start. What matters most is keeping control over
+                every payment.
+              </p>
+              <p>
+                Brigid pairs conversational ledger analysis with deterministic
+                mandate rules and out-of-band owner approvals, running locally
+                on synthetic business data so you can inspect every step safely.
+              </p>
+              <div className="rre-hero__actions">
+                <CornerButton href="/chat" variant="light">
+                  OPEN WORKSPACE
+                </CornerButton>
+                <CornerButton href="/approvals" variant="light">
+                  REVIEW APPROVALS
+                </CornerButton>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 2: Ice-Blue Guardrails Panel */}
+        <div className="rre-gutter-wrap">
+          <section
+            id="guardrails"
+            className="rre-ice-panel"
+            aria-labelledby="guardrails-heading"
+          >
+            <div className="rre-ice-panel__split">
+              <div className="rre-ice-panel__left">
+                <h2 id="guardrails-heading" className="rre-h2">
+                  The confidence to
+                  <br />
+                  delegate safely
+                </h2>
+                <p className="rre-ice-panel__desc">
+                  Every proposal goes through fixed policy checks before it ever
+                  reaches your approval queue.
+                </p>
+                <CornerButton href="/approvals" variant="dark">
+                  REVIEW APPROVALS
+                </CornerButton>
+              </div>
+
+              <div className="rre-guardrails">
+                {guardrails.map((item) => (
+                  <div key={item.kicker} className="rre-guardrail-row">
+                    <p className="rre-guardrail-row__kicker">{item.kicker}</p>
+                    <h3 className="rre-guardrail-row__title">{item.title}</h3>
+                    <p className="rre-guardrail-row__detail">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Section 3: Capabilities Hairline Grid */}
+          <section
+            id="workflows"
+            className="rre-grid-section"
+            aria-labelledby="workflows-heading"
+          >
+            <div className="rre-grid-section__split">
+              <div className="rre-grid-section__left">
+                <h2 id="workflows-heading" className="rre-h2">
+                  Finance workflows
+                </h2>
+                <p className="rre-grid-section__desc">
+                  Explore reconciliation, cash-flow forecasting, invoice review,
+                  and owner-confirmed mandates in one local simulation.
+                </p>
+              </div>
+
+              <div className="rre-areas-grid">
+                {capabilityLinks.map((cell) => (
+                  <Link
+                    key={cell.label}
+                    href={cell.href}
+                    className="rre-area-cell"
+                  >
+                    {cell.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Section 4: Ice-Blue Accordions */}
+          <section
+            className="rre-ice-panel"
+            aria-labelledby="difference-heading"
+          >
+            <div className="rre-ice-panel__split">
+              <div className="rre-ice-panel__left">
+                <h2 id="difference-heading" className="rre-h2">
+                  How Brigid works.
+                  <br />
+                  Step by step.
+                </h2>
+                <p className="rre-ice-panel__desc">
+                  Conversation handles analysis and drafting. Policy rules and
+                  human owners handle every final decision.
+                </p>
+                <CornerButton href="/mandate" variant="dark">
+                  DRAFT A MANDATE
+                </CornerButton>
+              </div>
+
+              <RreAccordions />
+            </div>
+          </section>
+
+          {/* Section 5: Interactive Scenario Slider */}
+          <section
+            className="rre-slider-section"
+            aria-label="Workspace prompt scenarios"
+          >
+            <RreScenarioSlider />
+          </section>
+
+          {/* Section 6: Solid Obsidian Workspace Routes */}
+          <section
+            className="rre-latest-section"
+            aria-labelledby="workspace-heading"
+          >
+            <div className="rre-latest-header">
+              <h2 id="workspace-heading" className="rre-h2">
+                Inside the workspace
+              </h2>
+              <CornerButton href="/chat" variant="light">
+                OPEN CHAT
+              </CornerButton>
+            </div>
+
+            <div className="rre-latest-list">
+              {workspaceRows.map((row) => (
+                <Link
+                  key={row.title}
+                  href={row.href}
+                  className="rre-latest-row"
+                >
+                  {row.hasPreview ? (
+                    <Image
+                      src="/media/brigid-demo.webp"
+                      alt="Brigid workspace preview"
+                      width={112}
+                      height={68}
+                      className="rre-latest-row__thumb"
+                    />
+                  ) : (
+                    <span className="rre-latest-row__badge">{row.tag}</span>
+                  )}
+                  <span className="rre-latest-row__title">{row.title}</span>
+                  <span className="rre-latest-row__tag">{row.tag}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {/* Section 7: Footer with geometric cutout video window */}
+      <footer className="rre-footer" role="contentinfo">
+        <div className="rre-footer__top">
+          <div>
+            <nav className="rre-footer__nav" aria-label="Footer primary links">
+              <Link href="#top" className="rre-footer__big-link">
+                Home
               </Link>
-              <a className="wl-button wl-button-secondary" href="#how-it-works">
-                Explore the workflow
+              <Link href="/chat" className="rre-footer__big-link">
+                Chat
+              </Link>
+              <Link href="/approvals" className="rre-footer__big-link">
+                Approvals
+              </Link>
+              <Link href="/mandate" className="rre-footer__big-link">
+                Mandate
+              </Link>
+            </nav>
+
+            <div className="rre-footer__sublinks">
+              <a href="#guardrails" className="rre-footer__sublink">
+                GUARDRAILS
+              </a>
+              <a href="#workflows" className="rre-footer__sublink">
+                WORKFLOWS
               </a>
             </div>
-          </section>
-          <section
-            className="wl-showcase wl-container"
-            aria-label="Brigid workspace preview"
-            data-landing-enter
-          >
-            <LandingHeroVisual>
-              <span className="wl-preview-label">Simulation preview</span>
-              <div className="wl-preview-card">
-                <div className="wl-preview-card-heading">
-                  <Image
-                    src="/brand/brigid.svg"
-                    alt=""
-                    width={24}
-                    height={24}
-                  />
-                  <span>Example prompt</span>
-                </div>
-                <p>
-                  Reconcile recent transactions and flag anything that needs
-                  review.
-                </p>
-                <div className="wl-preview-card-bottom">
-                  <span>Your next question starts here.</span>
-                  <Link className="wl-button wl-button-primary" href="/chat">
-                    Open chat
-                  </Link>
-                </div>
+          </div>
+
+          <div>
+            <div className="rre-footer__cutout" aria-hidden="true">
+              <video
+                className="rre-footer__cutout-video"
+                width={640}
+                height={260}
+                poster="/media/brigid-demo.webp"
+                muted
+                loop
+                playsInline
+                autoPlay
+                preload="metadata"
+              >
+                <source src="/media/brigid-demo.mp4" type="video/mp4" />
+              </video>
+              <div className="rre-footer__cutout-bars">
+                <div className="rre-cutout-bar-v" />
+                <div className="rre-cutout-bar-h" />
               </div>
-            </LandingHeroVisual>
-            <p className="wl-showcase-caption">
-              Explore the workspace with synthetic business data.
-            </p>
-          </section>
-        </LandingEntrance>
-
-        <section
-          id="capabilities"
-          className="wl-capabilities wl-container wl-section"
-          aria-labelledby="capabilities-title"
-        >
-          <div className="wl-section-heading">
-            <h2 id="capabilities-title">
-              Make sense of
-              <br />
-              everyday finance.
-            </h2>
-            <p>
-              Bring your financial questions into one conversation, from
-              matching transactions to considering what comes next.
-            </p>
-          </div>
-          <div className="wl-capability-grid">
-            {capabilities.map((item) => (
-              <article key={item.title}>
-                <item.icon size={24} strokeWidth={1.75} aria-hidden="true" />
-                <h3>{item.title}</h3>
-                <p>{item.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section
-          id="how-it-works"
-          className="wl-workflow wl-container wl-section"
-          aria-labelledby="workflow-title"
-        >
-          <div className="wl-workflow-heading">
-            <h2 id="workflow-title">
-              Ask.
-              <br />
-              Set boundaries.
-              <br />
-              <span>Review.</span>
-            </h2>
-            <p>
-              A conversation to understand the numbers. A place to define rules
-              and review the decisions that need you.
-            </p>
-            <WorkflowDemo />
-          </div>
-          <ol className="wl-steps">
-            {steps.map((step) => (
-              <li key={step.label}>
-                <step.icon
-                  className="wl-step-icon"
-                  size={20}
-                  strokeWidth={1.75}
-                  aria-hidden="true"
-                />
-                <div>
-                  <span className="wl-step-label">{step.label}</span>
-                  <h3>{step.title}</h3>
-                  <p>{step.description}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section
-          id="simulation"
-          className="wl-simulation wl-container wl-section"
-          aria-labelledby="simulation-title"
-        >
-          <div className="wl-simulation-inner">
-            <div>
-              <span className="wl-simulation-label">
-                <FlaskConical size={20} strokeWidth={1.75} aria-hidden="true" />
-                Local simulation
-              </span>
-              <h2 id="simulation-title">
-                Room to explore.
-                <br />
-                With simulated data.
-              </h2>
-              <p>
-                Brigid currently runs on synthetic business data. There are no
-                real bank connections and no real money is moved. Role selection
-                is part of the demo.
-              </p>
             </div>
-            <Link className="wl-button wl-button-primary" href="/chat">
-              Open Brigid
-            </Link>
+
+            <FooterLauncher />
           </div>
-        </section>
-      </main>
-      <footer className="wl-footer">
-        <div className="wl-container wl-footer-inner">
-          <Link className="wl-brand" href="/" aria-label="Brigid home">
-            <Image src="/brand/brigid.svg" alt="" width={28} height={28} />
-            <span>Brigid</span>
-          </Link>
-          <p>A conversational finance assistant. Simulation only.</p>
-          <nav aria-label="Footer navigation">
-            <a href="#capabilities">Capabilities</a>
-            <a href="#simulation">Simulation</a>
-            <Link href="/chat">Open chat</Link>
-          </nav>
+        </div>
+
+        <div className="rre-footer__bottom">
+          <p className="rre-footer__meta">BRIGID FINANCE WORKSPACE</p>
+          <p className="rre-footer__meta">LOCAL SIMULATION MODE</p>
+          <p className="rre-footer__meta">SYNTHETIC BUSINESS DATA ONLY</p>
+          <div className="rre-footer__bottom-actions">
+            <CornerButton href="/chat" variant="light">
+              OPEN CHAT
+            </CornerButton>
+            <CornerButton href="/approvals" variant="light">
+              APPROVALS
+            </CornerButton>
+          </div>
         </div>
       </footer>
     </div>

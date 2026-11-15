@@ -32,3 +32,6 @@ eval/reports/*
 
 # Local editor and assistant settings
 .claude/
+
+# Browser automation captures (runtime artifacts)
+.playwright-mcp/
