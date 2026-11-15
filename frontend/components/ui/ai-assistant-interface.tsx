@@ -5,7 +5,7 @@ import { animate, motion } from "motion/react";
 import type { FormEvent, KeyboardEvent, ReactNode } from "react";
 import { useWorkspace, type Message } from "@/components/workspace-provider";
 import { ChatIcon, type ChatIconName } from "./chat-icon";
-import { WaliLogo } from "./wali-logo";
+import { BrigidLogo } from "./brigid-logo";
 import { ChatBackground } from "./chat-background";
 import { PromptCard } from "./prompt-card";
 import { useMediaQuery } from "@/lib/use-media-query";
@@ -108,7 +108,7 @@ function AssistantMessage({
       animateEntry={animateEntry}
       className={`paper-message paper-message-assistant${message.blocked ? " paper-message-blocked" : ""}`}
     >
-      <WaliLogo className="paper-assistant-mark" state="reply" />
+      <BrigidLogo className="paper-assistant-mark" state="reply" />
       <div className="paper-reply">
         {message.blocked && (
           <strong className="paper-blocked-label">
@@ -382,7 +382,7 @@ export function AIAssistantInterface() {
                   className="paper-message paper-message-assistant"
                   role="status"
                 >
-                  <WaliLogo
+                  <BrigidLogo
                     className="paper-assistant-mark"
                     state="processing"
                     decorative

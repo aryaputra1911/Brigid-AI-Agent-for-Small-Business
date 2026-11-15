@@ -55,44 +55,66 @@ async function main() {
       assert(await logo.isVisible());
       assert.equal(await logo.getAttribute("aria-hidden"), "true");
       if (reducedMotion === "no-preference") {
-        await page.waitForFunction(
-          () =>
-            document.querySelector('.paper-message[role="status"] .wali-logo')
-              .dataset.playback === "playing",
-        );
-        const start = await logo.locator("svg").innerHTML();
-        await page.waitForFunction(
-          (initial) =>
-            document.querySelector(
-              '.paper-message[role="status"] .wali-logo svg',
-            ).innerHTML !== initial,
-          start,
-        );
-        const loop = await logo.evaluate(async (el) => {
-          await new Promise((resolve) => setTimeout(resolve, 1600));
-          return el.dataset.playback;
+        await page.waitForFunction(() => {
+          const el = document.querySelector(
+            '.paper-message[role="status"] .brigid-logo',
+          );
+          return (
+            el.dataset.playback === "playing" &&
+            getComputedStyle(el.querySelector(".brigid-logo-mark"))
+              .animationName === "brigid-processing"
+          );
         });
-        assert.equal(loop, "playing");
+        // the pulse must actually move the mark, not just declare an animation
+        const moves = await logo.evaluate(async (el) => {
+          const mark = el.querySelector(".brigid-logo-mark");
+          const before = getComputedStyle(mark).transform;
+          await new Promise((resolve) => setTimeout(resolve, 400));
+          return (
+            before !== getComputedStyle(mark).transform &&
+            el.dataset.playback === "playing"
+          );
+        });
+        assert(moves);
+        const loop = await logo.evaluate(async (el) => {
+          const mark = el.querySelector(".brigid-logo-mark");
+          const name = getComputedStyle(mark).animationName;
+          await new Promise((resolve) => setTimeout(resolve, 1600));
+          return (
+            el.dataset.playback === "playing" &&
+            getComputedStyle(mark).animationName === name
+          );
+        });
+        assert(loop);
         await page.screenshot({ path: path.join(output, "chat-loading.png") });
         await page.emulateMedia({ reducedMotion: "reduce" });
         await page.waitForFunction(
           () =>
-            document.querySelector('.paper-message[role="status"] .wali-logo')
+            document.querySelector('.paper-message[role="status"] .brigid-logo')
               .dataset.playback === "static",
         );
-        assert.equal(await logo.locator("svg").count(), 0);
-        await page.emulateMedia({ reducedMotion: "no-preference" });
-        await page.waitForFunction(
-          () =>
-            document.querySelector('.paper-message[role="status"] .wali-logo')
-              .dataset.playback === "playing" &&
-            document.querySelector(
-              '.paper-message[role="status"] .wali-logo svg',
-            ),
+        assert.equal(
+          await logo.evaluate(
+            (el) =>
+              getComputedStyle(el.querySelector(".brigid-logo-mark"))
+                .animationName === "none",
+          ),
+          true,
         );
+        await page.emulateMedia({ reducedMotion: "no-preference" });
+        await page.waitForFunction(() => {
+          const el = document.querySelector(
+            '.paper-message[role="status"] .brigid-logo',
+          );
+          return (
+            el.dataset.playback === "playing" &&
+            getComputedStyle(el.querySelector(".brigid-logo-mark"))
+              .animationName === "brigid-processing"
+          );
+        });
       } else {
         assert.equal(await logo.getAttribute("data-playback"), "static");
-        assert.equal(await logo.locator("svg").count(), 0);
+        assert.equal(await logo.locator("img").count(), 1);
       }
       await heldRoute.fulfill({
         json: {
@@ -105,34 +127,51 @@ async function main() {
       await page.getByText("Test response complete.").waitFor();
       const replyLogo = page.locator(".paper-assistant-mark");
       if (reducedMotion === "no-preference") {
-        await page.waitForFunction(
-          () =>
-            document.querySelector(".paper-message-assistant .wali-logo")
-              .dataset.playback === "playing",
-        );
-        await page.waitForFunction(
-          () =>
-            document.querySelector(".paper-message-assistant .wali-logo")
-              .dataset.playback === "complete",
-        );
+        await page.waitForFunction(() => {
+          const el = document.querySelector(
+            ".paper-message-assistant .brigid-logo",
+          );
+          return (
+            el.dataset.playback === "playing" &&
+            getComputedStyle(el.querySelector(".brigid-logo-mark"))
+              .animationName === "brigid-reply"
+          );
+        });
+        // one pulse, then the mark settles back to its static transform
+        await page.waitForFunction(() => {
+          const el = document.querySelector(
+            ".paper-message-assistant .brigid-logo",
+          );
+          return (
+            el.dataset.playback === "playing" &&
+            getComputedStyle(el.querySelector(".brigid-logo-mark"))
+              .transform === "none"
+          );
+        });
       } else
         assert.equal(await replyLogo.getAttribute("data-playback"), "static");
       await page.screenshot({
-        path: path.join(output, `chat-lottie-reply-${reducedMotion}.png`),
+        path: path.join(output, `chat-logo-reply-${reducedMotion}.png`),
       });
       assert.equal(
         await page.locator(".paper-brand-logo").getAttribute("data-playback"),
         "static",
       );
       assert(
-        await page.locator('link[rel="icon"][href="/brand/wali.svg"]').count(),
+        await page
+          .locator('link[rel="icon"][href="/brand/brigid.svg"]')
+          .count(),
       );
       assert.equal(
-        (await context.request.get(`${origin}/brand/wali.svg`)).status(),
+        (await context.request.get(`${origin}/brand/brigid.svg`)).status(),
         200,
       );
       assert.equal(
-        (await context.request.get(`${origin}/brand/wali-180.png`)).status(),
+        (await context.request.get(`${origin}/brand/brigid-180.png`)).status(),
+        200,
+      );
+      assert.equal(
+        (await context.request.get(`${origin}/favicon.ico`)).status(),
         200,
       );
       const failingRequest = nextChat();
@@ -152,7 +191,7 @@ async function main() {
       assert.equal(await input.inputValue(), "Retain this draft");
       assert.deepEqual(errors, []);
       results.push(
-        `${reducedMotion}: Lottie processing loop, reply logo, header/favicon, preference changes, success/failure cleanup, no runtime errors`,
+        `${reducedMotion}: Logo processing pulse, reply settle, header/favicon, preference changes, success/failure cleanup, no runtime errors`,
       );
       console.log(`PASS ${results.at(-1)}`);
       await context.close();

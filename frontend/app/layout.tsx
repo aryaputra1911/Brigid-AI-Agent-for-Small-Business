@@ -15,9 +15,12 @@ export const metadata: Metadata = {
   description:
     "A local simulation workspace for financial conversations and approvals.",
   icons: {
-    icon: [{ url: "/brand/wali.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/brand/brigid.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any", type: "image/x-icon" },
+    ],
     apple: [
-      { url: "/brand/wali-180.png", sizes: "180x180", type: "image/png" },
+      { url: "/brand/brigid-180.png", sizes: "180x180", type: "image/png" },
     ],
   },
 };

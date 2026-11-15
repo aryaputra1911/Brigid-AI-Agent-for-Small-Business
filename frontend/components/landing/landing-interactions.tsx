@@ -49,7 +49,13 @@ export function LandingHeader() {
     <header className="wl-header">
       <div className="wl-container wl-header-inner">
         <Link className="wl-brand" href="/" aria-label="Wali home">
-          <Image src="/brand/wali.svg" alt="" width={28} height={28} priority />
+          <Image
+            src="/brand/brigid.svg"
+            alt=""
+            width={28}
+            height={28}
+            priority
+          />
           <span>Wali</span>
         </Link>
         <nav className="wl-desktop-nav" aria-label="Main navigation">

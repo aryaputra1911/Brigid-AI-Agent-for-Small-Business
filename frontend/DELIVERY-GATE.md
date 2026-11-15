@@ -8,7 +8,7 @@ Verified on 2026-10-15. Mode: after (session choice). Direction: user-supplied P
 - R-03 PASS: browser checks document and composer bounds at 1440, 1024, 768, 390, and 320 CSS px; screenshots confirm reflow and no overlapping sidebar content.
 - R-17 PASS: no product metrics or invented financial statistics are added; actual request counts come from the provider.
 - R-18 PASS: no testimonials or fictional people are present.
-- R-23 PASS: Wali's new header, favicon and reply mark use the user-supplied loading.lottie asset; the role-derived avatar still identifies the actual role. The original archive is preserved and no invented image or profile is added.
+- R-23 PASS: Wali's new header, favicon and reply mark use the user-supplied logo asset (`public/brand/brigid.svg` and its rendered sizes); the role-derived avatar still identifies the actual role. No invented image or profile is added.
 - R-24 PASS: the sidebar links only to Chat, Approvals, Mandate, and the active in-tab conversation; browser navigation passed.
 - R-25 PASS: the regression script verifies 19 text/background pairings, including the purple navigation, sidebar labels, avatar and gradient endpoints for the large greeting; normal text meets 4.5:1 and large greeting text meets 3:1. See generated results.json for ratios.
 - Finance contrast PASS: twelve browser-computed text/boundary pairings pass. New primary-button text measures 8.14:1; secondary and decline boundaries measure 4.16:1 and 4.35:1. Ratios are saved in finance-results.json.
@@ -35,7 +35,7 @@ Verified on 2026-10-15. Mode: after (session choice). Direction: user-supplied P
 - R-12 PASS: the composer uses a flat fill; focus outlines communicate focus rather than decorative elevation.
 - R-13 PASS: no decorative glow is introduced.
 - R-14 PASS: four equal prompt cards represent equal starting choices; the phone layout changes to readable horizontal rows.
-- R-19 PASS: Lottie processing/reply behavior remains verified. Sidebar changes use a 240 ms desktop width transition and a Motion transform for phone enter/exit with a fading backdrop. Browser checks confirm real intermediate positions, rapid toggles, and immediate reduced-motion states; existing approval animations remain unchanged.
+- R-19 PASS: Logo processing/reply pulse behavior remains verified. Sidebar changes use a 240 ms desktop width transition and a Motion transform for phone enter/exit with a fading backdrop. Browser checks confirm real intermediate positions, rapid toggles, and immediate reduced-motion states; existing approval animations remain unchanged.
 - R-22 PASS: no generic stock illustration or image is added.
 
 ## Liveliness
@@ -92,7 +92,7 @@ Run `npm ci`, `npm run build`, then `npm run start -- --port 3005` in one termin
 
 API calls are intercepted; no live model or financial action is performed. Earlier Paper screenshots used Arial as the Google Sans fallback; the current user-requested typography uses bundled Poppins headings with Arial body text. The 320 CSS px and 400 px-tall checks verify reflow and a reduced visible area; they do not claim physical-device keyboard or native 200% browser zoom testing. No new Python test results are claimed because the Python code and API contract are unchanged.
 
-Lottie revision: `npm run test:loading` checks both normal and reduced-motion browser contexts, actual SVG frame changes, processing loops, one-cycle completed replies, header logo, favicon assets, live preference changes, removal of the pending animation after success/failure, preserved drafts on errors, and no browser runtime errors. It defaults to the running frontend on port 3000; set `WALI_TEST_ORIGIN` to use another port. The script intercepts all Wali API requests. Its results and screenshots are saved in `test-results/`. The full UI suite also checks all five responsive widths with the new header logo.
+Lottie revision: `npm run test:loading` checks both normal and reduced-motion browser contexts, actual mark movement, processing loops, one-cycle completed replies, header logo, favicon assets, live preference changes, removal of the pending animation after success/failure, preserved drafts on errors, and no browser runtime errors. It defaults to the running frontend on port 3000; set `BRIGID_TEST_ORIGIN` to use another port. The script intercepts all Brigid API requests. Its results and screenshots are saved in `test-results/`. The full UI suite also checks all five responsive widths with the new header logo.
 
 Sidebar revision: `npm run test:sidebar` checks animated desktop open/close, rapid toggles, the 64 px compact rail, four equal 44 x 44 px action targets centered at x=32, actual purple active colors, absence of zero badges, mobile enter/exit, inert/focus boundaries, reduced-motion switches and browser errors. Screenshots include `sidebar-collapsed.png`, `sidebar-expanded.png` and `sidebar-mobile-open.png`; measurements are saved in `sidebar-results.json`. All API responses are mocked.
 
@@ -115,7 +115,7 @@ The 320 CSS px check demonstrates narrow-width reflow; it is not a native 200% b
 
 ## Workflow conversation demo, 2026-10-16
 
-Status: PASS for the scoped automated Chrome and visual-review checks. `test:workflow-demo` verifies that playback starts only when the panel is in view, reveals partial reply text, completes four scripted messages after 14 seconds of active playback, and stops without looping. Keyboard Pause/Resume and Replay work. Leaving the viewport and simulated document visibility changes pause the clock; resuming preserves progress. Panel height remains unchanged during playback and completion. The logo uses the existing Lottie player only during active processing intervals. All content is local; the browser recorded zero Wali API calls and no runtime errors.
+Status: PASS for the scoped automated Chrome and visual-review checks. `test:workflow-demo` verifies that playback starts only when the panel is in view, reveals partial reply text, completes four scripted messages after 14 seconds of active playback, and stops without looping. Keyboard Pause/Resume and Replay work. Leaving the viewport and simulated document visibility changes pause the clock; resuming preserves progress. Panel height remains unchanged during playback and completion. The logo pulses only during active processing intervals. All content is local; the browser recorded zero Wali API calls and no runtime errors.
 
 The complete transcript is visible with reduced motion and without JavaScript. Accessible text is supplied once, outside the decorative animated list, without a per-word live region. Controls have visible keyboard outlines and 44 px targets. Text and panel bounds pass at 1440, 1024, 768, 390 and 320 CSS px. Five additional computed contrast pairs pass: user bubble 12.60:1, assistant bubble 16.48:1, speaker/disclosure 6.45:1 and controls 10.15:1. Screenshots `workflow-demo-playing.png` and `workflow-demo-{width}.png`, plus `workflow-demo-results.json`, are saved locally in ignored `test-results/`; desktop and 390/320 px views were reviewed.
 
