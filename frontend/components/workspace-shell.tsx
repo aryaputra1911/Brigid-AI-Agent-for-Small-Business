@@ -393,11 +393,21 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                 }}
                 onBlur={(event) => {
                   if (
-                    event.relatedTarget &&
-                    !event.currentTarget.contains(event.relatedTarget) &&
-                    event.relatedTarget !== avatarRef.current
+                    event.relatedTarget === avatarRef.current ||
+                    (event.relatedTarget &&
+                      event.currentTarget.contains(event.relatedTarget))
                   )
-                    closeSettings(false);
+                    return;
+                  // Opening from the drawer unmounts the focused button and can drop
+                  // focus on body mid-handoff, so decide on the next frame whether
+                  // focus really left the dialog (Tab past its last focusable must
+                  // still close it).
+                  requestAnimationFrame(() => {
+                    if (!settingsRef.current?.contains(document.activeElement)) {
+                      setSettingsOpen(false);
+                      settingsTriggerRef.current = null;
+                    }
+                  });
                 }}
               >
                 <div className="paper-settings-heading">
