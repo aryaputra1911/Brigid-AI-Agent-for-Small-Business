@@ -142,7 +142,11 @@ async function main() {
           );
         body = failDecision
           ? { detail: "Test decision unavailable" }
-          : { status: "complete", message: "Test decision recorded." };
+          : {
+              // Mirror the real API: confirm answers "executed", cancel "declined".
+              status: action === "confirm" ? "executed" : "declined",
+              message: "Test decision recorded.",
+            };
       } else if (action === "mandate") {
         if (releaseDraft)
           await new Promise((resolve) => {
@@ -152,7 +156,11 @@ async function main() {
         if (!failMandate) requests = [structuredClone(fixtures[1])];
         body = failMandate
           ? { detail: "Test drafting unavailable" }
-          : { status: "pending", message: "Test mandate ready for review." };
+          : {
+              // The backend answers a successful draft with "needs_confirmation".
+              status: "needs_confirmation",
+              message: "Test mandate ready for review.",
+            };
       } else throw new Error(`Unexpected action: ${action}`);
       await route.fulfill({ status, json: body });
     });
