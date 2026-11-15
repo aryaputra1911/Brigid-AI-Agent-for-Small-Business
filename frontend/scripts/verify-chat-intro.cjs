@@ -99,8 +99,15 @@ async function main() {
           .evaluateAll(
             (els) =>
               els
-                .flatMap((el) => el.getAnimations())
-                .filter((animation) => animation.playState === "running")
+                .flatMap((el) => el.getAnimations({ subtree: true }))
+                // Count keyframe animations only: enabling the send button also
+                // runs a background-color transition inside the composer, and
+                // that is a state change, not an intro replay.
+                .filter(
+                  (animation) =>
+                    animation instanceof CSSAnimation &&
+                    animation.playState === "running",
+                )
                 .length,
           );
       assert.equal(await running(), 0);
