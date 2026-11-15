@@ -21,6 +21,7 @@
     "test:background": "node scripts/verify-chat-background.cjs",
     "test:prompt-mesh": "node scripts/verify-prompt-mesh.cjs",
     "test:chat-intro": "node scripts/verify-chat-intro.cjs",
+    "test:prefill": "node scripts/verify-chat-prefill.cjs",
     "test:message-motion": "node scripts/verify-message-motion.cjs"
   },
   "dependencies": {
