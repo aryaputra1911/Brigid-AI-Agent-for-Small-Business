@@ -89,7 +89,9 @@
   font-size: 0.8125rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .rre-video-control:hover {
@@ -110,7 +112,10 @@
   left: 0;
   right: 0;
   z-index: 40;
-  transition: background-color 0.25s ease, border-color 0.25s ease, backdrop-filter 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    backdrop-filter 0.25s ease;
   border-bottom: 1px solid transparent;
 }
 

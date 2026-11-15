@@ -12,7 +12,10 @@ import { useMediaQuery } from "@/lib/use-media-query";
  */
 export function AmbientVideoBg() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)", false);
+  const reducedMotion = useMediaQuery(
+    "(prefers-reduced-motion: reduce)",
+    false,
+  );
   const [userPaused, setUserPaused] = useState(false);
 
   const shouldPlay = !reducedMotion && !userPaused;
@@ -78,7 +81,9 @@ export function AmbientVideoBg() {
         type="button"
         className="rre-video-control"
         onClick={togglePlayback}
-        aria-label={shouldPlay ? "Pause background video" : "Play background video"}
+        aria-label={
+          shouldPlay ? "Pause background video" : "Play background video"
+        }
         aria-pressed={shouldPlay}
       >
         {shouldPlay ? (

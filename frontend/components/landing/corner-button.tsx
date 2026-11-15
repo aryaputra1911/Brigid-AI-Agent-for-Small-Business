@@ -20,7 +20,8 @@ export function CornerButton({
   className = "",
   ariaLabel,
 }: CornerButtonProps) {
-  const classes = `rre-corner-btn rre-corner-btn--${variant} ${className}`.trim();
+  const classes =
+    `rre-corner-btn rre-corner-btn--${variant} ${className}`.trim();
 
   const corners = (
     <>
