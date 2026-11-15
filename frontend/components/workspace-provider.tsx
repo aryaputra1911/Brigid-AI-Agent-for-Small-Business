@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   type ChatResult,
   type DecisionResult,
@@ -71,10 +72,16 @@ function errorText(error: unknown): string {
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const nextMessageId = useRef(0);
   const pendingGeneration = useRef(0);
+  const searchParams = useSearchParams();
   const [info, setInfo] = useState<BrigidInfo | null>(null);
   const [infoError, setInfoError] = useState("");
   const [role, setRole] = useState<Role | "">("");
-  const [draft, setDraft] = useState("");
+  // The landing footer opens Chat with ?prompt=...: seed the composer draft as plain
+  // text only. Nothing is sent automatically, and the value is capped at the composer
+  // maximum because maxLength does not apply to programmatic values.
+  const [draft, setDraft] = useState(() =>
+    (searchParams.get("prompt") ?? "").trim().slice(0, 4000),
+  );
   const [messages, setMessages] = useState<Message[]>([]);
   const [sending, setSending] = useState(false);
   const [resetting, setResetting] = useState(false);
