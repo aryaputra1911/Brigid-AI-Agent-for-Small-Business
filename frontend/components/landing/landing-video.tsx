@@ -105,17 +105,14 @@ export function LandingVideo() {
           <div className="wl-video-fallback-top">
             <span className="wl-mono-tag">Simulation preview</span>
             <span className="wl-mono-tag wl-mono-muted">
-              {hasSource ? "Loading video" : "Video slot: /media/brigid-demo.webm"}
+              {hasSource
+                ? "Loading video"
+                : "Video slot: /media/brigid-demo.webm"}
             </span>
           </div>
           <div className="wl-preview-card">
             <div className="wl-preview-card-heading">
-              <Image
-                src="/brand/brigid.svg"
-                alt=""
-                width={24}
-                height={24}
-              />
+              <Image src="/brand/brigid.svg" alt="" width={24} height={24} />
               <span>Example prompt</span>
             </div>
             <p>
@@ -139,7 +136,9 @@ export function LandingVideo() {
             type="button"
             className="wl-video-toggle"
             onClick={togglePlayback}
-            aria-label={userPaused || reducedMotion ? "Play video" : "Pause video"}
+            aria-label={
+              userPaused || reducedMotion ? "Play video" : "Pause video"
+            }
             aria-pressed={!userPaused && !reducedMotion}
           >
             {userPaused || reducedMotion ? (

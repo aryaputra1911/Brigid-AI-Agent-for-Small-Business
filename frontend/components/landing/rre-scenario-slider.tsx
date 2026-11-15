@@ -14,28 +14,28 @@ interface Scenario {
 const scenarios: Scenario[] = [
   {
     prompt:
-      "\"Reconcile September bank feed entries against our books and flag any transaction that needs a closer look.\"",
+      '"Reconcile September bank feed entries against our books and flag any transaction that needs a closer look."',
     label: "Transaction reconciliation",
     routeLabel: "Chat workspace · Synthetic ledger",
     href: "/chat",
   },
   {
     prompt:
-      "\"Project our cash position over the next four weeks using verified ledger records and open supplier invoices.\"",
+      '"Project our cash position over the next four weeks using verified ledger records and open supplier invoices."',
     label: "Cash-flow forecasting",
     routeLabel: "Chat workspace · Weekly projection",
     href: "/chat",
   },
   {
     prompt:
-      "\"Draft a supplier spending mandate with a $2,500 per-invoice ceiling and send it for owner review.\"",
+      '"Draft a supplier spending mandate with a $2,500 per-invoice ceiling and send it for owner review."',
     label: "Mandate drafting",
     routeLabel: "Mandate · Owner review required",
     href: "/mandate",
   },
   {
     prompt:
-      "\"Inspect pending payment requests, check policy warnings, and confirm or decline with an owner token.\"",
+      '"Inspect pending payment requests, check policy warnings, and confirm or decline with an owner token."',
     label: "Out-of-band approvals",
     routeLabel: "Approvals · Human confirmation",
     href: "/approvals",
@@ -55,7 +55,11 @@ export function RreScenarioSlider() {
   };
 
   return (
-    <div className="rre-slider" aria-roledescription="carousel" aria-label="Example workspace workflows">
+    <div
+      className="rre-slider"
+      aria-roledescription="carousel"
+      aria-label="Example workspace workflows"
+    >
       <div className="rre-slider__controls-col">
         <div className="rre-slider__arrows">
           <button
