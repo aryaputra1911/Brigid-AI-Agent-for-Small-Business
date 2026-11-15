@@ -149,6 +149,27 @@ def test_the_csrf_guard_covers_login_and_logout(world):
         assert response.headers["cache-control"] == "no-store"
 
 
+def test_an_origin_of_null_is_refused_on_mutation_requests(world):
+    client, _ = client_for(world)
+
+    from_null = client.post(
+        "/api/login",
+        json={"email": EMAILS["owner"], "password": PASSWORD},
+        headers={"Origin": "null"},
+    )
+
+    assert from_null.status_code == 403
+
+
+def test_login_accepts_an_email_with_surrounding_spaces_and_any_letter_case(world):
+    client, _ = client_for(world)
+
+    reply = login(client, email="  OWNER@BRIGID.DEMO  ")
+
+    assert reply.status_code == 200
+    assert reply.json()["user"]["role"] == "owner"
+
+
 # --- Older endpoints with a session -------------------------------------------------------------
 
 
@@ -173,6 +194,28 @@ def test_a_role_that_disagrees_with_the_session_is_refused(world):
     refused_chat = client.post("/api/chat", json={"role": "staff", "text": "halo"})
 
     assert refused_pending.status_code == refused_chat.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "path, body",
+    [
+        ("/api/confirm", {"role": "bookkeeper", "subject_id": "any"}),
+        ("/api/cancel", {"role": "bookkeeper", "subject_id": "any"}),
+        ("/api/mandate", {"role": "bookkeeper"}),
+        ("/api/reset", {"role": "bookkeeper"}),
+    ],
+)
+def test_a_body_role_that_disagrees_with_the_session_is_refused_before_anything_runs(
+    world, path, body
+):
+    client, _ = client_for(world)
+    login(client, "owner")
+
+    refused = client.post(path, json=body)
+
+    assert refused.status_code == 403
+    # The session mismatch refuses it, not the endpoint's own role check.
+    assert refused.json()["detail"] == "That role does not match your session."
 
 
 def test_an_older_endpoint_without_a_session_or_a_role_is_refused(world):
