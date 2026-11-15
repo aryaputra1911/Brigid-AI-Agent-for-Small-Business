@@ -1,6 +1,6 @@
 export type Role = "owner" | "bookkeeper" | "staff";
 
-export type WaliInfo = {
+export type BrigidInfo = {
   simulation: string;
   roles: Role[];
   screening_model: boolean;
@@ -37,44 +37,44 @@ export type ChatResult = {
 
 export type DecisionResult = { status: string; message: string };
 
-export async function waliGet<T>(
+export async function brigidGet<T>(
   action: "info" | "pending",
   role?: Role,
 ): Promise<T> {
   const params = role ? `?role=${encodeURIComponent(role)}` : "";
-  return waliRequest<T>(`/api/wali/${action}${params}`);
+  return brigidRequest<T>(`/api/brigid/${action}${params}`);
 }
 
-export async function waliPost<T>(
+export async function brigidPost<T>(
   action: "chat" | "confirm" | "cancel" | "mandate" | "reset",
   body: Record<string, string>,
 ): Promise<T> {
-  return waliRequest<T>(`/api/wali/${action}`, {
+  return brigidRequest<T>(`/api/brigid/${action}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 }
 
-async function waliRequest<T>(path: string, init?: RequestInit): Promise<T> {
+async function brigidRequest<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
     response = await fetch(path, { ...init, cache: "no-store" });
   } catch {
     throw new Error(
-      "The local Wali service is unavailable. Check both servers and retry.",
+      "The local Brigid service is unavailable. Check both servers and retry.",
     );
   }
   let data: unknown;
   try {
     data = await response.json();
   } catch {
-    throw new Error("Wali returned an unreadable response. Please retry.");
+    throw new Error("Brigid returned an unreadable response. Please retry.");
   }
   if (!response.ok) {
     const detail =
       isRecord(data) && typeof data.detail === "string" ? data.detail : null;
-    throw new Error(detail ?? `Wali request failed (${response.status}).`);
+    throw new Error(detail ?? `Brigid request failed (${response.status}).`);
   }
   return data as T;
 }

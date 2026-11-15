@@ -4,7 +4,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 
 async function main() {
-  const origin = process.env.WALI_TEST_ORIGIN || "http://127.0.0.1:3000";
+  const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
   const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -23,7 +23,7 @@ async function main() {
         new Promise((resolve) => {
           receiveChat = resolve;
         });
-      await context.route("**/api/wali/**", async (route) => {
+      await context.route("**/api/brigid/**", async (route) => {
         const action = new URL(route.request().url()).pathname
           .split("/")
           .at(-1);

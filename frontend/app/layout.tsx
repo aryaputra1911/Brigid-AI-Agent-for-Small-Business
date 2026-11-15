@@ -11,7 +11,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Wali | Financial workspace",
+  title: "Brigid | AI finance agent for small business",
   description:
     "A local simulation workspace for financial conversations and approvals.",
   icons: {

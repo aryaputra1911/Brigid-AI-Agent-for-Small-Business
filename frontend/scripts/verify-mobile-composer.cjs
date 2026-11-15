@@ -15,7 +15,7 @@ async function main() {
     });
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.route("**/api/wali/**", (route) => {
+    await page.route("**/api/brigid/**", (route) => {
       const action = new URL(route.request().url()).pathname.split("/").at(-1);
       assert(["info", "pending"].includes(action));
       return route.fulfill({
@@ -38,7 +38,7 @@ async function main() {
     ]) {
       await page.setViewportSize({ width, height });
       await page.goto(
-        `${process.env.WALI_TEST_ORIGIN || "http://127.0.0.1:3000"}/chat`,
+        `${process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000"}/chat`,
       );
       await page.locator(".paper-prompt:enabled").first().waitFor();
       await page.evaluate(() => document.fonts.ready);

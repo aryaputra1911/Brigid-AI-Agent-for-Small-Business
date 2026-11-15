@@ -4,7 +4,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 
 async function main() {
-  const origin = process.env.WALI_TEST_ORIGIN || "http://127.0.0.1:3000";
+  const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
   const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -21,7 +21,7 @@ async function main() {
     const errors = [],
       calls = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.route("**/api/wali/**", (route) => {
+    await page.route("**/api/brigid/**", (route) => {
       const action = new URL(route.request().url()).pathname.split("/").at(-1);
       calls.push(action);
       assert(["info", "pending"].includes(action), `Unexpected API ${action}`);
@@ -44,7 +44,7 @@ async function main() {
       /Clearer finances\.\s*One conversation\./,
     );
     assert.equal(await page.locator(".paper-shell").count(), 0);
-    assert.match(await page.title(), /Wali \| Clearer finances/);
+    assert.match(await page.title(), /Brigid \| Clearer finances/);
     for (const [selector, size, count] of [
       [".wl-capability-grid .lucide", 24, 4],
       [".wl-steps .lucide", 20, 3],

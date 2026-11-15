@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ReactNode } from "react";
-import type { Role } from "@/lib/wali-api";
+import type { Role } from "@/lib/brigid-api";
 import { useWorkspace } from "@/components/workspace-provider";
 import { ChatIcon, type ChatIconName } from "@/components/ui/chat-icon";
 import { WaliLogo } from "@/components/ui/wali-logo";

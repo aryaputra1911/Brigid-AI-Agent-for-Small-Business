@@ -1,4 +1,4 @@
-# Wali Web V2
+# Brigid Web
 
 The Next.js interface in this folder runs separately from Wali's original static web page. It does not change the Python API or V1 files.
 
@@ -8,10 +8,10 @@ Start the FastAPI simulation from the repository root:
 
 ```powershell
 $env:UV_CACHE_DIR = Join-Path (Get-Location) '.uv-cache-v2'
-uv run --isolated --python 3.11 python -m wali.interfaces.web
+uv run --isolated --python 3.11 python -m brigid.interfaces.web
 ```
 
-The isolated command avoids the broken `.venv` currently present in this local checkout. Once that environment is repaired, the repository's usual `uv run python -m wali.interfaces.web` works too.
+The isolated command avoids the broken `.venv` currently present in this local checkout. Once that environment is repaired, the repository's usual `uv run python -m brigid.interfaces.web` works too.
 
 In a second terminal, from `frontend/`:
 
@@ -22,7 +22,7 @@ In a second terminal, from `frontend/`:
 
 Open `http://127.0.0.1:3000` for the public landing page. **Open Wali** enters `/chat`; `/chat`, `/approvals`, and `/mandate` also work directly. The landing page is server-rendered outside the workspace provider and makes no Wali API requests. Its example prompt is presentation only.
 
-The workspace sidebar links to Chat, Approvals, and Mandate. On phones, Menu opens the sidebar drawer; Escape closes it. Open Settings and help, or the role avatar, to change the simulation role. The Next.js route handler proxies `/api/wali/*` to `http://127.0.0.1:8000` by default. To change the backend, copy `.env.example` to `.env.local` and set `WALI_API_ORIGIN` to its local origin. The browser does not call FastAPI directly; the server proxy sends JSON without the browser's `Origin` header and does not cache API responses.
+The workspace sidebar links to Chat, Approvals, and Mandate. On phones, Menu opens the sidebar drawer; Escape closes it. Open Settings and help, or the role avatar, to change the simulation role. The Next.js route handler proxies `/api/brigid/*` to `http://127.0.0.1:8000` by default. To change the backend, copy `.env.example` to `.env.local` and set `BRIGID_API_ORIGIN` to its local origin. The browser does not call FastAPI directly; the server proxy sends JSON without the browser's `Origin` header and does not cache API responses.
 
 The role selector stands in for login only in this local simulation. Anyone who can reach either server can select the owner role. Do not expose these servers to other machines or deploy this interface until authentication and authorization are designed for that environment.
 
@@ -34,7 +34,7 @@ Landing icons come from the pinned `lucide-react` dependency. `test:landing` che
 
 `npm run test:workflow-demo` exercises the scripted How it works conversation: viewport start, partial replies, stable panel height, Pause/Resume, Replay, automatic offscreen/tab pause, completion without looping, reduced motion, no-JavaScript transcript, five responsive widths, control sizes and five computed text contrast pairs. It verifies zero Wali API requests and saves `workflow-demo-results.json` and screenshots in `test-results/`.
 
-`npm run test:landing` checks `/` at 1440, 1024, 768, 390 and 320 CSS px, sticky navigation, working anchors and Chat entry points, mobile menu focus, shader playback/pixel limits, reduced motion, contrast, no-WebGL fallback and no-JavaScript content. It asserts zero Wali API calls on the landing page and intercepts workspace requests after navigation. Screenshots `landing-*.png` and `landing-results.json` are written to ignored `test-results/`. Set `WALI_TEST_ORIGIN` to test a different local port.
+`npm run test:landing` checks `/` at 1440, 1024, 768, 390 and 320 CSS px, sticky navigation, working anchors and Chat entry points, mobile menu focus, shader playback/pixel limits, reduced motion, contrast, no-WebGL fallback and no-JavaScript content. It asserts zero Wali API calls on the landing page and intercepts workspace requests after navigation. Screenshots `landing-*.png` and `landing-results.json` are written to ignored `test-results/`. Set `BRIGID_TEST_ORIGIN` to test a different local port.
 
 ```powershell
 & 'D:\Program Files\nodejs\npm.cmd' run typecheck
@@ -65,9 +65,9 @@ After `npm ci`, start the frontend on a separate port:
 npm.cmd run dev -- --port 3005
 ```
 
-In another terminal run `npm.cmd run test:ui`. Google Chrome must be installed; the test uses Playwright's `chrome` channel. To test another port, set `$env:WALI_TEST_ORIGIN = 'http://127.0.0.1:3006'` before running it.
+In another terminal run `npm.cmd run test:ui`. Google Chrome must be installed; the test uses Playwright's `chrome` channel. To test another port, set `$env:BRIGID_TEST_ORIGIN = 'http://127.0.0.1:3006'` before running it.
 
-The test intercepts every `/api/wali/*` request and uses explicit test responses. It does not need FastAPI, call a model, or perform a financial action. It checks responsive layouts, chat failure recovery, blocked replies, clipboard success/failure, sidebar and profile keyboard behavior, role changes, approval flows, scroll behavior, and connection retry. Screenshots and results are written to ignored `test-results/`. These checks validate UI behavior, not live agent response quality or physical phone keyboards.
+The test intercepts every `/api/brigid/*` request and uses explicit test responses. It does not need FastAPI, call a model, or perform a financial action. It checks responsive layouts, chat failure recovery, blocked replies, clipboard success/failure, sidebar and profile keyboard behavior, role changes, approval flows, scroll behavior, and connection retry. Screenshots and results are written to ignored `test-results/`. These checks validate UI behavior, not live agent response quality or physical phone keyboards.
 
 `npm run test:profile` checks the avatar dropdown animation, role selector, keyboard focus and dismissal, mobile sidebar shortcut, five responsive widths, short-screen scrolling, reduced motion and five text/control contrast pairs. It uses mocked API responses on port 3000 by default and writes `profile-results.json` plus desktop/phone screenshots in `test-results/`.
 

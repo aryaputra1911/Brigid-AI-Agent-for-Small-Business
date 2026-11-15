@@ -35,7 +35,7 @@ async function main() {
       });
       let releaseReply;
       let chatCount = 0;
-      await page.route("**/api/wali/**", async (route) => {
+      await page.route("**/api/brigid/**", async (route) => {
         const action = new URL(route.request().url()).pathname
           .split("/")
           .at(-1);
@@ -68,7 +68,7 @@ async function main() {
         });
       });
       await page.goto(
-        `${process.env.WALI_TEST_ORIGIN || "http://127.0.0.1:3000"}/chat`,
+        `${process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000"}/chat`,
         { waitUntil: "domcontentloaded" },
       );
       const input = page.locator("#message-input");

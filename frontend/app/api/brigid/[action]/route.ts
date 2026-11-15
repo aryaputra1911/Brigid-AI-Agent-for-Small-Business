@@ -4,7 +4,7 @@ import { isLocalRequest } from "@/lib/local-request";
 
 const GET_ACTIONS = new Set(["info", "pending"]);
 const POST_ACTIONS = new Set(["chat", "confirm", "cancel", "mandate", "reset"]);
-const BACKEND = process.env.WALI_API_ORIGIN ?? "http://127.0.0.1:8000";
+const BACKEND = process.env.BRIGID_API_ORIGIN ?? "http://127.0.0.1:8000";
 
 type Context = { params: Promise<{ action: string }> };
 
@@ -73,7 +73,7 @@ async function forward(url: URL, body?: string) {
     return NextResponse.json(
       {
         detail:
-          "The Wali API is unavailable. Start FastAPI on the configured local origin.",
+          "The Brigid API is unavailable. Start FastAPI on the configured local origin.",
       },
       { status: 503, headers: { "Cache-Control": "no-store" } },
     );
