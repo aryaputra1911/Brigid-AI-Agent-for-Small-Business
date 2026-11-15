@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3005";
+const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
 const output = path.resolve(__dirname, "../test-results");
 const results = [];
 const check = (name) => {
@@ -87,12 +87,17 @@ async function main() {
         },
       ];
       body = {
-        status: "pending",
+        // The backend answers a successful draft with "needs_confirmation".
+        status: "needs_confirmation",
         message: "Test mandate is ready for review.",
       };
     } else if (action === "confirm" || action === "cancel") {
       pending = [];
-      body = { status: "complete", message: "Test decision recorded." };
+      body = {
+        // Mirror the real API: confirm answers "executed", cancel "declined".
+        status: action === "confirm" ? "executed" : "declined",
+        message: "Test decision recorded.",
+      };
     } else throw new Error(`Unexpected API action: ${action}`);
     await route.fulfill({
       status,
