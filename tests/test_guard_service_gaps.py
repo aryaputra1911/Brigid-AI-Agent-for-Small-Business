@@ -6,10 +6,10 @@ from decimal import Decimal
 
 import pytest
 
+from brigid.guard.service import GuardService
+from brigid.models import NewBookEntry
+from brigid.tools.base import ToolTimeout
 from conftest import activate_mandate, flagged_invoice_ids, mandate_request
-from wali.guard.service import GuardService
-from wali.models import NewBookEntry
-from wali.tools.base import ToolTimeout
 
 DAY = dt.date(2026, 10, 1)
 

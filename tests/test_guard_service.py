@@ -5,12 +5,12 @@ from decimal import Decimal
 
 import pytest
 
+from brigid.guard.audit import verify_chain
+from brigid.guard.keys import generate_keypair
+from brigid.guard.service import GuardService
+from brigid.models import Principal
+from brigid.tools.base import ToolTimeout
 from conftest import activate_mandate, flagged_invoice_ids, mandate_request
-from wali.guard.audit import verify_chain
-from wali.guard.keys import generate_keypair
-from wali.guard.service import GuardService
-from wali.models import Principal
-from wali.tools.base import ToolTimeout
 
 FAR_PAST = dt.date(2000, 1, 1)
 FAR_FUTURE = dt.date(2100, 1, 1)

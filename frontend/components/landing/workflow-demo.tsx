@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, useInView } from "motion/react";
 import { Pause, Play, RotateCcw } from "lucide-react";
-import { WaliLogo } from "@/components/ui/wali-logo";
+import { BrigidLogo } from "@/components/ui/brigid-logo";
 import { useMediaQuery } from "@/lib/use-media-query";
 
 const messages = [
@@ -81,7 +81,7 @@ export function WorkflowDemo() {
     >
       <div className="wl-demo-header">
         <div className="wl-demo-agent">
-          <WaliLogo
+          <BrigidLogo
             decorative
             state={processing && running ? "processing" : "idle"}
           />

@@ -6,7 +6,7 @@ from decimal import Decimal
 
 import pytest
 
-from wali.guard.audit import (
+from brigid.guard.audit import (
     GENESIS_HASH,
     AuditError,
     AuditLog,
@@ -14,7 +14,7 @@ from wali.guard.audit import (
     entry_hash,
     verify_chain,
 )
-from wali.models import Money, Principal
+from brigid.models import Money, Principal
 
 T0 = dt.datetime(2026, 10, 1, 9, 0, tzinfo=dt.UTC)
 OWNER = Principal(user_id="user-owner", role="owner", business_id="biz")
@@ -202,7 +202,7 @@ def test_a_damaged_log_is_not_continued(path):
 
 
 def test_two_logs_on_one_file_keep_a_single_chain(path):
-    """The web page, CLI and Telegram bot may share one data folder, each with its own log."""
+    """The web page and the CLI may share one data folder, each with its own log."""
     first, second = AuditLog(path), AuditLog(path)
 
     for n in range(3):
@@ -215,7 +215,7 @@ def test_two_logs_on_one_file_keep_a_single_chain(path):
 
 WRITER = """
 import datetime as dt, sys
-from wali.guard.audit import AuditLog
+from brigid.guard.audit import AuditLog
 log = AuditLog(sys.argv[1])
 for n in range(400):
     log.append(ts=dt.datetime(2026, 10, 1, tzinfo=dt.UTC), event=sys.argv[2], data={"n": n})

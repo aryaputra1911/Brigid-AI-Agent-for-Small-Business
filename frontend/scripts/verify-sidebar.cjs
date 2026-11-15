@@ -4,7 +4,7 @@ const fs = require("node:fs/promises");
 const path = require("node:path");
 
 async function main() {
-  const origin = process.env.WALI_TEST_ORIGIN || "http://127.0.0.1:3000";
+  const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
   const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -15,7 +15,7 @@ async function main() {
     });
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.route("**/api/wali/**", (route) =>
+    await page.route("**/api/brigid/**", (route) =>
       route.fulfill({
         json: route.request().url().includes("/info")
           ? {

@@ -7,10 +7,10 @@ from decimal import Decimal
 
 import pytest
 
+from brigid.config import ConfigError, load_settings
+from brigid.guard.audit import AuditLog, verify_chain
+from brigid.guard.store import GuardStore
 from conftest import flagged_invoice_ids
-from wali.config import ConfigError, load_settings
-from wali.guard.audit import AuditLog, verify_chain
-from wali.guard.store import GuardStore
 
 
 def a_clean_payable(env, owner, ground_truth):
@@ -129,14 +129,14 @@ def test_a_log_entry_whose_content_cannot_be_hashed_is_reported_not_crashed(tmp_
 @pytest.mark.parametrize(
     ("name", "low", "high"),
     [
-        ("WALI_AGENT_MAX_STEPS", "1", "50"),
-        ("WALI_CONFIRM_TOKEN_TTL_SECONDS", "1", "3600"),
-        ("WALI_HISTORY_MAX_TURNS", "4", "200"),
-        ("WALI_UTC_OFFSET_HOURS", "-12", "14"),
-        ("WALI_RECON_DATE_WINDOW_DAYS", "0", "31"),
-        ("WALI_RECON_MISMATCH_MAX_RATIO", "0", "1"),
+        ("BRIGID_AGENT_MAX_STEPS", "1", "50"),
+        ("BRIGID_CONFIRM_TOKEN_TTL_SECONDS", "1", "3600"),
+        ("BRIGID_HISTORY_MAX_TURNS", "4", "200"),
+        ("BRIGID_UTC_OFFSET_HOURS", "-12", "14"),
+        ("BRIGID_RECON_DATE_WINDOW_DAYS", "0", "31"),
+        ("BRIGID_RECON_MISMATCH_MAX_RATIO", "0", "1"),
         ("SIM_FAIL_RATE", "0", "1"),
-        ("WALI_PROPOSALS_PER_HOUR", "1", "1000000"),
+        ("BRIGID_PROPOSALS_PER_HOUR", "1", "1000000"),
     ],
 )
 def test_settings_accept_exactly_their_limits_and_refuse_one_step_beyond(name, low, high):
@@ -155,13 +155,13 @@ def test_settings_accept_exactly_their_limits_and_refuse_one_step_beyond(name, l
 
 def test_a_dotenv_value_with_an_equals_sign_keeps_everything_after_the_first(tmp_path):
     path = tmp_path / ".env"
-    path.write_text("WALI_LLM_BASE_URL=https://example.test/v1?a=b\n", encoding="utf-8")
+    path.write_text("BRIGID_LLM_BASE_URL=https://example.test/v1?a=b\n", encoding="utf-8")
 
     assert load_settings(env={}, env_file=path).llm_base_url == "https://example.test/v1?a=b"
 
 
 def test_a_quoted_dotenv_value_loses_only_the_outer_quotes(tmp_path):
     path = tmp_path / ".env"
-    path.write_text("WALI_AGENT_MODEL=\"model 'x'\"\n", encoding="utf-8")
+    path.write_text("BRIGID_AGENT_MODEL=\"model 'x'\"\n", encoding="utf-8")
 
     assert load_settings(env={}, env_file=path).agent_model == "model 'x'"

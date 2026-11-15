@@ -10,16 +10,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from wali.agent.llm import LLMResponse, ToolCall
-from wali.app import WaliApp
-from wali.guard.audit import AuditLog
-from wali.guard.keys import generate_keypair, load_private_key
-from wali.guard.service import GuardService, MandateRequest
-from wali.guard.signing import sign_payload
-from wali.guard.store import GuardStore
-from wali.models import GuardApproval, Invoice, Principal, Supplier
-from wali.tools.registry import ToolRegistry
-from wali.tools.sim_env import SimEnvironment
+from brigid.agent.llm import LLMResponse, ToolCall
+from brigid.app import BrigidApp
+from brigid.guard.audit import AuditLog
+from brigid.guard.keys import generate_keypair, load_private_key
+from brigid.guard.service import GuardService, MandateRequest
+from brigid.guard.signing import sign_payload
+from brigid.guard.store import GuardStore
+from brigid.models import GuardApproval, Invoice, Principal, Supplier
+from brigid.tools.registry import ToolRegistry
+from brigid.tools.sim_env import SimEnvironment
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SEED_DIR = REPO_ROOT / "data" / "seed"
@@ -239,8 +239,8 @@ def make_world(make_env, guard_keys, clock, audit_log):
         def make_registry(principal: Principal, **options) -> ToolRegistry:
             return ToolRegistry(env, guard, principal, today=lambda: clock().date(), **options)
 
-        def make_app(llm, **options) -> WaliApp:
-            return WaliApp(
+        def make_app(llm, **options) -> BrigidApp:
+            return BrigidApp(
                 env=env,
                 guard=guard,
                 llm=llm,

@@ -41,7 +41,7 @@ const fixtures = [
 ];
 
 async function main() {
-  const origin = process.env.WALI_TEST_ORIGIN || "http://127.0.0.1:3000";
+  const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
   const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -105,7 +105,7 @@ async function main() {
       failDecision = false,
       failMandate = false;
     let releaseDecision, releaseDraft;
-    await page.route("**/api/wali/**", async (route) => {
+    await page.route("**/api/brigid/**", async (route) => {
       const request = route.request();
       const url = new URL(request.url());
       const action = url.pathname.split("/").at(-1);

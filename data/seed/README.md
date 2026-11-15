@@ -23,5 +23,5 @@ match the generator.
 | `invoices.csv` | Payable and receivable invoices |
 | `ground_truth.json` | The problems planted on purpose, used by the tests and the evaluation. Its cash scenario also gives the expected forecast when invoices that need verification are set aside (`expected_confirmed`, `pending_verification`) |
 
-The loader in `src/wali/tools/sim_env.py` reads columns by name, ignores columns it does not know,
+The loader in `src/brigid/tools/sim_env.py` reads columns by name, ignores columns it does not know,
 and hard-codes no names or amounts, so these files can be replaced by more realistic data later.

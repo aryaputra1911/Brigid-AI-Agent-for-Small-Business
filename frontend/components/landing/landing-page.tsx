@@ -114,7 +114,12 @@ export function LandingPage() {
               <span className="wl-preview-label">Simulation preview</span>
               <div className="wl-preview-card">
                 <div className="wl-preview-card-heading">
-                  <Image src="/brand/wali.svg" alt="" width={24} height={24} />
+                  <Image
+                    src="/brand/brigid.svg"
+                    alt=""
+                    width={24}
+                    height={24}
+                  />
                   <span>Example prompt</span>
                 </div>
                 <p>
@@ -231,7 +236,7 @@ export function LandingPage() {
       <footer className="wl-footer">
         <div className="wl-container wl-footer-inner">
           <Link className="wl-brand" href="/" aria-label="Wali home">
-            <Image src="/brand/wali.svg" alt="" width={28} height={28} />
+            <Image src="/brand/brigid.svg" alt="" width={28} height={28} />
             <span>Wali</span>
           </Link>
           <p>A conversational finance assistant. Simulation only.</p>

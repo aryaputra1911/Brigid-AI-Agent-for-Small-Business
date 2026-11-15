@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const origin = process.env.WALI_TEST_ORIGIN || "http://127.0.0.1:3005";
+const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3005";
 const output = path.resolve(__dirname, "../test-results");
 const results = [];
 const check = (name) => {
@@ -46,7 +46,7 @@ async function main() {
   let pending = [];
   let nextReply =
     "Here are the records to review:\n\n1. Check the invoice due date.\n2. Reconcile the unmatched transaction.\n3. Review your cash forecast.\n\nNo payment has been made.";
-  await context.route("**/api/wali/**", async (route) => {
+  await context.route("**/api/brigid/**", async (route) => {
     const action = new URL(route.request().url()).pathname.split("/").at(-1);
     let status = 200,
       body = {};

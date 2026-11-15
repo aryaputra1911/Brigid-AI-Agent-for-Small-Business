@@ -6,8 +6,8 @@ import anthropic
 import httpx2
 import pytest
 
-from wali.agent.llm import REFUSAL_FALLBACK_BETA, AnthropicLLM, LLMError
-from wali.tools.registry import TOOL_SCHEMAS
+from brigid.agent.llm import REFUSAL_FALLBACK_BETA, AnthropicLLM, LLMError
+from brigid.tools.registry import TOOL_SCHEMAS
 
 API_KEY = "sk-test-not-a-real-key-123456"
 MESSAGES = [{"role": "user", "content": "saldo berapa?"}]
@@ -196,7 +196,7 @@ def test_a_refusal_is_passed_through_as_a_stop_reason():
     [
         (401, "authentication_error", False, "API key"),
         (403, "permission_error", False, "not allowed"),
-        (404, "not_found_error", False, "WALI_AGENT_MODEL"),
+        (404, "not_found_error", False, "BRIGID_AGENT_MODEL"),
         (400, "invalid_request_error", False, "configuration problem"),
         (429, "rate_limit_error", True, "busy"),
         (500, "api_error", True, "try again"),
@@ -229,5 +229,5 @@ def test_network_failures_are_retryable(failure):
 
 
 def test_a_missing_model_name_is_a_setup_problem():
-    with pytest.raises(LLMError, match="WALI_AGENT_MODEL"):
+    with pytest.raises(LLMError, match="BRIGID_AGENT_MODEL"):
         AnthropicLLM(model="", api_key=API_KEY)

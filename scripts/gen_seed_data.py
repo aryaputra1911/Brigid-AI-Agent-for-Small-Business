@@ -722,7 +722,7 @@ def pending_verification(flagged: dict) -> set[str]:
 def cash_scenario(w: World, closing: int, pending: set[str]) -> dict:
     """The planted cash squeeze: what a plain forecast from the day after as-of must show.
 
-    Computed here with a simple loop of its own, on purpose independent of ``wali.finance``:
+    Computed here with a simple loop of its own, on purpose independent of ``brigid.finance``:
     open payables leave on their due date (overdue ones on the first day), open receivables
     arrive on their due date (overdue ones are not counted), average daily sales arrive every
     day, and payroll leaves on payday. A shortfall day is a day that ends below zero.

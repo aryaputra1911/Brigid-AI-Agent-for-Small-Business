@@ -1,30 +1,18 @@
 # Demo script
 
-Three scenarios from the build specification, written for Telegram. The same messages work in the
-web page (`uv run python -m wali.interfaces.web`, role selector at the top) and in the CLI
-(`/role` instead of `/as`). Everything is a simulation with synthetic data; say so on screen.
+Three scenarios from the build specification. The same messages work in the web page
+(`uv run python -m brigid.interfaces.web`, role selector at the top) and in the CLI
+(`/role` to switch role). Everything is a simulation with synthetic data; say so on screen.
 
 The simulated day is 1 October 2026. The model's wording differs from run to run; what must not
 differ is the outcome in the last column.
 
 ## Before recording
 
-1. Start from a clean simulation: stop the bot and delete `data/wali.db`, `data/guard.db`, and
+1. Start from a clean simulation: delete `data/brigid.db`, `data/guard.db`, and
    `data/audit.jsonl`.
-2. Link the Telegram accounts in `.env` and start the bot (README, "Telegram"). Use **separate
-   accounts** for the owner, the bookkeeper, and staff if you can:
-
-   ```text
-   WALI_TELEGRAM_USERS=111=user-owner,222=user-bookkeeper,333=user-staff
-   ```
-
-   With one phone, link one account to all three and switch with `/as owner`,
-   `/as bookkeeper`, `/as staff`:
-
-   ```text
-   WALI_TELEGRAM_USERS=111=user-bookkeeper|user-owner|user-staff
-   ```
-
+2. Run the web page (README, "Menjalankan") and pick the role at the top for each step, or run
+   the CLI and switch with `/role owner`, `/role bookkeeper`, `/role staff`.
 3. As the owner: `/mandate`, then press **Confirm**. This sets the spending rules: payments above
    Rp 1.000.000 need the owner, the bookkeeper may propose up to Rp 5.000.000, and a cash buffer
    of Rp 3.000.000 is kept.
@@ -69,6 +57,6 @@ uv run pytest tests/test_attacks_smoke.py -q
 
 ## Closing
 
-Show the evaluation results (`docs/baseline/README.md` and `docs/results/`), run
+Show the evaluation results (`docs/baseline/README.md` and `docs/archive/results/`), run
 `uv run python -m eval.offline --check` for the model-free baseline, and `uv run pytest -q` for the
 test suite.

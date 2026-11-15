@@ -5,18 +5,18 @@ import json
 import httpx
 import pytest
 
-from conftest import flagged_invoice_ids
-from wali.agent.llm import LLMError
-from wali.agent.llm_openai import (
+from brigid.agent.llm import LLMError
+from brigid.agent.llm_openai import (
     UNPARSEABLE_ARGUMENTS,
     OpenAICompatibleLLM,
     to_openai_messages,
     to_openai_tools,
 )
-from wali.agent.loop import Agent, Session
-from wali.app import SetupError, build_llm
-from wali.config import load_settings
-from wali.tools.registry import TOOL_SCHEMAS
+from brigid.agent.loop import Agent, Session
+from brigid.app import SetupError, build_llm
+from brigid.config import load_settings
+from brigid.tools.registry import TOOL_SCHEMAS
+from conftest import flagged_invoice_ids
 
 API_KEY = "sk-compat-not-a-real-key-987654"
 BASE_URL = "https://llm.example.test/v1/"
@@ -340,9 +340,9 @@ def test_a_reply_can_be_sent_straight_back():
 @pytest.mark.parametrize(
     ("status", "hint"),
     [
-        (401, "WALI_LLM_API_KEY"),
+        (401, "BRIGID_LLM_API_KEY"),
         (403, "not allowed"),
-        (404, "WALI_LLM_BASE_URL"),
+        (404, "BRIGID_LLM_BASE_URL"),
         (400, "configuration problem"),
         (422, "configuration problem"),
     ],
@@ -421,9 +421,9 @@ def test_unreadable_answers_are_errors_not_crashes(body):
 @pytest.mark.parametrize(
     ("options", "setting"),
     [
-        ({"model": ""}, "WALI_AGENT_MODEL"),
-        ({"base_url": ""}, "WALI_LLM_BASE_URL"),
-        ({"api_key": ""}, "WALI_LLM_API_KEY"),
+        ({"model": ""}, "BRIGID_AGENT_MODEL"),
+        ({"base_url": ""}, "BRIGID_LLM_BASE_URL"),
+        ({"api_key": ""}, "BRIGID_LLM_API_KEY"),
     ],
 )
 def test_missing_settings_are_named(options, setting):
@@ -441,10 +441,10 @@ def settings(**env):
 def test_build_llm_picks_the_backend_from_the_provider_setting():
     compatible = build_llm(
         settings(
-            WALI_LLM_PROVIDER="openai_compatible",
-            WALI_LLM_BASE_URL="https://llm.example.test/v1",
-            WALI_LLM_API_KEY=API_KEY,
-            WALI_LLM_TEMPERATURE="0",
+            BRIGID_LLM_PROVIDER="openai_compatible",
+            BRIGID_LLM_BASE_URL="https://llm.example.test/v1",
+            BRIGID_LLM_API_KEY=API_KEY,
+            BRIGID_LLM_TEMPERATURE="0",
         ),
         "some-model",
     )
@@ -458,24 +458,24 @@ def test_build_llm_picks_the_backend_from_the_provider_setting():
 @pytest.mark.parametrize(
     ("env", "message"),
     [
-        ({"WALI_LLM_API_KEY": API_KEY}, "WALI_LLM_BASE_URL"),
-        ({"WALI_LLM_BASE_URL": "https://llm.example.test/v1"}, "WALI_LLM_API_KEY"),
+        ({"BRIGID_LLM_API_KEY": API_KEY}, "BRIGID_LLM_BASE_URL"),
+        ({"BRIGID_LLM_BASE_URL": "https://llm.example.test/v1"}, "BRIGID_LLM_API_KEY"),
     ],
 )
 def test_build_llm_names_the_missing_setting(env, message):
     with pytest.raises(SetupError, match=message):
-        build_llm(settings(WALI_LLM_PROVIDER="openai_compatible", **env), "some-model")
+        build_llm(settings(BRIGID_LLM_PROVIDER="openai_compatible", **env), "some-model")
 
 
 def test_build_llm_needs_a_model_and_a_known_provider():
-    with pytest.raises(SetupError, match="WALI_AGENT_MODEL"):
+    with pytest.raises(SetupError, match="BRIGID_AGENT_MODEL"):
         build_llm(settings(), None)
-    with pytest.raises(ValueError, match="WALI_LLM_PROVIDER"):
-        settings(WALI_LLM_PROVIDER="something_else")
+    with pytest.raises(ValueError, match="BRIGID_LLM_PROVIDER"):
+        settings(BRIGID_LLM_PROVIDER="something_else")
 
 
 def test_the_key_is_not_shown_in_settings():
-    loaded = settings(WALI_LLM_API_KEY=API_KEY)
+    loaded = settings(BRIGID_LLM_API_KEY=API_KEY)
 
     assert API_KEY not in repr(loaded)
     assert API_KEY not in loaded.model_dump_json()

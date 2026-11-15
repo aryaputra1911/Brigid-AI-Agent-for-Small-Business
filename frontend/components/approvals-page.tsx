@@ -4,7 +4,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef } from "react";
 import { useWorkspace } from "@/components/workspace-provider";
-import type { PendingRequest } from "@/lib/wali-api";
+import type { PendingRequest } from "@/lib/brigid-api";
 import { ChatIcon } from "@/components/ui/chat-icon";
 import { FinanceHeading, FinanceState } from "@/components/finance-page-ui";
 import { useMediaQuery } from "@/lib/use-media-query";

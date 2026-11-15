@@ -2,8 +2,8 @@ import datetime as dt
 
 import pytest
 
-from wali.guard.confirm import ConfirmationError, ConfirmationStore
-from wali.models import Principal
+from brigid.guard.confirm import ConfirmationError, ConfirmationStore
+from brigid.models import Principal
 
 T0 = dt.datetime(2026, 10, 1, 9, 0, tzinfo=dt.UTC)
 OWNER = Principal(user_id="user-owner", role="owner", business_id="biz")

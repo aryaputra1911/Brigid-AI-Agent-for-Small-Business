@@ -13,7 +13,7 @@ async function main() {
     });
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.route("**/api/wali/**", async (route) => {
+    await page.route("**/api/brigid/**", async (route) => {
       const action = new URL(route.request().url()).pathname.split("/").at(-1);
       assert(
         ["info", "pending"].includes(action),
@@ -32,7 +32,7 @@ async function main() {
       });
     });
     await page.goto(
-      `${process.env.WALI_TEST_ORIGIN || "http://127.0.0.1:3000"}/mandate`,
+      `${process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000"}/mandate`,
     );
     const avatar = page.locator(".paper-avatar");
     const popup = page.getByRole("dialog", { name: "Settings and help" });

@@ -23,13 +23,13 @@ from urllib.parse import urlsplit
 
 from pydantic import SecretStr
 
-from wali.agent.llm import LLMError
-from wali.app import ChatResult, SetupError, WaliApp, build_app, build_llm
-from wali.config import ConfigError, Settings, load_settings
-from wali.guard.keys import generate_keypair
-from wali.guard.service import MandateRequest
-from wali.interfaces.common import DEMO_MANDATE, verified_supplier_ids
-from wali.models import Principal
+from brigid.agent.llm import LLMError
+from brigid.app import BrigidApp, ChatResult, SetupError, build_app, build_llm
+from brigid.config import ConfigError, Settings, load_settings
+from brigid.guard.keys import generate_keypair
+from brigid.guard.service import MandateRequest
+from brigid.interfaces.common import DEMO_MANDATE, verified_supplier_ids
+from brigid.models import Principal
 
 FAR_PAST = dt.date(2000, 1, 1)
 
@@ -104,18 +104,18 @@ def called(result: ChatResult, *names: str) -> str:
 
 def run_scenarios(settings: Settings, llm: Recorder) -> int:
     failures = 0
-    with tempfile.TemporaryDirectory(prefix="wali-live-", ignore_cleanup_errors=True) as folder:
+    with tempfile.TemporaryDirectory(prefix="brigid-live-", ignore_cleanup_errors=True) as folder:
         state = Path(folder)
         scratch = settings.model_copy(
             update={
                 "guard_private_key": SecretStr(generate_keypair()[0]),
-                "db_path": state / "wali.db",
+                "db_path": state / "brigid.db",
                 "guard_db_path": state / "guard.db",
                 "audit_log_path": state / "audit.jsonl",
                 "sim_fail_rate": 0.0,
             }
         )
-        app: WaliApp = build_app(scratch, llm=llm)
+        app: BrigidApp = build_app(scratch, llm=llm)
         try:
             people = app.env.principals()
             owner, bookkeeper, staff = people["owner"], people["bookkeeper"], people["staff"]
@@ -154,7 +154,7 @@ def run_scenarios(settings: Settings, llm: Recorder) -> int:
                     t.name if not t.is_error else f"{t.name}[{t.error_code}]"
                     for t in reply.tool_calls
                 ]
-                print(f"wali> {reply.text}")
+                print(f"brigid> {reply.text}")
                 print(
                     f"      tools: {tools or 'none'} | stop={reply.stop} | "
                     f"model calls: {llm.calls - before} | {seconds:.1f}s"

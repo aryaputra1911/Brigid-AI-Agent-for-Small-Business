@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 
+from brigid.tools.sim_env import SimEnvironment
 from conftest import SEED_DIR
-from wali.tools.sim_env import SimEnvironment
 
 FILES = ("business", "users", "suppliers", "bank_transactions", "books", "invoices")
 MATCH_WINDOW_DAYS = 5

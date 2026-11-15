@@ -3,9 +3,9 @@ from decimal import Decimal
 
 import pytest
 
-from wali.guard.keys import generate_keypair, load_private_key, load_public_key
-from wali.guard.signing import SIGNATURE_PREFIX, canonical_json, sign_payload, verify_payload
-from wali.models import GuardApproval
+from brigid.guard.keys import generate_keypair, load_private_key, load_public_key
+from brigid.guard.signing import SIGNATURE_PREFIX, canonical_json, sign_payload, verify_payload
+from brigid.models import GuardApproval
 
 
 @pytest.fixture(scope="module")

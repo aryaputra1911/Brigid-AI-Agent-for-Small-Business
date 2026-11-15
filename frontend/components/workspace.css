@@ -483,7 +483,7 @@
   height: 32px;
   margin-top: 2px;
 }
-.wali-logo {
+.brigid-logo {
   position: relative;
   display: inline-block;
   width: 32px;
@@ -491,26 +491,38 @@
   flex-shrink: 0;
   vertical-align: middle;
 }
-.wali-logo-fallback,
-.wali-logo-player {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.wali-logo-player {
-  visibility: hidden;
-}
-.wali-logo[data-playback="playing"] .wali-logo-player {
-  visibility: visible;
-}
-.wali-logo[data-playback="playing"] .wali-logo-fallback {
-  visibility: hidden;
-}
-.wali-logo-player svg {
+.brigid-logo-mark {
   display: block;
-  width: 100%;
-  height: 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .brigid-logo[data-playback="playing"][data-state="processing"]
+    .brigid-logo-mark {
+    animation: brigid-processing 1.4s ease-in-out infinite;
+  }
+  .brigid-logo[data-playback="playing"][data-state="reply"] .brigid-logo-mark {
+    animation: brigid-reply 0.9s ease-out 1;
+  }
+}
+@keyframes brigid-processing {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.9);
+    opacity: 0.72;
+  }
+}
+@keyframes brigid-reply {
+  from {
+    transform: scale(0.9);
+    opacity: 0.72;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 .paper-reply {
   flex: 1;

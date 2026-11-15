@@ -14,15 +14,15 @@ import {
   type DecisionResult,
   type PendingRequest,
   type Role,
-  type WaliInfo,
-  waliGet,
-  waliPost,
-} from "@/lib/wali-api";
+  type BrigidInfo,
+  brigidGet,
+  brigidPost,
+} from "@/lib/brigid-api";
 import { decisionTone } from "@/lib/decision-tone";
 
 export type Message = {
   id: number;
-  author: "you" | "wali";
+  author: "you" | "brigid";
   text: string;
   blocked?: boolean;
 };
@@ -30,7 +30,7 @@ export type Notice = { tone: "success" | "error"; text: string };
 export type QueueState = "loading" | "ready" | "error";
 
 type WorkspaceContextValue = {
-  info: WaliInfo | null;
+  info: BrigidInfo | null;
   infoError: string;
   role: Role | "";
   draft: string;
@@ -71,7 +71,7 @@ function errorText(error: unknown): string {
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const nextMessageId = useRef(0);
   const pendingGeneration = useRef(0);
-  const [info, setInfo] = useState<WaliInfo | null>(null);
+  const [info, setInfo] = useState<BrigidInfo | null>(null);
   const [infoError, setInfoError] = useState("");
   const [role, setRole] = useState<Role | "">("");
   const [draft, setDraft] = useState("");
@@ -91,7 +91,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const loadPending = useCallback(async (currentRole: Role) => {
     const generation = ++pendingGeneration.current;
     try {
-      const result = await waliGet<{ requests: PendingRequest[] }>(
+      const result = await brigidGet<{ requests: PendingRequest[] }>(
         "pending",
         currentRole,
       );
@@ -108,7 +108,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    void waliGet<WaliInfo>("info")
+    void brigidGet<BrigidInfo>("info")
       .then((result) => {
         if (!active) return;
         setInfo(result);
@@ -125,7 +125,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!role) return;
     const generation = ++pendingGeneration.current;
-    void waliGet<{ requests: PendingRequest[] }>("pending", role)
+    void brigidGet<{ requests: PendingRequest[] }>("pending", role)
       .then((result) => {
         if (generation !== pendingGeneration.current) return;
         setRequests(result.requests);
@@ -144,7 +144,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   async function retryInfo() {
     setInfoError("");
     try {
-      const result = await waliGet<WaliInfo>("info");
+      const result = await brigidGet<BrigidInfo>("info");
       setInfo(result);
       setRole((current) =>
         current && result.roles.includes(current)
@@ -196,12 +196,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       { id: submittedId, author: "you", text },
     ]);
     try {
-      const result = await waliPost<ChatResult>("chat", { role, text });
+      const result = await brigidPost<ChatResult>("chat", { role, text });
       setMessages((items) => [
         ...items,
         {
           id: ++nextMessageId.current,
-          author: "wali",
+          author: "brigid",
           text: result.reply,
           blocked: result.blocked,
         },
@@ -233,7 +233,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setResetting(true);
     setChatNotice(null);
     try {
-      await waliPost<{ status: string }>("reset", { role });
+      await brigidPost<{ status: string }>("reset", { role });
       setMessages([]);
       setDraft("");
       setChatNotice({
@@ -260,7 +260,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setMandating(true);
     setMandateNotice(null);
     try {
-      const result = await waliPost<DecisionResult>("mandate", { role });
+      const result = await brigidPost<DecisionResult>("mandate", { role });
       setMandateNotice({
         tone: decisionTone(result.status, ["needs_confirmation"]),
         text: result.message,
@@ -281,7 +281,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     setProcessingId(request.subject_id);
     setQueueNotice(null);
     try {
-      const result = await waliPost<DecisionResult>(action, {
+      const result = await brigidPost<DecisionResult>(action, {
         role,
         subject_id: request.subject_id,
       });

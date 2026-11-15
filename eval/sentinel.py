@@ -13,7 +13,7 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel, ConfigDict
 
-from wali.guard.sentinel import Sentinel, heuristic_verdict
+from brigid.guard.sentinel import Sentinel, heuristic_verdict
 
 SEEDS_PATH = Path(__file__).with_name("sentinel_seeds.yaml")
 

@@ -5,10 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ReactNode } from "react";
-import type { Role } from "@/lib/wali-api";
+import type { Role } from "@/lib/brigid-api";
 import { useWorkspace } from "@/components/workspace-provider";
 import { ChatIcon, type ChatIconName } from "@/components/ui/chat-icon";
-import { WaliLogo } from "@/components/ui/wali-logo";
+import { BrigidLogo } from "@/components/ui/brigid-logo";
 import { useMediaQuery } from "@/lib/use-media-query";
 import "./workspace.css";
 
@@ -342,7 +342,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           </button>
           <div className="paper-product">
             <Link href="/chat">
-              <WaliLogo className="paper-brand-logo" decorative />
+              <BrigidLogo className="paper-brand-logo" decorative />
               <span>Wali</span>
             </Link>
             <span className="paper-simulation">Simulation</span>

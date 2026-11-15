@@ -13,7 +13,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from wali.agent.llm import LLMResponse, ToolCall
+from brigid.agent.llm import LLMResponse, ToolCall
 
 _IDS = itertools.count(1)
 

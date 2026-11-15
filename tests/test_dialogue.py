@@ -5,8 +5,7 @@ import json
 
 import pytest
 
-from conftest import ScriptedLLM, flagged_invoice_ids, say, tool_results, use
-from wali.agent.dialogue import (
+from brigid.agent.dialogue import (
     fallback_hint,
     guess_language,
     is_correction,
@@ -16,8 +15,9 @@ from wali.agent.dialogue import (
     reply_problems,
     ungrounded_figures,
 )
-from wali.agent.prompts import build_system_prompt
-from wali.tools.registry import TOOL_NAMES
+from brigid.agent.prompts import build_system_prompt
+from brigid.tools.registry import TOOL_NAMES
+from conftest import ScriptedLLM, flagged_invoice_ids, say, tool_results, use
 
 SEPTEMBER = {"start": "2026-09-01", "end": "2026-09-30"}
 

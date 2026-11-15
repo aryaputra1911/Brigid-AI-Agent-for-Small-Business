@@ -3,16 +3,15 @@
 Versions are the ones pinned in `pyproject.toml` (Python) and installed from
 `frontend/package-lock.json` (web front end). Licences are as the packages declare them.
 
-## Python (the agent, guard, simulation, CLI, Telegram bot, API)
+## Python (the agent, guard, simulation, CLI, API)
 
 | Package | Version | Licence | Used for |
 | --- | --- | --- | --- |
-| anthropic | 1.13.0 | MIT | Anthropic model client (when `WALI_LLM_PROVIDER=anthropic`) |
+| anthropic | 1.13.0 | MIT | Anthropic model client (when `BRIGID_LLM_PROVIDER=anthropic`) |
 | cryptography | 50.0.2 | Apache-2.0 or BSD-3-Clause | Ed25519 signatures on mandates and payment approvals |
 | fastapi | 0.143.0 | MIT | The JSON API behind the web pages |
 | httpx | 0.28.1 | BSD-3-Clause | The OpenAI-compatible model client; FastAPI's test client |
 | pydantic | 2.14.1 | MIT | Data models and settings validation |
-| python-telegram-bot | 22.8 | LGPL-3.0-only | The Telegram bot (used as an unmodified library) |
 | PyYAML | 6.0.3 | MIT | Reading the evaluation files |
 | uvicorn | 0.54.0 | BSD-3-Clause | Serving the web API |
 
@@ -38,15 +37,14 @@ Development only: tailwindcss and @tailwindcss/postcss 4.3.3 (MIT), postcss 8.5.
 typescript 6.0.3 (Apache-2.0), eslint 9.39.5 and eslint-config-next 16.4.0 (MIT),
 prettier 3.9.10 (MIT), playwright 1.62.1 (Apache-2.0), and the @types packages (MIT).
 
-The Wali logo animation (`frontend/public/brand/wali.lottie`) was supplied by the team.
+The Brigid logo assets (`frontend/public/brand/brigid.svg`, `brigid-mono.svg`, and PNG icons) were created for the project.
 
 ## Services
 
 | Service | Used for | Notes |
 | --- | --- | --- |
-| A language model with tool calling | The assistant, and the sentinel's screening check | Configured in `.env`. The published evaluations used OpenAI-compatible endpoints: `deepseek-v4.1-flash` through the SumoPod gateway (`docs/results/`) and `openai/gpt-oss-20b` through NVIDIA NIM (`docs/baseline/`). The Anthropic path is supported and tested without a live model |
+| A language model with tool calling | The assistant, and the sentinel's screening check | Configured in `.env`. The published evaluations used OpenAI-compatible endpoints: `deepseek-v4.1-flash` through the SumoPod gateway (`docs/archive/results/`) and `openai/gpt-oss-20b` through NVIDIA NIM (`docs/baseline/`). The Anthropic path is supported and tested without a live model |
 | GitHub Actions | Tests, lint, and frontend checks on every push and pull request | `.github/workflows/ci.yml`; it never calls a model |
-| Telegram Bot API | The Telegram interface | Optional; needs a bot token from @BotFather |
 
 No real bank, payment network, or personal data is used anywhere. The bank, the books, the
 suppliers, and the people are all synthetic.

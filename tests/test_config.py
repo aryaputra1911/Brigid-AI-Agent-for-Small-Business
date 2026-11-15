@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from wali.config import ConfigError, load_settings, read_env_file
+from brigid.config import ConfigError, load_settings, read_env_file
 
 
 def test_defaults_when_nothing_is_set():
@@ -25,10 +25,10 @@ def test_values_are_parsed_into_types():
         env={
             "SIM_FAIL_RATE": "0.25",
             "SIM_SEED": "7",
-            "WALI_DB_PATH": "tmp/x.db",
-            "WALI_RECON_MISMATCH_MAX_RATIO": "0.1",
+            "BRIGID_DB_PATH": "tmp/x.db",
+            "BRIGID_RECON_MISMATCH_MAX_RATIO": "0.1",
             "MANUAL_MINUTES_PER_ITEM": "3.5",
-            "WALI_AGENT_MODEL": "some-model",
+            "BRIGID_AGENT_MODEL": "some-model",
         },
         env_file=None,
     )
@@ -42,7 +42,7 @@ def test_values_are_parsed_into_types():
 
 
 def test_empty_values_count_as_unset():
-    settings = load_settings(env={"SIM_FAIL_RATE": "", "WALI_AGENT_MODEL": "  "}, env_file=None)
+    settings = load_settings(env={"SIM_FAIL_RATE": "", "BRIGID_AGENT_MODEL": "  "}, env_file=None)
 
     assert settings.sim_fail_rate == 0.0
     assert settings.agent_model is None
@@ -54,11 +54,11 @@ def test_empty_values_count_as_unset():
         ("SIM_FAIL_RATE", "1.5"),
         ("SIM_FAIL_RATE", "-0.1"),
         ("SIM_SEED", "abc"),
-        ("WALI_AGENT_MAX_STEPS", "0"),
-        ("WALI_CONFIRM_TOKEN_TTL_SECONDS", "0"),
-        ("WALI_RECON_AMOUNT_TOLERANCE", "-1"),
+        ("BRIGID_AGENT_MAX_STEPS", "0"),
+        ("BRIGID_CONFIRM_TOKEN_TTL_SECONDS", "0"),
+        ("BRIGID_RECON_AMOUNT_TOLERANCE", "-1"),
         ("MANUAL_MINUTES_PER_ITEM", "0"),
-        ("WALI_DEFAULT_CURRENCY", "RUPIAH"),
+        ("BRIGID_DEFAULT_CURRENCY", "RUPIAH"),
     ],
 )
 def test_invalid_values_fail_closed(name, value):
@@ -71,7 +71,7 @@ def test_invalid_values_fail_closed(name, value):
 def test_secrets_are_not_shown_in_repr_or_errors():
     secret = "super-secret-value-123"
     settings = load_settings(
-        env={"ANTHROPIC_API_KEY": secret, "WALI_GUARD_PRIVATE_KEY": secret}, env_file=None
+        env={"ANTHROPIC_API_KEY": secret, "BRIGID_GUARD_PRIVATE_KEY": secret}, env_file=None
     )
 
     assert secret not in repr(settings)
@@ -96,7 +96,7 @@ def test_env_file_is_read_and_overridden_by_env(tmp_path):
         "# a comment",
         "",
         "SIM_SEED=11",
-        "WALI_AGENT_MODEL='from-file'",
+        "BRIGID_AGENT_MODEL='from-file'",
         "not a valid line",
         "SIM_FAIL_RATE=0.5",
     ]
@@ -104,7 +104,7 @@ def test_env_file_is_read_and_overridden_by_env(tmp_path):
 
     assert read_env_file(env_file) == {
         "SIM_SEED": "11",
-        "WALI_AGENT_MODEL": "from-file",
+        "BRIGID_AGENT_MODEL": "from-file",
         "SIM_FAIL_RATE": "0.5",
     }
 

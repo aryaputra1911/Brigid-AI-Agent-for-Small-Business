@@ -1,6 +1,6 @@
 # Architecture
 
-Wali is a finance assistant for a small business. It can reconcile the bank feed with the books,
+Brigid is a finance assistant for a small business. It can reconcile the bank feed with the books,
 forecast cash, suggest actions, and pay supplier invoices. **Everything runs against a simulated
 business with synthetic data.**
 
@@ -15,10 +15,9 @@ flowchart TD
     person([Owner / bookkeeper / staff])
     subgraph interfaces [Interfaces: who you are is decided here]
         cli[CLI]
-        tg[Telegram bot]
         web[Web page]
     end
-    app[WaliApp<br/>sessions and the confirmation inbox]
+    app[BrigidApp<br/>sessions and the confirmation inbox]
     agent[Agent loop<br/>language model + reply check]
     tools[Tool registry<br/>exactly 10 tools]
     finance[Finance logic<br/>reconcile, forecast, recommend]
@@ -41,14 +40,14 @@ flowchart TD
 
 | Part | Code | What it does |
 | --- | --- | --- |
-| Interfaces | `src/wali/interfaces/` | CLI, Telegram bot, demo web page. Each decides who the person is (a role picked at the CLI or web page, a linked Telegram id) and shows Confirm and Decline buttons. Nothing typed in a chat changes who someone is |
-| WaliApp | `src/wali/app.py` | Wires everything together; keeps one conversation per person and channel, and the inbox of requests waiting for confirmation |
-| Agent loop | `src/wali/agent/loop.py`, `prompts.py`, `dialogue.py` | Hand-written tool-use loop (no agent framework). Calls the model, runs the tools it asks for, and checks each answer before it is shown (figures must come from the data, the language must match the person's) |
-| Model clients | `src/wali/agent/llm.py`, `llm_openai.py` | Anthropic SDK, or any OpenAI-compatible endpoint, behind one small interface. Chosen in `.env` |
-| Tool registry | `src/wali/tools/registry.py` | The only ten tools the model has. None takes a user, role, or account, and none can pay, confirm, or change a limit |
-| Finance logic | `src/wali/finance/` | Pure functions: reconciliation in passes, a day-by-day cash forecast, recommendation candidates. The model explains results; it does not calculate them. The forecast tool leaves out invoices that need verification first (copies, unverified suppliers, changed accounts) and lists them apart with the forecast as it would be if they turned out valid |
-| Guard | `src/wali/guard/` | Holds the signing key. Decides every payment with fixed rules, issues confirmation tokens, signs approvals, screens text, and writes the audit log |
-| Environment | `src/wali/tools/sim_env.py` | The simulated bank and books, with role scopes. Pays only on a valid signed approval. `organiser_env.py` is the empty slot for an organiser-provided environment |
+| Interfaces | `src/brigid/interfaces/` | CLI and demo web page. Each decides who the person is (a role picked at the CLI or web page) and shows Confirm and Decline buttons. Nothing typed in a chat changes who someone is |
+| BrigidApp | `src/brigid/app.py` | Wires everything together; keeps one conversation per person and channel, and the inbox of requests waiting for confirmation |
+| Agent loop | `src/brigid/agent/loop.py`, `prompts.py`, `dialogue.py` | Hand-written tool-use loop (no agent framework). Calls the model, runs the tools it asks for, and checks each answer before it is shown (figures must come from the data, the language must match the person's) |
+| Model clients | `src/brigid/agent/llm.py`, `llm_openai.py` | Anthropic SDK, or any OpenAI-compatible endpoint, behind one small interface. Chosen in `.env` |
+| Tool registry | `src/brigid/tools/registry.py` | The only ten tools the model has. None takes a user, role, or account, and none can pay, confirm, or change a limit |
+| Finance logic | `src/brigid/finance/` | Pure functions: reconciliation in passes, a day-by-day cash forecast, recommendation candidates. The model explains results; it does not calculate them. The forecast tool leaves out invoices that need verification first (copies, unverified suppliers, changed accounts) and lists them apart with the forecast as it would be if they turned out valid |
+| Guard | `src/brigid/guard/` | Holds the signing key. Decides every payment with fixed rules, issues confirmation tokens, signs approvals, screens text, and writes the audit log |
+| Environment | `src/brigid/tools/sim_env.py` | The simulated bank and books, with role scopes. Pays only on a valid signed approval. `organiser_env.py` is the empty slot for an organiser-provided environment |
 
 ## The ten tools
 
@@ -61,8 +60,8 @@ from the records. `propose_mandate` only drafts; a draft takes effect when the o
 
 ## What happens when someone asks to pay
 
-1. The bookkeeper types "bayarin tagihan kopi pak budi ya" in Telegram. The bot knows this
-   Telegram id is the bookkeeper.
+1. The bookkeeper types "bayarin tagihan kopi pak budi ya" on the web page (or the CLI). The
+   role selector is what makes them the bookkeeper.
 2. The message is screened. If it carries pasted text that tries to steer the assistant, every
    payment in this turn will wait for the owner.
 3. The model calls `list_invoices`. Every text field read from the bank and books is screened
@@ -94,7 +93,7 @@ from the records. `propose_mandate` only drafts; a draft takes effect when the o
 
 | Comes from | Treated as | Enforced by |
 | --- | --- | --- |
-| The interface (CLI role, Telegram id, web role selector) | Who the person is | The interface; the environment also checks its own user table. The web API answers only requests addressed to this computer's own host names |
+| The interface (CLI role, web role selector) | Who the person is | The interface; the environment also checks its own user table. The web API answers only requests addressed to this computer's own host names |
 | What a person types | A request, possibly with pasted text | Screening of the message; in a suspicious turn, payments wait for the owner and no book entry is recorded |
 | Invoices, memos, names, emails | Data, never instructions | The sentinel withholds instruction-like text; the policy ignores accounts written in text |
 | The language model | A proposer that may be wrong or manipulated | Ten narrow tools; the guard; the reply checks |
@@ -109,7 +108,7 @@ to show everything it saw. No payment, leak, or permission rule breaks.
 | Where | What |
 | --- | --- |
 | `data/seed/` | Synthetic seed data (CSV) and `ground_truth.json` with the planted problems. Regenerated by `scripts/gen_seed_data.py` |
-| `data/wali.db` | The simulated bank and books, built from the seed on first run |
+| `data/brigid.db` | The simulated bank and books, built from the seed on first run |
 | `data/guard.db` | The guard's own records: the mandate, payments it executed, review items |
 | `data/audit.jsonl` | The audit log. Each entry holds the hash of the one before. A file lock keeps one chain when several processes write to it |
 | `.env` | Settings and secrets. Never committed |
@@ -137,4 +136,4 @@ checks on every push; it never calls a model.
 - `docs/assumptions.md`: every decision the specification left open, and why.
 - `docs/demo.md`: the demo script.
 - `docs/third_party.md`: libraries and services used.
-- `docs/audit/`: the code audit of 17 and 18 October and its remaining risks.
+- `docs/archive/audit/`: the code audit of 17 and 18 October and its remaining risks (Wali era, kept as-is).
