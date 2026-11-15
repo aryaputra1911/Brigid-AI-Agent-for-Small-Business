@@ -37,7 +37,7 @@ Development only: tailwindcss and @tailwindcss/postcss 4.3.3 (MIT), postcss 8.5.
 typescript 6.0.3 (Apache-2.0), eslint 9.39.5 and eslint-config-next 16.4.0 (MIT),
 prettier 3.9.10 (MIT), playwright 1.62.1 (Apache-2.0), and the @types packages (MIT).
 
-The logo animation (`frontend/public/brand/wali.lottie`) was supplied by the team.
+The Brigid logo assets (`frontend/public/brand/brigid.svg`, `brigid-mono.svg`, and PNG icons) were created for the project.
 
 ## Services
 
