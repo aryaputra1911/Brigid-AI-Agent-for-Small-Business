@@ -3,6 +3,30 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
+// The collapse/expand transition is a fast ease-out curve, so its in-between frames
+// only exist for a couple of paints. Click and sample every frame inside the page
+// instead of polling from outside, which can step over the whole animation.
+function animatedSidebarWidths(page) {
+  return page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        document.querySelector('[aria-label="Toggle sidebar"]').click();
+        const widths = [];
+        const start = performance.now();
+        const sample = () => {
+          widths.push(
+            document
+              .querySelector(".paper-sidebar")
+              .getBoundingClientRect().width,
+          );
+          if (performance.now() - start < 700) requestAnimationFrame(sample);
+          else resolve(widths);
+        };
+        requestAnimationFrame(sample);
+      }),
+  );
+}
+
 async function main() {
   const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
   const output = path.resolve(__dirname, "../test-results");
@@ -30,13 +54,11 @@ async function main() {
     await page.locator(".paper-welcome").waitFor();
     const sidebar = page.locator(".paper-sidebar");
     const toggle = page.getByRole("button", { name: "Toggle sidebar" });
-    await toggle.click();
-    await page.waitForFunction(() => {
-      const width = document
-        .querySelector(".paper-sidebar")
-        .getBoundingClientRect().width;
-      return width > 64 && width < 280;
-    });
+    const collapse = await animatedSidebarWidths(page);
+    assert(
+      collapse.some((width) => width > 64 && width < 280),
+      `collapse did not animate: ${JSON.stringify(collapse)}`,
+    );
     await page.waitForFunction(
       () => document.querySelector(".paper-sidebar").offsetWidth === 64,
     );
@@ -68,13 +90,11 @@ async function main() {
       "rgb(99, 34, 104)",
     );
     await page.screenshot({ path: path.join(output, "sidebar-collapsed.png") });
-    await toggle.click();
-    await page.waitForFunction(() => {
-      const width = document
-        .querySelector(".paper-sidebar")
-        .getBoundingClientRect().width;
-      return width > 64 && width < 280;
-    });
+    const expand = await animatedSidebarWidths(page);
+    assert(
+      expand.some((width) => width > 64 && width < 280),
+      `expand did not animate: ${JSON.stringify(expand)}`,
+    );
     await page.waitForFunction(
       () => document.querySelector(".paper-sidebar").offsetWidth === 280,
     );
