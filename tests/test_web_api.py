@@ -143,6 +143,10 @@ def test_the_csrf_guard_covers_login_and_logout(world):
 
     assert as_form.status_code == foreign_origin.status_code == 403
     assert logout_as_text.status_code == logout_foreign.status_code == 403
+    # The refusal skips the normal response path, so it must carry the headers itself.
+    for response in (as_form, foreign_origin, logout_as_text, logout_foreign):
+        assert response.headers["x-content-type-options"] == "nosniff"
+        assert response.headers["cache-control"] == "no-store"
 
 
 # --- Older endpoints with a session -------------------------------------------------------------
