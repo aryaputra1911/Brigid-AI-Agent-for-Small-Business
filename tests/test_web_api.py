@@ -86,6 +86,32 @@ def test_me_accepts_a_cookie_or_a_bearer_token_and_refuses_anonymous(world):
     assert anonymous.status_code == 401
 
 
+def test_logging_in_again_retires_the_previous_session(world):
+    client, _ = client_for(world)
+    first = login(client, "owner").json()["token"]
+    # The cookie carries the first session, so the re-login must retire it.
+    second = login(client, "owner").json()["token"]
+    other = TestClient(client.app, base_url=LOCAL)
+
+    assert second != first
+    assert other.get("/api/me", headers=bearer(first)).status_code == 401
+    assert other.get("/api/me", headers=bearer(second)).status_code == 200
+
+
+def test_logout_clears_a_session_sent_as_bearer_and_cookie(world):
+    client, _ = client_for(world)
+    login(client, "owner")
+    other = TestClient(client.app, base_url=LOCAL)
+    bearer_token = login(other, "owner").json()["token"]
+
+    logged_out = client.post("/api/logout", json={}, headers=bearer(bearer_token))
+
+    assert logged_out.json() == {"status": "logged_out"}
+    assert other.get("/api/me", headers=bearer(bearer_token)).status_code == 401
+    assert client.get("/api/me").status_code == 401
+    assert client.cookies.get("brigid_session") is None
+
+
 def test_logout_ends_the_session(world):
     client, _ = client_for(world)
     login(client, "owner")
