@@ -3,28 +3,29 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-// The collapse/expand transition is a fast ease-out curve, so its in-between frames
-// only exist for a couple of paints. Click and sample every frame inside the page
-// instead of polling from outside, which can step over the whole animation.
-function animatedSidebarWidths(page) {
-  return page.evaluate(
-    () =>
-      new Promise((resolve) => {
-        document.querySelector('[aria-label="Toggle sidebar"]').click();
-        const widths = [];
-        const start = performance.now();
-        const sample = () => {
-          widths.push(
-            document
-              .querySelector(".paper-sidebar")
-              .getBoundingClientRect().width,
-          );
-          if (performance.now() - start < 700) requestAnimationFrame(sample);
-          else resolve(widths);
-        };
-        requestAnimationFrame(sample);
-      }),
+// Click the toggle and read the width CSSTransition the click creates. The
+// transition object lives for its whole 240 ms regardless of how many frames the
+// browser paints, so this stays deterministic while still failing on a snap.
+async function sidebarWidthTransition(page) {
+  await page.evaluate(() =>
+    document.querySelector('[aria-label="Toggle sidebar"]').click(),
   );
+  return page.evaluate(() => {
+    const transition = document
+      .querySelector(".paper-sidebar")
+      .getAnimations()
+      .find(
+        (animation) =>
+          animation instanceof CSSTransition &&
+          animation.transitionProperty === "width",
+      );
+    if (!transition) return null;
+    const keyframes = transition.effect.getKeyframes();
+    return {
+      from: keyframes[0].width,
+      to: keyframes[keyframes.length - 1].width,
+    };
+  });
 }
 
 async function main() {
@@ -54,11 +55,8 @@ async function main() {
     await page.locator(".paper-welcome").waitFor();
     const sidebar = page.locator(".paper-sidebar");
     const toggle = page.getByRole("button", { name: "Toggle sidebar" });
-    const collapse = await animatedSidebarWidths(page);
-    assert(
-      collapse.some((width) => width > 64 && width < 280),
-      `collapse did not animate: ${JSON.stringify(collapse)}`,
-    );
+    const collapse = await sidebarWidthTransition(page);
+    assert.deepEqual(collapse, { from: "280px", to: "64px" });
     await page.waitForFunction(
       () => document.querySelector(".paper-sidebar").offsetWidth === 64,
     );
@@ -90,11 +88,8 @@ async function main() {
       "rgb(99, 34, 104)",
     );
     await page.screenshot({ path: path.join(output, "sidebar-collapsed.png") });
-    const expand = await animatedSidebarWidths(page);
-    assert(
-      expand.some((width) => width > 64 && width < 280),
-      `expand did not animate: ${JSON.stringify(expand)}`,
-    );
+    const expand = await sidebarWidthTransition(page);
+    assert.deepEqual(expand, { from: "64px", to: "280px" });
     await page.waitForFunction(
       () => document.querySelector(".paper-sidebar").offsetWidth === 280,
     );
