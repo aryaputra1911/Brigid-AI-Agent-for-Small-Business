@@ -1,5 +1,5 @@
 # Convenience targets. On machines without make, run the uv commands directly (see README.md).
-.PHONY: install test lint format key seed chat telegram web live-check eval eval-dialogues eval-sentinel eval-compare baseline-offline baseline-offline-write
+.PHONY: install test lint format key seed chat web live-check eval eval-dialogues eval-sentinel eval-compare baseline-offline baseline-offline-write
 
 install:
 	uv sync
@@ -23,9 +23,6 @@ seed:
 
 chat:
 	uv run python -m wali.interfaces.cli --role owner
-
-telegram:
-	uv run python -m wali.interfaces.telegram_bot
 
 web:
 	uv run python -m wali.interfaces.web

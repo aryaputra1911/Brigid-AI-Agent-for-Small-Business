@@ -15,7 +15,6 @@ flowchart TD
     person([Owner / bookkeeper / staff])
     subgraph interfaces [Interfaces: who you are is decided here]
         cli[CLI]
-        tg[Telegram bot]
         web[Web page]
     end
     app[WaliApp<br/>sessions and the confirmation inbox]
@@ -41,7 +40,7 @@ flowchart TD
 
 | Part | Code | What it does |
 | --- | --- | --- |
-| Interfaces | `src/wali/interfaces/` | CLI, Telegram bot, demo web page. Each decides who the person is (a role picked at the CLI or web page, a linked Telegram id) and shows Confirm and Decline buttons. Nothing typed in a chat changes who someone is |
+| Interfaces | `src/wali/interfaces/` | CLI and demo web page. Each decides who the person is (a role picked at the CLI or web page) and shows Confirm and Decline buttons. Nothing typed in a chat changes who someone is |
 | WaliApp | `src/wali/app.py` | Wires everything together; keeps one conversation per person and channel, and the inbox of requests waiting for confirmation |
 | Agent loop | `src/wali/agent/loop.py`, `prompts.py`, `dialogue.py` | Hand-written tool-use loop (no agent framework). Calls the model, runs the tools it asks for, and checks each answer before it is shown (figures must come from the data, the language must match the person's) |
 | Model clients | `src/wali/agent/llm.py`, `llm_openai.py` | Anthropic SDK, or any OpenAI-compatible endpoint, behind one small interface. Chosen in `.env` |
@@ -61,8 +60,8 @@ from the records. `propose_mandate` only drafts; a draft takes effect when the o
 
 ## What happens when someone asks to pay
 
-1. The bookkeeper types "bayarin tagihan kopi pak budi ya" in Telegram. The bot knows this
-   Telegram id is the bookkeeper.
+1. The bookkeeper types "bayarin tagihan kopi pak budi ya" on the web page (or the CLI). The
+   role selector is what makes them the bookkeeper.
 2. The message is screened. If it carries pasted text that tries to steer the assistant, every
    payment in this turn will wait for the owner.
 3. The model calls `list_invoices`. Every text field read from the bank and books is screened
@@ -94,7 +93,7 @@ from the records. `propose_mandate` only drafts; a draft takes effect when the o
 
 | Comes from | Treated as | Enforced by |
 | --- | --- | --- |
-| The interface (CLI role, Telegram id, web role selector) | Who the person is | The interface; the environment also checks its own user table. The web API answers only requests addressed to this computer's own host names |
+| The interface (CLI role, web role selector) | Who the person is | The interface; the environment also checks its own user table. The web API answers only requests addressed to this computer's own host names |
 | What a person types | A request, possibly with pasted text | Screening of the message; in a suspicious turn, payments wait for the owner and no book entry is recorded |
 | Invoices, memos, names, emails | Data, never instructions | The sentinel withholds instruction-like text; the policy ignores accounts written in text |
 | The language model | A proposer that may be wrong or manipulated | Ten narrow tools; the guard; the reply checks |

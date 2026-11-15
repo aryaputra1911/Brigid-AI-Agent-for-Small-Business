@@ -1,4 +1,4 @@
-"""Pieces shared by the CLI, the Telegram bot, and the web page."""
+"""Pieces shared by the CLI and the web page."""
 
 from __future__ import annotations
 

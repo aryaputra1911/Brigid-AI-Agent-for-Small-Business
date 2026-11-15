@@ -215,19 +215,19 @@ def test_channels_do_not_share_a_conversation(ready, owner):
     app = ready.make_app(llm)
 
     app.chat(owner, "dari cli", channel="cli")
-    app.chat(owner, "dari telegram", channel="telegram")
+    app.chat(owner, "dari web", channel="web")
 
-    assert [m["content"] for m in llm.requests[1]["messages"]] == ["dari telegram"]
+    assert [m["content"] for m in llm.requests[1]["messages"]] == ["dari web"]
 
 
 def test_tool_calls_carry_the_session_id_into_the_audit_log(ready, owner):
     llm = ScriptedLLM(use(("get_balance", {})), say("ok"))
     app = ready.make_app(llm)
 
-    app.chat(owner, "saldo", channel="telegram")
+    app.chat(owner, "saldo", channel="web")
 
     entry = [e for e in ready.audit.entries() if e["event"] == "tool_called"][-1]
-    assert entry["session_id"].startswith(f"telegram:{owner.user_id}:")
+    assert entry["session_id"].startswith(f"web:{owner.user_id}:")
     assert entry["principal"]["role"] == "owner"
 
 

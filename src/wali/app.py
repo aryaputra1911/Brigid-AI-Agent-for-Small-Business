@@ -1,4 +1,4 @@
-"""Wiring shared by every interface (CLI, Telegram, web).
+"""Wiring shared by every interface (CLI, web).
 
 ``WaliApp`` owns the pieces and the two things an interface needs:
 
@@ -9,8 +9,8 @@
 The principal given to these methods must come from the interface's own authentication. Nothing
 typed in a chat can change it.
 
-Every public method takes one lock, so interfaces that serve several people at once (Telegram,
-web) can call it from any thread. A slow model answer for one person makes the others wait.
+Every public method takes one lock, so interfaces that serve several people at once (the web
+API) can call it from any thread. A slow model answer for one person makes the others wait.
 """
 
 from __future__ import annotations
@@ -328,7 +328,7 @@ def build_app(
             settings.model_copy(update={"llm_max_tokens": capped}), settings.sentinel_model
         )
     sentinel = Sentinel(sentinel_llm, prompt=SENTINEL_PROMPT)
-    api_keys = (settings.anthropic_api_key, settings.llm_api_key, settings.telegram_bot_token)
+    api_keys = (settings.anthropic_api_key, settings.llm_api_key)
     try:
         audit = AuditLog(settings.audit_log_path)
     except AuditError as error:

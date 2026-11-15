@@ -3,7 +3,7 @@
 Versions are the ones pinned in `pyproject.toml` (Python) and installed from
 `frontend/package-lock.json` (web front end). Licences are as the packages declare them.
 
-## Python (the agent, guard, simulation, CLI, Telegram bot, API)
+## Python (the agent, guard, simulation, CLI, API)
 
 | Package | Version | Licence | Used for |
 | --- | --- | --- | --- |
@@ -12,7 +12,6 @@ Versions are the ones pinned in `pyproject.toml` (Python) and installed from
 | fastapi | 0.143.0 | MIT | The JSON API behind the web pages |
 | httpx | 0.28.1 | BSD-3-Clause | The OpenAI-compatible model client; FastAPI's test client |
 | pydantic | 2.14.1 | MIT | Data models and settings validation |
-| python-telegram-bot | 22.8 | LGPL-3.0-only | The Telegram bot (used as an unmodified library) |
 | PyYAML | 6.0.3 | MIT | Reading the evaluation files |
 | uvicorn | 0.54.0 | BSD-3-Clause | Serving the web API |
 
@@ -46,7 +45,6 @@ The Wali logo animation (`frontend/public/brand/wali.lottie`) was supplied by th
 | --- | --- | --- |
 | A language model with tool calling | The assistant, and the sentinel's screening check | Configured in `.env`. The published evaluations used OpenAI-compatible endpoints: `deepseek-v4.1-flash` through the SumoPod gateway (`docs/archive/results/`) and `openai/gpt-oss-20b` through NVIDIA NIM (`docs/baseline/`). The Anthropic path is supported and tested without a live model |
 | GitHub Actions | Tests, lint, and frontend checks on every push and pull request | `.github/workflows/ci.yml`; it never calls a model |
-| Telegram Bot API | The Telegram interface | Optional; needs a bot token from @BotFather |
 
 No real bank, payment network, or personal data is used anywhere. The bank, the books, the
 suppliers, and the people are all synthetic.

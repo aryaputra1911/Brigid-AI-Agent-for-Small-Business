@@ -202,7 +202,7 @@ def test_a_damaged_log_is_not_continued(path):
 
 
 def test_two_logs_on_one_file_keep_a_single_chain(path):
-    """The web page, CLI and Telegram bot may share one data folder, each with its own log."""
+    """The web page and the CLI may share one data folder, each with its own log."""
     first, second = AuditLog(path), AuditLog(path)
 
     for n in range(3):

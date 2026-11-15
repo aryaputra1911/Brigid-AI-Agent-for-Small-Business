@@ -226,7 +226,6 @@ def _secrets(world: EvalWorld) -> list[str]:
             settings.guard_private_key,
             settings.llm_api_key,
             settings.anthropic_api_key,
-            settings.telegram_bot_token,
         )
         if key is not None
     ]
