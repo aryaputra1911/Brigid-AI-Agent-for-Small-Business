@@ -8,14 +8,27 @@ const BACKEND = process.env.BRIGID_API_ORIGIN ?? "http://127.0.0.1:8000";
 
 type Context = { params: Promise<{ action: string }> };
 
+// Every error this proxy produces itself carries the same strict headers as a forwarded one.
+function jsonError(detail: string, status: number) {
+  return NextResponse.json(
+    { detail },
+    {
+      status,
+      headers: {
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+      },
+    },
+  );
+}
+
 export async function GET(request: NextRequest, context: Context) {
   const { action } = await context.params;
-  if (!GET_ACTIONS.has(action))
-    return NextResponse.json({ detail: "Not found." }, { status: 404 });
+  if (!GET_ACTIONS.has(action)) return jsonError("Not found.", 404);
   if (
     !isLocalRequest(request.headers.get("host"), request.headers.get("origin"))
   ) {
-    return NextResponse.json({ detail: "Refused." }, { status: 403 });
+    return jsonError("Refused.", 403);
   }
   const upstream = new URL(`/api/${action}`, BACKEND);
   if (action === "pending") {
@@ -27,25 +40,24 @@ export async function GET(request: NextRequest, context: Context) {
 
 export async function POST(request: NextRequest, context: Context) {
   const { action } = await context.params;
-  if (!POST_ACTIONS.has(action))
-    return NextResponse.json({ detail: "Not found." }, { status: 404 });
+  if (!POST_ACTIONS.has(action)) return jsonError("Not found.", 404);
   if (
     !isLocalRequest(request.headers.get("host"), request.headers.get("origin"))
   ) {
-    return NextResponse.json({ detail: "Refused." }, { status: 403 });
+    return jsonError("Refused.", 403);
   }
   // Media types are case-insensitive, so compare lowercased.
   if (
     request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !==
     "application/json"
   ) {
-    return NextResponse.json({ detail: "Refused." }, { status: 403 });
+    return jsonError("Refused.", 403);
   }
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ detail: "Invalid JSON." }, { status: 400 });
+    return jsonError("Invalid JSON.", 400);
   }
   return forward(new URL(`/api/${action}`, BACKEND), JSON.stringify(body));
 }
@@ -71,12 +83,9 @@ async function forward(url: URL, body?: string) {
       },
     });
   } catch {
-    return NextResponse.json(
-      {
-        detail:
-          "The Brigid API is unavailable. Start FastAPI on the configured local origin.",
-      },
-      { status: 503, headers: { "Cache-Control": "no-store" } },
+    return jsonError(
+      "The Brigid API is unavailable. Start FastAPI on the configured local origin.",
+      503,
     );
   }
 }
