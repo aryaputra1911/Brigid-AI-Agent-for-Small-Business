@@ -208,7 +208,8 @@ def create_web_app(
         # The Origin is checked against the configured hosts, not against the Host header,
         # which the caller chooses.
         if request.method not in ("GET", "HEAD"):
-            content_type = request.headers.get("content-type", "").split(";")[0].strip()
+            # Media types are case-insensitive (RFC 9110), so compare lowercased.
+            content_type = request.headers.get("content-type", "").split(";")[0].strip().lower()
             origin = request.headers.get("origin")
             local_origin = origin is None or urlsplit(origin).hostname in hosts
             if content_type != "application/json" or not local_origin:

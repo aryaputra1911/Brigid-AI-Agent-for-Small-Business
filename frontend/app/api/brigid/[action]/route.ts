@@ -34,8 +34,9 @@ export async function POST(request: NextRequest, context: Context) {
   ) {
     return NextResponse.json({ detail: "Refused." }, { status: 403 });
   }
+  // Media types are case-insensitive, so compare lowercased.
   if (
-    request.headers.get("content-type")?.split(";")[0].trim() !==
+    request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !==
     "application/json"
   ) {
     return NextResponse.json({ detail: "Refused." }, { status: 403 });
