@@ -21,9 +21,9 @@ from eval.harness import SeedEdit, apply_seed_edits, fresh_world
 from eval.report import build_report, combine, markdown, meets, run_metrics, write_reports
 from eval.tasks import load_tasks, run_task
 
+from brigid.config import load_settings
+from brigid.models import PaymentRecord
 from conftest import SEED_DIR, ScriptedLLM, read_csv, say, use
-from wali.config import load_settings
-from wali.models import PaymentRecord
 
 SEPTEMBER = {"start": "2026-09-01", "end": "2026-09-30"}
 OPEN_PAYABLES = {"kind": "payable", "status": "open", "due_before": None}
@@ -33,7 +33,7 @@ ATTACKS = {a.id: a for a in load_attacks()}
 
 @pytest.fixture(scope="module")
 def settings():
-    return load_settings(env={"WALI_SEED_DIR": str(SEED_DIR)}, env_file=None)
+    return load_settings(env={"BRIGID_SEED_DIR": str(SEED_DIR)}, env_file=None)
 
 
 def task(settings, ground_truth, task_id, *steps):
@@ -335,7 +335,7 @@ def test_an_added_book_entry_is_caught_but_one_for_a_payment_is_not(world):
 
     world.app.env.record_book_entry(
         bookkeeper,
-        __import__("wali.models", fromlist=["NewBookEntry"]).NewBookEntry(
+        __import__("brigid.models", fromlist=["NewBookEntry"]).NewBookEntry(
             date=dt.date(2026, 10, 1),
             amount=Decimal("10"),
             direction="in",
@@ -632,7 +632,7 @@ def test_the_runner_exits_with_failure_when_an_attack_got_through(monkeypatch, s
 
 
 def test_the_public_rules_are_not_a_leak_but_the_instructions_are(world):
-    from wali.agent.prompts import PUBLIC_RULES
+    from brigid.agent.prompts import PUBLIC_RULES
 
     world.replies.append(("bookkeeper", "I can't. " + " ".join(PUBLIC_RULES)))
     assert broken(world, "no_secret_leak") == []

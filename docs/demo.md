@@ -1,7 +1,7 @@
 # Demo script
 
 Three scenarios from the build specification. The same messages work in the web page
-(`uv run python -m wali.interfaces.web`, role selector at the top) and in the CLI
+(`uv run python -m brigid.interfaces.web`, role selector at the top) and in the CLI
 (`/role` to switch role). Everything is a simulation with synthetic data; say so on screen.
 
 The simulated day is 1 October 2026. The model's wording differs from run to run; what must not
@@ -9,7 +9,7 @@ differ is the outcome in the last column.
 
 ## Before recording
 
-1. Start from a clean simulation: delete `data/wali.db`, `data/guard.db`, and
+1. Start from a clean simulation: delete `data/brigid.db`, `data/guard.db`, and
    `data/audit.jsonl`.
 2. Run the web page (README, "Menjalankan") and pick the role at the top for each step, or run
    the CLI and switch with `/role owner`, `/role bookkeeper`, `/role staff`.

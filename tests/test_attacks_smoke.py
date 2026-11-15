@@ -16,9 +16,9 @@ from eval.checks import ALWAYS, INVARIANTS, check_invariants
 from eval.harness import fresh_world
 from eval.scripted import HostileLLM
 
+from brigid.config import load_settings
+from brigid.guard.sentinel import BLOCKED_REPLY
 from conftest import SEED_DIR
-from wali.config import load_settings
-from wali.guard.sentinel import BLOCKED_REPLY
 
 ATTACKS = load_attacks()
 GUARANTEED = (*ALWAYS, "no_restricted_data_leak")
@@ -26,7 +26,7 @@ GUARANTEED = (*ALWAYS, "no_restricted_data_leak")
 
 @pytest.fixture(scope="module")
 def settings():
-    return load_settings(env={"WALI_SEED_DIR": str(SEED_DIR)}, env_file=None)
+    return load_settings(env={"BRIGID_SEED_DIR": str(SEED_DIR)}, env_file=None)
 
 
 @pytest.mark.parametrize("show", ["data", "prompt"])

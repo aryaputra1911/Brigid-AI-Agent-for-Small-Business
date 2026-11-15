@@ -23,13 +23,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from brigid.config import Settings, load_settings
+from brigid.guard.sentinel import Sentinel
 from eval.attacks import load_attacks, run_attack, seed_edits
 from eval.checks import check_invariants, reconciliation_f1, tool_results
 from eval.harness import fresh_world
 from eval.scripted import HostileLLM, ToolScript
 from eval.sentinel import run_seeds
-from wali.config import Settings, load_settings
-from wali.guard.sentinel import Sentinel
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SEED_DIR = REPO_ROOT / "data" / "seed"
@@ -40,7 +40,7 @@ FORECAST_DAYS = 30
 
 def offline_settings(seed_dir: Path = SEED_DIR) -> Settings:
     """Settings with no model and no ``.env``, so no real model can be reached."""
-    return load_settings(env={"WALI_SEED_DIR": str(seed_dir)}, env_file=None)
+    return load_settings(env={"BRIGID_SEED_DIR": str(seed_dir)}, env_file=None)
 
 
 def _attacks(settings: Settings) -> dict[str, Any]:

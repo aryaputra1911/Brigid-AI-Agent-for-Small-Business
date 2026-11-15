@@ -148,7 +148,7 @@ def _short(text: str, limit: int = 120) -> str:
 def markdown(report: dict[str, Any]) -> str:
     config, metrics = report["config"], report["metrics"]
     lines = [
-        f"# Wali evaluation, {report['generated_at']}",
+        f"# Brigid evaluation, {report['generated_at']}",
         "",
         f"{report['label']} Runs: {report['repeat']}.",
         "",

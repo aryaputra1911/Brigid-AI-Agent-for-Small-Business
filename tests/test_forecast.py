@@ -3,8 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from wali.finance.forecast import detect_recurring, forecast
-from wali.models import BookEntry, Invoice, Money, RecurringItem
+from brigid.finance.forecast import detect_recurring, forecast
+from brigid.models import BookEntry, Invoice, Money, RecurringItem
 
 START = dt.date(2026, 10, 1)
 FAR_PAST = dt.date(2000, 1, 1)

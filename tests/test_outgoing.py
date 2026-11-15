@@ -5,21 +5,21 @@ import datetime as dt
 
 import pytest
 
-from conftest import ScriptedLLM, read_csv, say
-from wali.agent.dialogue import UNVERIFIED_FIGURES_NOTE
-from wali.agent.loop import (
+from brigid.agent.dialogue import UNVERIFIED_FIGURES_NOTE
+from brigid.agent.loop import (
     ACTIONS_MAY_HAVE_RUN,
     EMPTY_REPLY,
     REFUSAL_REPLY,
     STEP_LIMIT_REPLY,
     TRUNCATED_REPLY,
 )
-from wali.agent.prompts import SENTINEL_PROMPT, build_system_prompt, protected_texts
-from wali.guard import policy
-from wali.guard.audit import verify_chain
-from wali.guard.confirm import CONFIRMATION_MESSAGES
-from wali.guard.keys import generate_keypair
-from wali.guard.sentinel import BLOCKED_REPLY, WITHHELD_TEXT, OutgoingScreen
+from brigid.agent.prompts import SENTINEL_PROMPT, build_system_prompt, protected_texts
+from brigid.guard import policy
+from brigid.guard.audit import verify_chain
+from brigid.guard.confirm import CONFIRMATION_MESSAGES
+from brigid.guard.keys import generate_keypair
+from brigid.guard.sentinel import BLOCKED_REPLY, WITHHELD_TEXT, OutgoingScreen
+from conftest import ScriptedLLM, read_csv, say
 
 ROLES = ("owner", "bookkeeper", "staff")
 PRIVATE_KEY, _ = generate_keypair()
@@ -121,7 +121,7 @@ def test_long_ordinary_words_are_not_tokens(screen):
 @pytest.mark.parametrize(
     "section",
     [
-        "You are Wali",
+        "You are Brigid",
         "# How to talk",
         "# Missing details and unclear requests",
         "# Using the tools",
@@ -318,7 +318,7 @@ def test_a_token_that_looks_like_nothing_special_is_still_caught_while_it_is_liv
     ready, owner, bookkeeper, monkeypatch
 ):
     plain = "a" * 30
-    monkeypatch.setattr("wali.guard.confirm.secrets.token_urlsafe", lambda size: plain)
+    monkeypatch.setattr("brigid.guard.confirm.secrets.token_urlsafe", lambda size: plain)
     assert not ready.guard.screen_outgoing(f"kode {plain}", owner).blocked
 
     large = max(
@@ -395,7 +395,7 @@ def test_an_ordinary_reply_is_not_marked_as_blocked(world, owner):
 
 @pytest.mark.parametrize("role", ROLES)
 def test_the_public_rules_may_be_told_but_the_rest_of_the_prompt_stays_protected(screen, role):
-    from wali.agent.prompts import PUBLIC_RULES
+    from brigid.agent.prompts import PUBLIC_RULES
 
     prompt = build_system_prompt(role=role, currency="IDR", today=TODAY)
     for rule in PUBLIC_RULES:

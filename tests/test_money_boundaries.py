@@ -11,6 +11,12 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
+from brigid.finance.forecast import detect_recurring, forecast
+from brigid.finance.recommend import recommend
+from brigid.finance.reconcile import ReconcileConfig, reconcile
+from brigid.guard.mandate import Limits, MandateTerms, RoleAuthority
+from brigid.guard.policy import PaymentTerms, amount_above_usual
+from brigid.models import BookEntry, Invoice, Money, NewBookEntry, RecurringItem
 from test_forecast import START, balances, daily, idr, monthly, on
 from test_forecast import invoice as fc_invoice
 from test_policy import (
@@ -27,12 +33,6 @@ from test_policy import (
     idr as pidr,
 )
 from test_reconcile import day, entry, tx
-from wali.finance.forecast import detect_recurring, forecast
-from wali.finance.recommend import recommend
-from wali.finance.reconcile import ReconcileConfig, reconcile
-from wali.guard.mandate import Limits, MandateTerms, RoleAuthority
-from wali.guard.policy import PaymentTerms, amount_above_usual
-from wali.models import BookEntry, Invoice, Money, NewBookEntry, RecurringItem
 
 HUGE = Decimal("9" * 20)
 

@@ -21,6 +21,10 @@ import sys
 import time
 from typing import Any
 
+from brigid.agent.prompts import SENTINEL_PROMPT
+from brigid.app import SENTINEL_MAX_TOKENS, SetupError, build_llm
+from brigid.config import ConfigError, Settings, load_settings
+from brigid.guard.sentinel import Sentinel
 from eval.attacks import AttackResult, load_attacks, run_attack, seed_edits
 from eval.compare import against_baseline
 from eval.dialogues import DialogueResult, load_dialogues, run_dialogue
@@ -28,10 +32,6 @@ from eval.harness import CountingLLM, fresh_world
 from eval.report import build_report, meets, run_metrics, write_reports
 from eval.sentinel import run_seeds
 from eval.tasks import TaskResult, load_tasks, run_task
-from wali.agent.prompts import SENTINEL_PROMPT
-from wali.app import SENTINEL_MAX_TOKENS, SetupError, build_llm
-from wali.config import ConfigError, Settings, load_settings
-from wali.guard.sentinel import Sentinel
 
 SUITES = ("tasks", "dialogues", "attacks", "sentinel", "all")
 MAX_SHOWN_CHARS = 700
@@ -53,7 +53,7 @@ def show_dialogue(result: DialogueResult, *, full: bool) -> None:
     print(f"\n=== {result.id} {'PASS' if result.passed else 'FAIL'}  {result.title} ===")
     for turn in result.turns:
         print(f"user> {turn.user}")
-        print(f"wali> {_shown(turn.reply, full)}")
+        print(f"brigid> {_shown(turn.reply, full)}")
         print(
             f"      tools: {turn.tools or 'none'} | stop={turn.stop} | "
             f"model calls: {turn.model_calls} | {turn.seconds:.1f}s"
@@ -70,7 +70,7 @@ def show_task(result: TaskResult, user: list[str], *, full: bool) -> None:
     print(f"\n=== {result.id} {'PASS' if result.passed else 'FAIL'}  {result.title} ===")
     for text, reply in zip(user, result.replies, strict=False):
         print(f"user> {text}")
-        print(f"wali> {_shown(reply, full)}")
+        print(f"brigid> {_shown(reply, full)}")
     print(
         f"      tools: {result.tools or 'none'} | turns: {result.turns} | "
         f"model calls: {result.model_calls} | {result.seconds:.1f}s"
@@ -85,7 +85,7 @@ def show_attack(result: AttackResult, *, full: bool) -> None:
     verdict = "GOT THROUGH" if result.succeeded else "held"
     print(f"\n=== {result.id} {verdict}  [{result.category}] {result.title} ===")
     for reply in result.replies:
-        print(f"wali> {_shown(reply, full)}")
+        print(f"brigid> {_shown(reply, full)}")
     print(f"      tools: {result.tools or 'none'} | defences: {result.defences}")
     for name, problems in result.violations.items():
         for problem in problems:

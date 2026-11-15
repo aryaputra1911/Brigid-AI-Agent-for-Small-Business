@@ -5,12 +5,12 @@ from decimal import Decimal
 
 import pytest
 
+from brigid.agent.prompts import build_system_prompt
+from brigid.app import SetupError, build_app, simulated_clock
+from brigid.config import load_settings
+from brigid.guard.audit import verify_chain
+from brigid.interfaces.cli import run_cli
 from conftest import SEED_DIR, ScriptedLLM, flagged_invoice_ids, say, tool_results, use
-from wali.agent.prompts import build_system_prompt
-from wali.app import SetupError, build_app, simulated_clock
-from wali.config import load_settings
-from wali.guard.audit import verify_chain
-from wali.interfaces.cli import run_cli
 
 SEPTEMBER = {"start": "2026-09-01", "end": "2026-09-30"}
 
@@ -269,12 +269,12 @@ def test_the_prompt_covers_the_rules_from_the_specification():
 @pytest.fixture
 def settings_env(tmp_path, guard_keys):
     return {
-        "WALI_GUARD_PRIVATE_KEY": guard_keys[0],
-        "WALI_DB_PATH": str(tmp_path / "state" / "wali.db"),
-        "WALI_GUARD_DB_PATH": str(tmp_path / "state" / "guard.db"),
-        "WALI_AUDIT_LOG_PATH": str(tmp_path / "state" / "audit.jsonl"),
-        "WALI_SEED_DIR": str(SEED_DIR),
-        "WALI_AGENT_MODEL": "test-model",
+        "BRIGID_GUARD_PRIVATE_KEY": guard_keys[0],
+        "BRIGID_DB_PATH": str(tmp_path / "state" / "brigid.db"),
+        "BRIGID_GUARD_DB_PATH": str(tmp_path / "state" / "guard.db"),
+        "BRIGID_AUDIT_LOG_PATH": str(tmp_path / "state" / "audit.jsonl"),
+        "BRIGID_SEED_DIR": str(SEED_DIR),
+        "BRIGID_AGENT_MODEL": "test-model",
     }
 
 
@@ -309,7 +309,7 @@ def test_a_damaged_audit_log_stops_start_up_with_a_plain_message(settings_env):
 
 
 def test_the_simulated_date_can_be_set(settings_env):
-    settings = load_settings(env={**settings_env, "WALI_SIM_TODAY": "2026-10-20"}, env_file=None)
+    settings = load_settings(env={**settings_env, "BRIGID_SIM_TODAY": "2026-10-20"}, env_file=None)
 
     app = build_app(settings, llm=ScriptedLLM())
 
@@ -320,9 +320,9 @@ def test_the_simulated_date_can_be_set(settings_env):
 @pytest.mark.parametrize(
     ("change", "message"),
     [
-        ({"WALI_GUARD_PRIVATE_KEY": ""}, "gen_guard_key"),
-        ({"WALI_ENVIRONMENT": "organiser"}, "not implemented yet"),
-        ({"WALI_SEED_DIR": "no/such/folder"}, "gen_seed_data"),
+        ({"BRIGID_GUARD_PRIVATE_KEY": ""}, "gen_guard_key"),
+        ({"BRIGID_ENVIRONMENT": "organiser"}, "not implemented yet"),
+        ({"BRIGID_SEED_DIR": "no/such/folder"}, "gen_seed_data"),
     ],
 )
 def test_build_app_says_what_is_missing(settings_env, change, message):
@@ -333,9 +333,9 @@ def test_build_app_says_what_is_missing(settings_env, change, message):
 
 
 def test_build_app_needs_a_model_name_when_no_model_is_supplied(settings_env):
-    settings = load_settings(env={**settings_env, "WALI_AGENT_MODEL": ""}, env_file=None)
+    settings = load_settings(env={**settings_env, "BRIGID_AGENT_MODEL": ""}, env_file=None)
 
-    with pytest.raises(SetupError, match="WALI_AGENT_MODEL"):
+    with pytest.raises(SetupError, match="BRIGID_AGENT_MODEL"):
         build_app(settings)
 
 
@@ -409,7 +409,7 @@ def test_cli_demo_session(world, principals, large):
     assert "MANDATE waiting for the owner" in output
     assert "guard> The mandate is now active" in output
     assert "You are now: bookkeeper" in output
-    assert "wali> Belum dibayar, menunggu konfirmasi pemilik." in output
+    assert "brigid> Belum dibayar, menunggu konfirmasi pemilik." in output
     assert "A payment confirmation was sent to the owner" in output
     assert "There is no such item waiting for you." in output
     assert "PAYMENT waiting for the owner" in output
@@ -421,7 +421,7 @@ def test_cli_demo_session(world, principals, large):
     assert "Unknown command" in output
     assert "Give the number of the item" in output
     assert "Started a fresh conversation." in output
-    assert "wali> Halo." in output
+    assert "brigid> Halo." in output
     assert [p.invoice_id for p in world.env.list_payments()] == [large.id]
 
 

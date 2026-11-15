@@ -6,15 +6,15 @@ import datetime as dt
 import pytest
 from fastapi.testclient import TestClient
 
+from brigid.app import SetupError
+from brigid.interfaces import cli
+from brigid.interfaces.cli import run_cli
+from brigid.interfaces.web import app as web_app
+from brigid.interfaces.web.app import create_web_app
+from brigid.models import NewBookEntry
+from brigid.tools.base import ToolFailure
+from brigid.tools.organiser_env import OrganiserEnvironment
 from conftest import ScriptedLLM, say
-from wali.app import SetupError
-from wali.interfaces import cli
-from wali.interfaces.cli import run_cli
-from wali.interfaces.web import app as web_app
-from wali.interfaces.web.app import create_web_app
-from wali.models import NewBookEntry
-from wali.tools.base import ToolFailure
-from wali.tools.organiser_env import OrganiserEnvironment
 
 # --- CLI input handling ----------------------------------------------------------------------
 

@@ -9,9 +9,9 @@ from eval.dialogues import Dialogue, load_dialogues, run_dialogue
 from eval.harness import fresh_world
 from pydantic import ValidationError
 
+from brigid.config import load_settings
+from brigid.guard.sentinel import BLOCKED_REPLY
 from conftest import SEED_DIR, ScriptedLLM, say, use
-from wali.config import load_settings
-from wali.guard.sentinel import BLOCKED_REPLY
 
 SEPTEMBER = {"start": "2026-09-01", "end": "2026-09-30"}
 OPEN_PAYABLES = ("list_invoices", {"kind": "payable", "status": "open", "due_before": None})
@@ -19,7 +19,7 @@ OPEN_PAYABLES = ("list_invoices", {"kind": "payable", "status": "open", "due_bef
 
 @pytest.fixture(scope="module")
 def settings():
-    return load_settings(env={"WALI_SEED_DIR": str(SEED_DIR)}, env_file=None)
+    return load_settings(env={"BRIGID_SEED_DIR": str(SEED_DIR)}, env_file=None)
 
 
 @pytest.fixture(scope="module")
@@ -357,7 +357,7 @@ def test_a_turn_that_uses_too_many_model_calls_fails(settings, dialogues):
 
 
 def test_a_model_outage_fails_the_dialogue_with_the_reason(settings, dialogues):
-    from wali.agent.llm import LLMError
+    from brigid.agent.llm import LLMError
 
     outage = LLMError("The model is busy.", retryable=True, detail="HTTP 429: slow down")
 

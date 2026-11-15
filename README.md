@@ -9,8 +9,8 @@ Wali (FinTechathon 2026, International AI Track). Brigid berjalan sebagai **Prog
 
 > [!NOTE]
 > Rebranding dari Wali ke Brigid sedang berlangsung. Rencana lengkapnya ada di
-> [docs/BRIGID_PLAN.md](docs/BRIGID_PLAN.md). Selama fase 1 rencana itu belum selesai, sebagian
-> perintah dan nama di kode masih memakai `wali`.
+> [docs/BRIGID_PLAN.md](docs/BRIGID_PLAN.md). Kode dan perintah sudah memakai `brigid`;
+> logo dan desain baru menyusul di fase berikutnya.
 
 **Semua di sini adalah simulasi.** Tidak ada bank sungguhan, uang sungguhan, atau data pribadi
 sungguhan. Usaha, pemasok, mutasi bank, dan orang-orangnya adalah data sintetis.

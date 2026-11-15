@@ -16,6 +16,7 @@ from typing import Any
 import yaml
 from pydantic import Field
 
+from brigid.models import Role
 from eval.checks import items_handled, mentions_date, reconciliation_f1, tool_results
 from eval.dialogues import (
     FinalExpect,
@@ -28,7 +29,6 @@ from eval.dialogues import (
     summarise_calls,
 )
 from eval.harness import EvalWorld
-from wali.models import Role
 
 TASKS_PATH = Path(__file__).with_name("tasks.yaml")
 

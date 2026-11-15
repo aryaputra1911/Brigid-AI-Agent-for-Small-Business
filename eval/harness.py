@@ -21,13 +21,13 @@ from typing import Any
 
 from pydantic import SecretStr
 
-from wali.agent.llm import LLMClient, LLMError
-from wali.app import WaliApp, build_app
-from wali.config import Settings
-from wali.guard.keys import generate_keypair
-from wali.guard.service import MandateRequest
-from wali.interfaces.common import DEMO_MANDATE, verified_supplier_ids
-from wali.models import Principal
+from brigid.agent.llm import LLMClient, LLMError
+from brigid.app import BrigidApp, build_app
+from brigid.config import Settings
+from brigid.guard.keys import generate_keypair
+from brigid.guard.service import MandateRequest
+from brigid.interfaces.common import DEMO_MANDATE, verified_supplier_ids
+from brigid.models import Principal
 
 FAR_PAST = dt.date(2000, 1, 1)
 FAR_FUTURE = dt.date(2100, 1, 1)
@@ -84,7 +84,7 @@ def apply_seed_edits(folder: Path, edits: Sequence[SeedEdit]) -> None:
 
 @dataclass
 class EvalWorld:
-    app: WaliApp
+    app: BrigidApp
     principals: dict[str, Principal]
     llm: CountingLLM
     audit_path: Path
@@ -125,7 +125,7 @@ def fresh_world(
 ) -> Iterator[EvalWorld]:
     """Build an isolated application. ``llm`` may be the real client or a scripted stand-in."""
     counting = llm if isinstance(llm, CountingLLM) else CountingLLM(llm)
-    with tempfile.TemporaryDirectory(prefix="wali-eval-", ignore_cleanup_errors=True) as folder:
+    with tempfile.TemporaryDirectory(prefix="brigid-eval-", ignore_cleanup_errors=True) as folder:
         state = Path(folder)
         seed = state / "seed"
         shutil.copytree(settings.seed_dir, seed)
@@ -134,7 +134,7 @@ def fresh_world(
             update={
                 "guard_private_key": SecretStr(generate_keypair()[0]),
                 "seed_dir": seed,
-                "db_path": state / "wali.db",
+                "db_path": state / "brigid.db",
                 "guard_db_path": state / "guard.db",
                 "audit_log_path": state / "audit.jsonl",
                 "sim_fail_rate": 0.0,

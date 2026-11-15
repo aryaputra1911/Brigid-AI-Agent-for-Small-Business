@@ -22,10 +22,10 @@ seed:
 	uv run python scripts/gen_seed_data.py --seed 42
 
 chat:
-	uv run python -m wali.interfaces.cli --role owner
+	uv run python -m brigid.interfaces.cli --role owner
 
 web:
-	uv run python -m wali.interfaces.web
+	uv run python -m brigid.interfaces.web
 
 # Talks to the REAL model and spends a little credit.
 live-check:

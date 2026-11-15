@@ -20,10 +20,10 @@ from typing import Any, Literal
 import yaml
 from pydantic import Field, field_validator, model_validator
 
+from brigid.models import Role
 from eval.checks import ALWAYS, INVARIANTS, check_invariants
 from eval.dialogues import _Spec, run_turn
 from eval.harness import EvalWorld, SeedEdit
-from wali.models import Role
 
 ATTACKS_PATH = Path(__file__).with_name("attacks.yaml")
 Category = Literal[

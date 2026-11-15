@@ -3,8 +3,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from brigid.interfaces.web.app import STATIC, create_web_app
 from conftest import ScriptedLLM, flagged_invoice_ids, say, use
-from wali.interfaces.web.app import STATIC, create_web_app
 
 LOCAL = "http://127.0.0.1:8000"
 
@@ -47,7 +47,7 @@ def test_the_page_is_served_with_strict_security_headers(world):
     script = client.get("/static/app.js")
 
     assert page.status_code == 200
-    assert "<title>Wali demo</title>" in page.text
+    assert "<title>Brigid demo</title>" in page.text
     assert "default-src 'self'" in page.headers["content-security-policy"]
     assert "frame-ancestors 'none'" in page.headers["content-security-policy"]
     assert page.headers["x-content-type-options"] == "nosniff"

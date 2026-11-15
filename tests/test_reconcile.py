@@ -4,10 +4,10 @@ from decimal import Decimal
 
 import pytest
 
+from brigid.config import load_settings
+from brigid.finance.reconcile import ReconcileConfig, discrepancy_keys, reconcile
+from brigid.models import BankTransaction, BookEntry
 from conftest import precision_recall_f1, truth_discrepancy_keys
-from wali.config import load_settings
-from wali.finance.reconcile import ReconcileConfig, discrepancy_keys, reconcile
-from wali.models import BankTransaction, BookEntry
 
 FAR_PAST = dt.date(2000, 1, 1)
 FAR_FUTURE = dt.date(2100, 1, 1)
@@ -265,9 +265,9 @@ def test_duplicate_ids_are_refused():
 def test_config_comes_from_settings():
     settings = load_settings(
         env={
-            "WALI_RECON_DATE_WINDOW_DAYS": "5",
-            "WALI_RECON_AMOUNT_TOLERANCE": "2",
-            "WALI_RECON_MISMATCH_MAX_RATIO": "0.1",
+            "BRIGID_RECON_DATE_WINDOW_DAYS": "5",
+            "BRIGID_RECON_AMOUNT_TOLERANCE": "2",
+            "BRIGID_RECON_MISMATCH_MAX_RATIO": "0.1",
         },
         env_file=None,
     )

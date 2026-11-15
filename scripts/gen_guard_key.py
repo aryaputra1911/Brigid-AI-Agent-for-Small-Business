@@ -16,10 +16,10 @@ import argparse
 import sys
 from pathlib import Path
 
-from wali.guard.keys import generate_keypair
+from brigid.guard.keys import generate_keypair
 
-PRIVATE_VAR = "WALI_GUARD_PRIVATE_KEY"
-PUBLIC_VAR = "WALI_GUARD_PUBLIC_KEY"
+PRIVATE_VAR = "BRIGID_GUARD_PRIVATE_KEY"
+PUBLIC_VAR = "BRIGID_GUARD_PUBLIC_KEY"
 
 
 def _is_assignment(line: str, name: str) -> bool:

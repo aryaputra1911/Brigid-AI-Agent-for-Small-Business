@@ -4,18 +4,18 @@ from decimal import Decimal
 
 import pytest
 
-from conftest import SEED_DIR
-from wali.guard.keys import generate_keypair
-from wali.models import NewBookEntry, Principal
-from wali.tools.base import (
+from brigid.guard.keys import generate_keypair
+from brigid.models import NewBookEntry, Principal
+from brigid.tools.base import (
     AccessDenied,
     FinancialEnvironment,
     NotFound,
     ToolFailure,
     ToolTimeout,
 )
-from wali.tools.organiser_env import OrganiserEnvironment
-from wali.tools.sim_env import PROTOCOL_METHODS, SeedDataError, SimEnvironment
+from brigid.tools.organiser_env import OrganiserEnvironment
+from brigid.tools.sim_env import PROTOCOL_METHODS, SeedDataError, SimEnvironment
+from conftest import SEED_DIR
 
 FAR_PAST = dt.date(2000, 1, 1)
 FAR_FUTURE = dt.date(2100, 1, 1)
@@ -103,7 +103,7 @@ def test_malformed_seed_row_is_an_error_that_names_the_file_and_line(guard_keys,
 def test_create_refuses_to_overwrite_and_open_keeps_state(
     guard_keys, tmp_path, now, owner, ground_truth, make_approval
 ):
-    db_path = tmp_path / "sim" / "wali.db"
+    db_path = tmp_path / "sim" / "brigid.db"
     first = SimEnvironment.create(SEED_DIR, guard_keys[1], db_path=db_path, clock=lambda: now)
     invoice = first.list_invoices(owner, "payable", status="open")[0]
     supplier = first.get_supplier(owner, invoice.counterparty_id)
@@ -126,7 +126,7 @@ def test_create_refuses_to_overwrite_and_open_keeps_state(
 
 
 def test_a_malformed_public_key_is_rejected(tmp_path):
-    db_path = tmp_path / "wali.db"
+    db_path = tmp_path / "brigid.db"
 
     with pytest.raises(ValueError):
         SimEnvironment.create(SEED_DIR, "not-a-key", db_path=db_path)

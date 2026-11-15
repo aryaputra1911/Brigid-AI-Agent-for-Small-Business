@@ -5,9 +5,9 @@ from decimal import Decimal
 
 import pytest
 
-from wali.guard.keys import generate_keypair, load_private_key, load_public_key
-from wali.guard.mandate import Limits, MandateTerms, RoleAuthority, sign_mandate
-from wali.guard.policy import (
+from brigid.guard.keys import generate_keypair, load_private_key, load_public_key
+from brigid.guard.mandate import Limits, MandateTerms, RoleAuthority, sign_mandate
+from brigid.guard.policy import (
     Allow,
     Deny,
     NeedsConfirmation,
@@ -21,7 +21,7 @@ from wali.guard.policy import (
     is_first_copy,
     verification_issues,
 )
-from wali.models import Invoice, Money, Principal, Supplier
+from brigid.models import Invoice, Money, Principal, Supplier
 
 NOW = dt.datetime(2026, 10, 1, 9, 0, tzinfo=dt.timezone(dt.timedelta(hours=7)))
 BUSINESS = "biz-1"

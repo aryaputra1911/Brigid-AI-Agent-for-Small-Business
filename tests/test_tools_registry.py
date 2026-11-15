@@ -6,9 +6,9 @@ from decimal import Decimal
 
 import pytest
 
+from brigid.tools import registry as registry_module
+from brigid.tools.registry import TOOL_NAMES, TOOL_SCHEMAS, ToolRegistry
 from conftest import flagged_invoice_ids, mandate_request, truth_discrepancy_keys
-from wali.tools import registry as registry_module
-from wali.tools.registry import TOOL_NAMES, TOOL_SCHEMAS, ToolRegistry
 
 EXPECTED_TOOLS = {
     "get_balance",

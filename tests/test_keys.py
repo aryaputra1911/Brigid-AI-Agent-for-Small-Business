@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 from cryptography.exceptions import InvalidSignature
 
-from wali.config import read_env_file
-from wali.guard.keys import KeyFormatError, generate_keypair, load_private_key, load_public_key
+from brigid.config import read_env_file
+from brigid.guard.keys import KeyFormatError, generate_keypair, load_private_key, load_public_key
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "gen_guard_key.py"
 
@@ -50,14 +50,14 @@ def test_malformed_keys_are_rejected_without_echoing_them(encoded):
 
 def test_script_writes_env_file_without_printing_the_private_key(tmp_path):
     env_file = tmp_path / ".env"
-    env_file.write_text("SIM_SEED=5\nWALI_GUARD_PRIVATE_KEY=\n", encoding="utf-8")
+    env_file.write_text("SIM_SEED=5\nBRIGID_GUARD_PRIVATE_KEY=\n", encoding="utf-8")
 
     result = run_script("--write-env", str(env_file))
 
     assert result.returncode == 0, result.stderr
     values = read_env_file(env_file)
     assert values["SIM_SEED"] == "5"
-    private_b64, public_b64 = values["WALI_GUARD_PRIVATE_KEY"], values["WALI_GUARD_PUBLIC_KEY"]
+    private_b64, public_b64 = values["BRIGID_GUARD_PRIVATE_KEY"], values["BRIGID_GUARD_PUBLIC_KEY"]
     assert private_b64 not in result.stdout + result.stderr
     assert public_b64 in result.stdout
     signature = load_private_key(private_b64).sign(b"m")
@@ -75,4 +75,4 @@ def test_script_refuses_to_replace_an_existing_key_unless_forced(tmp_path):
 
     forced = run_script("--write-env", str(env_file), "--force")
     assert forced.returncode == 0
-    assert read_env_file(env_file)["WALI_GUARD_PRIVATE_KEY"] != first["WALI_GUARD_PRIVATE_KEY"]
+    assert read_env_file(env_file)["BRIGID_GUARD_PRIVATE_KEY"] != first["BRIGID_GUARD_PRIVATE_KEY"]

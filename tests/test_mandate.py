@@ -6,10 +6,10 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
+from brigid.guard.keys import generate_keypair, load_private_key, load_public_key
+from brigid.guard.mandate import Mandate, MandateTerms, mandate_problem, sign_mandate
+from brigid.models import Principal
 from conftest import activate_mandate, mandate_request
-from wali.guard.keys import generate_keypair, load_private_key, load_public_key
-from wali.guard.mandate import Mandate, MandateTerms, mandate_problem, sign_mandate
-from wali.models import Principal
 
 NOW = dt.datetime(2026, 10, 1, 9, 0, tzinfo=dt.timezone(dt.timedelta(hours=7)))
 

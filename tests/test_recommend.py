@@ -3,9 +3,9 @@ from decimal import Decimal
 
 import pytest
 
-from wali.finance.forecast import forecast
-from wali.finance.recommend import recommend
-from wali.models import Invoice, Money, RecurringItem
+from brigid.finance.forecast import forecast
+from brigid.finance.recommend import recommend
+from brigid.models import Invoice, Money, RecurringItem
 
 START = dt.date(2026, 10, 1)
 DELAY_DAYS = 7

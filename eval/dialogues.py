@@ -16,9 +16,9 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from brigid.agent.loop import ACTION_TOOLS
+from brigid.models import Principal, Role
 from eval.harness import EvalWorld
-from wali.agent.loop import ACTION_TOOLS
-from wali.models import Principal, Role
 
 DIALOGUES_PATH = Path(__file__).with_name("dialogues.yaml")
 

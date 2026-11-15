@@ -7,7 +7,7 @@ Versions are the ones pinned in `pyproject.toml` (Python) and installed from
 
 | Package | Version | Licence | Used for |
 | --- | --- | --- | --- |
-| anthropic | 1.13.0 | MIT | Anthropic model client (when `WALI_LLM_PROVIDER=anthropic`) |
+| anthropic | 1.13.0 | MIT | Anthropic model client (when `BRIGID_LLM_PROVIDER=anthropic`) |
 | cryptography | 50.0.2 | Apache-2.0 or BSD-3-Clause | Ed25519 signatures on mandates and payment approvals |
 | fastapi | 0.143.0 | MIT | The JSON API behind the web pages |
 | httpx | 0.28.1 | BSD-3-Clause | The OpenAI-compatible model client; FastAPI's test client |
@@ -37,7 +37,7 @@ Development only: tailwindcss and @tailwindcss/postcss 4.3.3 (MIT), postcss 8.5.
 typescript 6.0.3 (Apache-2.0), eslint 9.39.5 and eslint-config-next 16.4.0 (MIT),
 prettier 3.9.10 (MIT), playwright 1.62.1 (Apache-2.0), and the @types packages (MIT).
 
-The Wali logo animation (`frontend/public/brand/wali.lottie`) was supplied by the team.
+The logo animation (`frontend/public/brand/wali.lottie`) was supplied by the team.
 
 ## Services
 
