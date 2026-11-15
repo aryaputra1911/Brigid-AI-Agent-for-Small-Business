@@ -220,7 +220,10 @@ def create_web_app(
             origin = request.headers.get("origin")
             local_origin = origin is None or urlsplit(origin).hostname in hosts
             if content_type != "application/json" or not local_origin:
-                return JSONResponse({"detail": "Refused."}, status_code=403)
+                # An early return skips the header update below, so carry them here.
+                return JSONResponse(
+                    {"detail": "Refused."}, status_code=403, headers=SECURITY_HEADERS
+                )
         response = await call_next(request)
         response.headers.update(SECURITY_HEADERS)
         return response
