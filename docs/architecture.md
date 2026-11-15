@@ -137,4 +137,4 @@ checks on every push; it never calls a model.
 - `docs/assumptions.md`: every decision the specification left open, and why.
 - `docs/demo.md`: the demo script.
 - `docs/third_party.md`: libraries and services used.
-- `docs/audit/`: the code audit of 17 and 18 October and its remaining risks.
+- `docs/archive/audit/`: the code audit of 17 and 18 October and its remaining risks (Wali era, kept as-is).

@@ -44,7 +44,7 @@ The Wali logo animation (`frontend/public/brand/wali.lottie`) was supplied by th
 
 | Service | Used for | Notes |
 | --- | --- | --- |
-| A language model with tool calling | The assistant, and the sentinel's screening check | Configured in `.env`. The published evaluations used OpenAI-compatible endpoints: `deepseek-v4.1-flash` through the SumoPod gateway (`docs/results/`) and `openai/gpt-oss-20b` through NVIDIA NIM (`docs/baseline/`). The Anthropic path is supported and tested without a live model |
+| A language model with tool calling | The assistant, and the sentinel's screening check | Configured in `.env`. The published evaluations used OpenAI-compatible endpoints: `deepseek-v4.1-flash` through the SumoPod gateway (`docs/archive/results/`) and `openai/gpt-oss-20b` through NVIDIA NIM (`docs/baseline/`). The Anthropic path is supported and tested without a live model |
 | GitHub Actions | Tests, lint, and frontend checks on every push and pull request | `.github/workflows/ci.yml`; it never calls a model |
 | Telegram Bot API | The Telegram interface | Optional; needs a bot token from @BotFather |
 

@@ -69,6 +69,6 @@ uv run pytest tests/test_attacks_smoke.py -q
 
 ## Closing
 
-Show the evaluation results (`docs/baseline/README.md` and `docs/results/`), run
+Show the evaluation results (`docs/baseline/README.md` and `docs/archive/results/`), run
 `uv run python -m eval.offline --check` for the model-free baseline, and `uv run pytest -q` for the
 test suite.

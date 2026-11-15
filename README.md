@@ -180,7 +180,7 @@ uv run python -m eval.run_eval --suite all
 | `sentinel` | `eval/sentinel_seeds.yaml` | Teks injeksi dan teks biasa melalui penyaringan |
 
 Hasil evaluasi era Wali (sebelum rebranding) ada di [docs/baseline/](docs/baseline/README.md)
-dan [docs/results/](docs/results/). Jalankan `make eval` lagi sebelum mengutip angka untuk kode
+dan [docs/archive/results/](docs/archive/results/). Jalankan `make eval` lagi sebelum mengutip angka untuk kode
 saat ini.
 
 ## Pengembangan
