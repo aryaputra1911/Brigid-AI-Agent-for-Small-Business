@@ -33,3 +33,32 @@ test("a missing or malformed Host header is refused", () => {
   assert.equal(isLocalRequest(null, null), false);
   assert.equal(isLocalRequest("localhost@evil.example", null), false);
 });
+
+test("configured Vercel or allowed deployment hosts are accepted only for matching origins", () => {
+  const env = {
+    VERCEL_URL: "brigid-preview.vercel.app",
+    VERCEL_PROJECT_PRODUCTION_URL: "brigid-one.vercel.app",
+    BRIGID_ALLOWED_HOSTS: "custom.example.com",
+  };
+  assert.equal(
+    isLocalRequest(
+      "brigid-one.vercel.app",
+      "https://brigid-one.vercel.app",
+      env,
+    ),
+    true,
+  );
+  assert.equal(isLocalRequest("brigid-preview.vercel.app", null, env), true);
+  assert.equal(
+    isLocalRequest("custom.example.com", "https://custom.example.com", env),
+    true,
+  );
+  assert.equal(
+    isLocalRequest("brigid-one.vercel.app", "http://localhost:3000", env),
+    false,
+  );
+  assert.equal(
+    isLocalRequest("brigid-one.vercel.app", "https://evil.example", env),
+    false,
+  );
+});
