@@ -85,13 +85,13 @@
 }
 .paper-finance-state-icon,
 .paper-mandate-icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border: 1px solid var(--hairline-subtle);
-  border-radius: 4px;
-  background: #18232d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: auto;
+  height: auto;
+  border: 0;
+  background: transparent;
   color: var(--ice);
 }
 .paper-finance-state h2 {
@@ -127,8 +127,8 @@
 }
 .paper-finance-state-error .paper-finance-state-icon {
   color: #ffb4a2;
-  background: #2a1518;
-  border-color: rgba(255, 180, 162, 0.35);
+  background: transparent;
+  border: 0;
 }
 .paper-finance-notice {
   padding: 16px 20px;
@@ -435,16 +435,16 @@
   padding-bottom: 0;
 }
 .paper-mandate-step-number {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 24px;
+  height: 24px;
   flex-shrink: 0;
-  border: 1px solid var(--hairline-subtle);
-  border-radius: 4px;
-  background: #18232d;
+  border: 0;
+  background: transparent;
   color: var(--ice);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
