@@ -12,15 +12,16 @@ Status: **Layak dilanjutkan** (dengan temuan yang butuh keputusan pemilik, lihat
 | `ef370ab` | test(landing): update verify-landing suite for rre layout and interactions |
 | `1303498` | fix(chat): prefill composer safely from landing prompt query |
 | `1a249f5` | style(landing): format landing components |
-| `b2d8c8e` | test: fall back to bundled chromium when chrome is absent |
+| `18121fe` | test: fall back to bundled chromium when chrome is absent |
 | `534b1cd` | fix(chat): close the settings dialog when focus leaves without a target |
+| `9911102` | test(sidebar): sample sidebar animation frames inside the page |
 | `ef2d293` | test(finance): mirror real decision statuses in the confirm and draft mocks |
 | `36db608` | test(sidebar): assert the width CSSTransition instead of catching a frame |
 | `0f8a646` | test(chat): run against port 3000 and mock real decision statuses |
 | `96ba719` | style: format the touched workspace and verification files |
 | `c564371` | test(chat-intro): count only keyframe animations as intro replays |
 | `7b97ec4` | test(mobile-composer): import the shared browser launcher |
-| `f850463` | docs(audit): add stage 7 verification report |
+| `82e8fe9` | docs(audit): add stage 7 verification report |
 
 ## 2. Ringkasan Perubahan
 
@@ -116,24 +117,17 @@ Status: **Layak dilanjutkan** (dengan temuan yang butuh keputusan pemilik, lihat
 - `uv run ruff format --check .`: **144 files already formatted**
 - `uv run python -m eval.offline --check`: **Same as the stored baseline.** (exit 0)
 
-## 4. Temuan yang Butuh Keputusan Pemilik
+## 4. Temuan yang Butuh Keputusan Pemilik & Tindak Lanjut Review
 
-1. **`frontend/public/media/brigid-demo.webp` berukuran 36 MB** (animated WebP 600
-   frame, 1280x720) dipakai sebagai poster video latar dan gambar preview di landing.
-   Ini beban unduh besar untuk halaman pertama. Saran: ekstrak satu frame statis
-   (~50-100 KB) sebagai poster dan simpan animated webp untuk penggunaan lain. Tidak
-   diubah diam-diam karena tampilan landing sudah disetujui.
-2. **Komponen landing lama tidak lagi terpakai**: `landing-video.tsx` (menunjuk
-   `brigid-demo.webm` yang tidak ada), `workflow-demo.tsx`, dan `landing-mesh.tsx`
-   tidak diimpor oleh landing baru. Perlu keputusan: hapus atau pertahankan.
-3. **`npm run test:workflow-demo` menguji demo landing lama** yang sudah tidak ada di
-   halaman baru, sehingga suite ini tidak akan pernah hijau lagi (di luar daftar
-   verifikasi Task 4). Perlu keputusan: hapus suite atau tulis ulang untuk landing baru.
+1. ~~**`frontend/public/media/brigid-demo.webp` berukuran 36 MB**~~ — **Diselesaikan pada tindak lanjut review**: diekstrak 1 frame statis `frontend/public/media/brigid-demo-poster.webp` (73 KB) dari `brigid-demo.mp4` untuk `poster` video dan thumbnail preview landing; `brigid-demo.webp` dihapus.
+2. ~~**Komponen landing lama tidak lagi terpakai**~~ — **Diselesaikan pada tindak lanjut review**: `landing-video.tsx`, `workflow-demo.tsx`, dan `landing-mesh.tsx` dihapus.
+3. ~~**`npm run test:workflow-demo` menguji demo landing lama**~~ — **Diselesaikan pada tindak lanjut review**: `frontend/scripts/verify-workflow-demo.cjs` dan script `test:workflow-demo` di `frontend/package.json` dihapus.
 4. **Dokumen frontend** (`README.md`, `DESIGN.md`, `DELIVERY-GATE.md`) masih menyebut
    "Wali" sebagai nama produk secara historis; di luar daftar 14 file Tahap 4.
 5. **Satu flake teramati** pada `test:sidebar` (1 dari 8 run): tunggu `inert` setelah
    resize ke mobile kadang melebihi 30 detik, tetapi selalu lulus dalam probe terisolasi
    (8/8) dan pada run lain. Tidak ada perubahan perilaku yang terlibat; dipantau saja.
+6. **Sinkronisasi `?prompt=` navigasi internal** — **Diselesaikan pada tindak lanjut review**: `WorkspaceProvider` menyinkronkan `draft` ketika parameter `?prompt=` berubah pada navigasi client-side di dalam workspace tanpa menimpa draft saat parameter kosong.
 
 ## 5. Kesimpulan
 
