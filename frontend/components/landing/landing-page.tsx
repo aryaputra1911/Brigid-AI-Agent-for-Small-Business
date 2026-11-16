@@ -233,7 +233,7 @@ export function LandingPage() {
                 >
                   {row.hasPreview ? (
                     <Image
-                      src="/media/brigid-demo.webp"
+                      src="/media/brigid-demo-poster.webp"
                       alt="Brigid workspace preview"
                       width={112}
                       height={68}
@@ -286,7 +286,7 @@ export function LandingPage() {
                 className="rre-footer__cutout-video"
                 width={640}
                 height={260}
-                poster="/media/brigid-demo.webp"
+                poster="/media/brigid-demo-poster.webp"
                 muted
                 loop
                 playsInline

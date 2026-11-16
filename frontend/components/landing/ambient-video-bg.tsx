@@ -6,8 +6,8 @@ import { useMediaQuery } from "@/lib/use-media-query";
 
 /**
  * Full-viewport fixed background video for the RRE-inspired editorial layout.
- * Uses /media/brigid-demo.mp4 (compressed 4K source) with /media/brigid-demo.webp
- * as poster/fallback, plus a dark scrim for WCAG AA text contrast and a
+ * Uses /media/brigid-demo.mp4 with /media/brigid-demo-poster.webp as static
+ * poster/fallback, plus a dark scrim for WCAG AA text contrast and a
  * keyboard-accessible Pause/Play control.
  */
 export function AmbientVideoBg() {
@@ -65,7 +65,7 @@ export function AmbientVideoBg() {
           className="rre-bg-video"
           width={1920}
           height={1080}
-          poster="/media/brigid-demo.webp"
+          poster="/media/brigid-demo-poster.webp"
           muted
           loop
           playsInline
