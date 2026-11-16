@@ -79,13 +79,13 @@ async function main() {
       await page
         .locator(".paper-nav-active")
         .evaluate((el) => getComputedStyle(el).backgroundColor),
-      "rgb(236, 220, 239)",
+      "rgb(211, 231, 241)",
     );
     assert.equal(
       await page
         .locator(".paper-nav-active")
         .evaluate((el) => getComputedStyle(el).color),
-      "rgb(99, 34, 104)",
+      "rgb(7, 2, 10)",
     );
     await page.screenshot({ path: path.join(output, "sidebar-collapsed.png") });
     const expand = await sidebarWidthTransition(page);
