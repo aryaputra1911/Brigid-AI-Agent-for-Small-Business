@@ -117,16 +117,23 @@ def create_web_app(
             raise HTTPException(404, f"No {role} in this business.")
         return found
 
+    def presented_tokens(request: Request) -> list[str]:
+        """Every session token the request presents: the Bearer header first, then the cookie."""
+        auth = request.headers.get("authorization", "")
+        tokens = [auth[7:].strip()] if auth[:7].lower() == "bearer " else []
+        cookie = request.cookies.get(SESSION_COOKIE)
+        if cookie:
+            tokens.append(cookie)
+        return [token for token in tokens if token]
+
     def session_of(request: Request) -> tuple[str, Principal] | None:
         """The session for a request, from the Bearer header or the session cookie."""
-        auth = request.headers.get("authorization", "")
-        token = auth[7:].strip() if auth[:7].lower() == "bearer " else None
-        token = token or request.cookies.get(SESSION_COOKIE)
-        if token is None:
-            return None
-        with session_lock:
-            found = sessions.get(token)
-        return (token, found) if found is not None else None
+        for token in presented_tokens(request):
+            with session_lock:
+                found = sessions.get(token)
+            if found is not None:
+                return token, found
+        return None
 
     def signed_in(request: Request) -> Principal:
         found = session_of(request)
@@ -208,11 +215,15 @@ def create_web_app(
         # The Origin is checked against the configured hosts, not against the Host header,
         # which the caller chooses.
         if request.method not in ("GET", "HEAD"):
-            content_type = request.headers.get("content-type", "").split(";")[0].strip()
+            # Media types are case-insensitive (RFC 9110), so compare lowercased.
+            content_type = request.headers.get("content-type", "").split(";")[0].strip().lower()
             origin = request.headers.get("origin")
             local_origin = origin is None or urlsplit(origin).hostname in hosts
             if content_type != "application/json" or not local_origin:
-                return JSONResponse({"detail": "Refused."}, status_code=403)
+                # An early return skips the header update below, so carry them here.
+                return JSONResponse(
+                    {"detail": "Refused."}, status_code=403, headers=SECURITY_HEADERS
+                )
         response = await call_next(request)
         response.headers.update(SECURITY_HEADERS)
         return response
@@ -230,7 +241,7 @@ def create_web_app(
         }
 
     @api.post("/api/login")
-    def login(body: LoginBody, response: Response) -> dict:
+    def login(body: LoginBody, request: Request, response: Response) -> dict:
         email = body.email.strip().lower()
         account = next((a for a in DEMO_ACCOUNTS if a.email == email), None)
         if account is None or not hmac.compare_digest(
@@ -240,19 +251,23 @@ def create_web_app(
         found = principals.get(account.role)
         if found is None:
             raise HTTPException(401, "Invalid email or password.")
-        token = secrets.token_urlsafe(32)
+        # A fresh sign-in retires the session the request presented, so a re-login leaves
+        # no stale token behind.
         with session_lock:
+            for token in presented_tokens(request):
+                sessions.pop(token, None)
+            token = secrets.token_urlsafe(32)
             sessions[token] = found
         response.set_cookie(SESSION_COOKIE, token, httponly=True, samesite="lax", path="/")
         return {"token": token, "user": user_view(found)}
 
     @api.post("/api/logout")
     def logout(request: Request, response: Response) -> dict:
-        # The CSRF middleware still applies: callers must send a JSON content type.
-        found = session_of(request)
-        if found is not None:
-            with session_lock:
-                sessions.pop(found[0], None)
+        # The CSRF middleware still applies: callers must send a JSON content type. The
+        # request may carry a session twice, as a Bearer token and as the cookie.
+        with session_lock:
+            for token in presented_tokens(request):
+                sessions.pop(token, None)
         response.delete_cookie(SESSION_COOKIE, path="/")
         return {"status": "logged_out"}
 

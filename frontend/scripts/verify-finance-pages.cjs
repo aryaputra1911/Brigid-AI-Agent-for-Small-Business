@@ -1,4 +1,4 @@
-const { chromium } = require("playwright");
+const { launchBrowser } = require("./browser.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -44,7 +44,7 @@ async function main() {
   const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser();
   try {
     const page = await browser.newPage({
       reducedMotion: "reduce",
@@ -142,7 +142,11 @@ async function main() {
           );
         body = failDecision
           ? { detail: "Test decision unavailable" }
-          : { status: "complete", message: "Test decision recorded." };
+          : {
+              // Mirror the real API: confirm answers "executed", cancel "declined".
+              status: action === "confirm" ? "executed" : "declined",
+              message: "Test decision recorded.",
+            };
       } else if (action === "mandate") {
         if (releaseDraft)
           await new Promise((resolve) => {
@@ -152,7 +156,11 @@ async function main() {
         if (!failMandate) requests = [structuredClone(fixtures[1])];
         body = failMandate
           ? { detail: "Test drafting unavailable" }
-          : { status: "pending", message: "Test mandate ready for review." };
+          : {
+              // The backend answers a successful draft with "needs_confirmation".
+              status: "needs_confirmation",
+              message: "Test mandate ready for review.",
+            };
       } else throw new Error(`Unexpected action: ${action}`);
       await route.fulfill({ status, json: body });
     });

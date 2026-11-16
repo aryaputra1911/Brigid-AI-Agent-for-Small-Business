@@ -1,4 +1,4 @@
-const { chromium } = require("playwright");
+const { launchBrowser } = require("./browser.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
@@ -7,7 +7,7 @@ async function main() {
   const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser();
   const results = [];
   try {
     for (const reducedMotion of ["no-preference", "reduce"]) {
@@ -44,7 +44,7 @@ async function main() {
       });
       await page.goto(`${origin}/chat`);
       await page.locator(".paper-welcome").waitFor();
-      const input = page.getByRole("textbox", { name: "Message Wali" });
+      const input = page.getByRole("textbox", { name: "Message Brigid" });
       const waiting = page.locator('.paper-message[role="status"]');
       const request = nextChat();
       await input.fill("Review invoices");

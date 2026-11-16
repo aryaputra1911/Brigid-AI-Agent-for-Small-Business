@@ -1,0 +1,622 @@
+{
+  "title": "RRE: Early-Stage Venture Capital Partner",
+  "scrollHeight": 4842,
+  "htmlClasses": " w-mod-js w-mod-ix",
+  "bodyClasses": "",
+  "bodyStyles": {
+    "bg": "rgb(7, 2, 10)",
+    "color": "rgb(255, 255, 255)",
+    "fontFamily": "\"RRE Monument Grotesk Trial\", Arial, sans-serif",
+    "fontSize": "20px",
+    "lineHeight": "28px"
+  },
+  "fontLinks": [
+    "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/css/rre-staging.webflow.shared.2cd079dfd.min.css",
+    "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/css/rre-staging.webflow.68dd8df9be996d3bc9c73df8.3236bffea.opt.min.css",
+    "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+  ],
+  "fonts": [
+    "sans-serif",
+    "\"RRE Monument Grotesk Trial\", Arial, sans-serif",
+    "webflow-icons"
+  ],
+  "videos": [],
+  "imageCount": 32,
+  "images": [
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68ded34ab25461868d25b067_nav-bar.svg",
+      "alt": "",
+      "naturalWidth": 58,
+      "naturalHeight": 24,
+      "rect": {
+        "x": 80,
+        "y": 52,
+        "width": 58,
+        "height": 24,
+        "top": 52,
+        "right": 138,
+        "bottom": 76,
+        "left": 80
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/img/placeholder-thumb.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/69333fded4bbd2edcbc5ecc6_Screenshot%202025-12-05%20at%203.26.04%E2%80%AFPM.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 811.84375,
+        "y": 2887.734375,
+        "width": 234,
+        "height": 0,
+        "top": 2887.734375,
+        "right": 1045.84375,
+        "bottom": 2887.734375,
+        "left": 811.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 928.84375,
+        "y": 2885.734375,
+        "width": 0,
+        "height": 0,
+        "top": 2885.734375,
+        "right": 928.84375,
+        "bottom": 2885.734375,
+        "left": 928.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/69334266443f3946ddf2ce53_Screenshot%202025-12-05%20at%203.35.20%E2%80%AFPM.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 811.84375,
+        "y": 2810.953125,
+        "width": 234,
+        "height": 0,
+        "top": 2810.953125,
+        "right": 1045.84375,
+        "bottom": 2810.953125,
+        "left": 811.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 928.84375,
+        "y": 2808.953125,
+        "width": 0,
+        "height": 0,
+        "top": 2808.953125,
+        "right": 928.84375,
+        "bottom": 2808.953125,
+        "left": 928.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/6932f9bc20d0bcc515dce306_Screenshot%202025-12-05%20at%2010.26.47%E2%80%AFAM.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 811.84375,
+        "y": 2772.5625,
+        "width": 234,
+        "height": 0,
+        "top": 2772.5625,
+        "right": 1045.84375,
+        "bottom": 2772.5625,
+        "left": 811.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 928.84375,
+        "y": 2770.5625,
+        "width": 0,
+        "height": 0,
+        "top": 2770.5625,
+        "right": 928.84375,
+        "bottom": 2770.5625,
+        "left": 928.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/img/placeholder-thumb.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/69334244fd18d0fa3e7f7d9c_Screenshot%202025-12-05%20at%203.36.10%E2%80%AFPM.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 811.84375,
+        "y": 2926.125,
+        "width": 234,
+        "height": 0,
+        "top": 2926.125,
+        "right": 1045.84375,
+        "bottom": 2926.125,
+        "left": 811.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 928.84375,
+        "y": 2924.125,
+        "width": 0,
+        "height": 0,
+        "top": 2924.125,
+        "right": 928.84375,
+        "bottom": 2924.125,
+        "left": 928.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/693341a4ab1fe95dcfdff12d_vic%20and%20mok.webp",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 811.84375,
+        "y": 3002.90625,
+        "width": 234,
+        "height": 0,
+        "top": 3002.90625,
+        "right": 1045.84375,
+        "bottom": 3002.90625,
+        "left": 811.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 928.84375,
+        "y": 3000.90625,
+        "width": 0,
+        "height": 0,
+        "top": 3000.90625,
+        "right": 928.84375,
+        "bottom": 3000.90625,
+        "left": 928.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/693344c1c0973e5abf9ebce7_Screenshot%202025-12-05%20at%203.46.54%E2%80%AFPM.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 811.84375,
+        "y": 2810.953125,
+        "width": 234,
+        "height": 0,
+        "top": 2810.953125,
+        "right": 1045.84375,
+        "bottom": 2810.953125,
+        "left": 811.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 928.84375,
+        "y": 2808.953125,
+        "width": 0,
+        "height": 0,
+        "top": 2808.953125,
+        "right": 928.84375,
+        "bottom": 2808.953125,
+        "left": 928.84375
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/img/placeholder-thumb.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/img/placeholder-thumb.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/img/placeholder-thumb.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/img/placeholder-thumb.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68dd8df8be996d3bc9c73d27/68df203b70a28d4dda57a36b_play.svg",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "top": 0,
+        "right": 0,
+        "bottom": 0,
+        "left": 0
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/6af491241400c01615d59583_Screenshot%202026-11-11%20at%2011.00.26%E2%80%AFAM.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 171.421875,
+        "y": 3262.90625,
+        "width": 91.421875,
+        "height": 91.421875,
+        "top": 3262.90625,
+        "right": 262.84375,
+        "bottom": 3354.328125,
+        "left": 171.421875
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/69723e8cb39bc826af9e4702_RRE-POV-4.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 171.421875,
+        "y": 3354.328125,
+        "width": 91.421875,
+        "height": 91.421875,
+        "top": 3354.328125,
+        "right": 262.84375,
+        "bottom": 3445.75,
+        "left": 171.421875
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/6ace5e75ec5cf9e1f97cdfcf_deutsche_bank_farsight_announcement_square%20(1).png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 171.421875,
+        "y": 3445.75,
+        "width": 91.421875,
+        "height": 91.421875,
+        "top": 3445.75,
+        "right": 262.84375,
+        "bottom": 3537.171875,
+        "left": 171.421875
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/69723e8cb39bc826af9e4702_RRE-POV-4.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 171.421875,
+        "y": 3537.171875,
+        "width": 91.421875,
+        "height": 91.421875,
+        "top": 3537.171875,
+        "right": 262.84375,
+        "bottom": 3628.59375,
+        "left": 171.421875
+      }
+    },
+    {
+      "src": "https://cdn.prod.website-files.com/68ded319c10201f09110493e/6ab542358ef18a6fdcf9bdb5_Screenshot%202026-09-24%20at%2011.30.52%E2%80%AFAM.png",
+      "alt": "",
+      "naturalWidth": 0,
+      "naturalHeight": 0,
+      "rect": {
+        "x": 171.421875,
+        "y": 3628.59375,
+        "width": 91.421875,
+        "height": 91.421875,
+        "top": 3628.59375,
+        "right": 262.84375,
+        "bottom": 3720.015625,
+        "left": 171.421875
+      }
+    }
+  ],
+  "svgCount": 23,
+  "sections": [
+    {
+      "index": 0,
+      "tag": "section",
+      "id": null,
+      "classes": "section_home-hero",
+      "rect": {
+        "top": 124,
+        "height": 620,
+        "width": 1440
+      },
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "position": "relative",
+      "zIndex": "auto",
+      "textPreview": "Backing the best for the distanceFounding a world-changing company is a marathon, not a sprint — and raising capital is just the starting gun. What matters most"
+    },
+    {
+      "index": 1,
+      "tag": "section",
+      "id": null,
+      "classes": "section_home",
+      "rect": {
+        "top": 744,
+        "height": 707,
+        "width": 1440
+      },
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "position": "static",
+      "zIndex": "auto",
+      "textPreview": "The confidence to commit earlyWe combine 30 years of experience and deep AI analysis to identify the rare early-stage founders with a vision and the guts to see"
+    },
+    {
+      "index": 2,
+      "tag": "section",
+      "id": null,
+      "classes": "section_home",
+      "rect": {
+        "top": 1451,
+        "height": 345,
+        "width": 1440
+      },
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "position": "static",
+      "zIndex": "auto",
+      "textPreview": "Investment areasWe back bold companies across sectors. What unites them isn’t industry — it’s a clear thesis for technological transformation, and founders we b"
+    },
+    {
+      "index": 3,
+      "tag": "section",
+      "id": null,
+      "classes": "section_home",
+      "rect": {
+        "top": 1796,
+        "height": 493,
+        "width": 1440
+      },
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "position": "static",
+      "zIndex": "auto",
+      "textPreview": "Our difference? Depth.At RRE, success isn’t an accident — it’s a recipe we’ve spent decades perfecting. Here, deeper experience, relationships, and commitment c"
+    },
+    {
+      "index": 4,
+      "tag": "section",
+      "id": null,
+      "classes": "section_home",
+      "rect": {
+        "top": 2289,
+        "height": 758,
+        "width": 1440
+      },
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "position": "static",
+      "zIndex": "auto",
+      "textPreview": "\"RRE was always going to be a core part of our round in the Seed and Series A as well. It was never a question. It’s a relationship that you really can’t replic"
+    },
+    {
+      "index": 5,
+      "tag": "section",
+      "id": null,
+      "classes": "section_home background-color-primary",
+      "rect": {
+        "top": 3047,
+        "height": 857,
+        "width": 1440
+      },
+      "bg": "rgb(7, 2, 10)",
+      "color": "rgb(7, 2, 10)",
+      "position": "static",
+      "zIndex": "auto",
+      "textPreview": "Latest from RREGraphon Announces $35M Series A led by RRE VenturesNewsThe AI Model Wars: Why One Winner Won’t Take AllPodcastDeutsche Bank Deploys Farsight On-P"
+    },
+    {
+      "index": 6,
+      "tag": "footer",
+      "id": "section_footer",
+      "classes": "section_footer",
+      "rect": {
+        "top": 3904,
+        "height": 938,
+        "width": 1440
+      },
+      "bg": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "position": "relative",
+      "zIndex": "auto",
+      "textPreview": "HomePortfolioTeamrre povBlogXLinkedInJobsSubscribe to receive news and updatessubscribeThank You! We shall keep you posted with our latest updates and news!Oops"
+    }
+  ]
+}

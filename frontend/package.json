@@ -9,10 +9,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format:check": "prettier --check app components lib",
-    "test:unit": "node --test lib/decision-tone.test.ts lib/local-request.test.ts lib/next-config.test.ts",
+    "test:unit": "node --test lib/decision-tone.test.ts lib/local-request.test.ts lib/next-config.test.ts lib/brigid-api.test.ts",
     "test:ui": "node scripts/verify-chat.cjs",
     "test:landing": "node scripts/verify-landing.cjs",
-    "test:workflow-demo": "node scripts/verify-workflow-demo.cjs",
     "test:loading": "node scripts/verify-loading.cjs",
     "test:sidebar": "node scripts/verify-sidebar.cjs",
     "test:finance": "node scripts/verify-finance-pages.cjs",
@@ -21,6 +20,7 @@
     "test:background": "node scripts/verify-chat-background.cjs",
     "test:prompt-mesh": "node scripts/verify-prompt-mesh.cjs",
     "test:chat-intro": "node scripts/verify-chat-intro.cjs",
+    "test:prefill": "node scripts/verify-chat-prefill.cjs",
     "test:message-motion": "node scripts/verify-message-motion.cjs"
   },
   "dependencies": {

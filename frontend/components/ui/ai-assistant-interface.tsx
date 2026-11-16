@@ -324,14 +324,14 @@ export function AIAssistantInterface() {
         )}
         {!infoError && !info && (
           <div className="paper-chat-state state-panel" role="status">
-            <h1 id="chat-title">Connecting to Wali</h1>
+            <h1 id="chat-title">Connecting to Brigid</h1>
             <p>Loading roles and approval requests.</p>
           </div>
         )}
         {info && !infoError && messages.length === 0 && (
           <div className="paper-welcome">
             <h1 id="chat-title">
-              <span data-chat-intro="greeting">{"Hello, i'm Wali"}</span>
+              <span data-chat-intro="greeting">{"Hello, i'm Brigid"}</span>
               <span data-chat-intro="question">How can I help you today?</span>
             </h1>
             <div className="paper-prompts" aria-label="Suggested prompts">
@@ -353,7 +353,7 @@ export function AIAssistantInterface() {
         {messages.length > 0 && (
           <div className="paper-conversation">
             <h1 id="chat-title" className="sr-only">
-              Conversation with Wali
+              Conversation with Brigid
             </h1>
             <ol className="paper-messages" aria-label="Conversation messages">
               {messages.map((message) =>
@@ -411,7 +411,7 @@ export function AIAssistantInterface() {
           onSubmit={submit}
         >
           <label className="sr-only" htmlFor="message-input">
-            Message Wali
+            Message Brigid
           </label>
           <textarea
             id="message-input"
@@ -421,7 +421,7 @@ export function AIAssistantInterface() {
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={onComposerKeyDown}
             maxLength={4000}
-            placeholder="Ask Wali about your business"
+            placeholder="Ask Brigid about your business"
             aria-describedby="composer-instructions"
             disabled={!role || busy}
           />
@@ -449,7 +449,7 @@ export function AIAssistantInterface() {
           className="paper-disclaimer my-4 opacity-50"
           data-chat-intro="caption"
         >
-          Wali can make mistakes. Check its answers. Local simulation only.
+          Brigid can make mistakes. Check its answers. Local simulation only.
           Attachments, tools & voice: Coming soon
         </p>
         <div

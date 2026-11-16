@@ -1,10 +1,10 @@
-const { chromium } = require("playwright");
+const { launchBrowser } = require("./browser.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
 async function main() {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser();
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
   try {
@@ -58,7 +58,7 @@ async function main() {
         `${process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000"}/chat`,
         { waitUntil: "domcontentloaded" },
       );
-      await page.getByRole("heading", { name: "Connecting to Wali" }).waitFor();
+      await page.getByRole("heading", { name: "Connecting to Brigid" }).waitFor();
       releaseInfo();
       await page.locator(".paper-welcome").waitFor();
       if (!reduced) {
@@ -99,8 +99,15 @@ async function main() {
           .evaluateAll(
             (els) =>
               els
-                .flatMap((el) => el.getAnimations())
-                .filter((animation) => animation.playState === "running")
+                .flatMap((el) => el.getAnimations({ subtree: true }))
+                // Count keyframe animations only: enabling the send button also
+                // runs a background-color transition inside the composer, and
+                // that is a state change, not an intro replay.
+                .filter(
+                  (animation) =>
+                    animation instanceof CSSAnimation &&
+                    animation.playState === "running",
+                )
                 .length,
           );
       assert.equal(await running(), 0);

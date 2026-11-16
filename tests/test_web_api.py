@@ -86,6 +86,32 @@ def test_me_accepts_a_cookie_or_a_bearer_token_and_refuses_anonymous(world):
     assert anonymous.status_code == 401
 
 
+def test_logging_in_again_retires_the_previous_session(world):
+    client, _ = client_for(world)
+    first = login(client, "owner").json()["token"]
+    # The cookie carries the first session, so the re-login must retire it.
+    second = login(client, "owner").json()["token"]
+    other = TestClient(client.app, base_url=LOCAL)
+
+    assert second != first
+    assert other.get("/api/me", headers=bearer(first)).status_code == 401
+    assert other.get("/api/me", headers=bearer(second)).status_code == 200
+
+
+def test_logout_clears_a_session_sent_as_bearer_and_cookie(world):
+    client, _ = client_for(world)
+    login(client, "owner")
+    other = TestClient(client.app, base_url=LOCAL)
+    bearer_token = login(other, "owner").json()["token"]
+
+    logged_out = client.post("/api/logout", json={}, headers=bearer(bearer_token))
+
+    assert logged_out.json() == {"status": "logged_out"}
+    assert other.get("/api/me", headers=bearer(bearer_token)).status_code == 401
+    assert client.get("/api/me").status_code == 401
+    assert client.cookies.get("brigid_session") is None
+
+
 def test_logout_ends_the_session(world):
     client, _ = client_for(world)
     login(client, "owner")
@@ -95,6 +121,53 @@ def test_logout_ends_the_session(world):
 
     assert logged_out.json() == {"status": "logged_out"}
     assert client.get("/api/me").status_code == 401
+
+
+def test_the_csrf_guard_covers_login_and_logout(world):
+    client, _ = client_for(world)
+
+    as_form = client.post(
+        "/api/login",
+        content='{"email": "owner@brigid.demo", "password": "brigid123"}',
+        headers={"Content-Type": "text/plain"},
+    )
+    foreign_origin = client.post(
+        "/api/login",
+        json={"email": EMAILS["owner"], "password": PASSWORD},
+        headers={"Origin": "https://evil.example"},
+    )
+    logout_as_text = client.post(
+        "/api/logout", content="{}", headers={"Content-Type": "text/plain"}
+    )
+    logout_foreign = client.post("/api/logout", json={}, headers={"Origin": "https://evil.example"})
+
+    assert as_form.status_code == foreign_origin.status_code == 403
+    assert logout_as_text.status_code == logout_foreign.status_code == 403
+    # The refusal skips the normal response path, so it must carry the headers itself.
+    for response in (as_form, foreign_origin, logout_as_text, logout_foreign):
+        assert response.headers["x-content-type-options"] == "nosniff"
+        assert response.headers["cache-control"] == "no-store"
+
+
+def test_an_origin_of_null_is_refused_on_mutation_requests(world):
+    client, _ = client_for(world)
+
+    from_null = client.post(
+        "/api/login",
+        json={"email": EMAILS["owner"], "password": PASSWORD},
+        headers={"Origin": "null"},
+    )
+
+    assert from_null.status_code == 403
+
+
+def test_login_accepts_an_email_with_surrounding_spaces_and_any_letter_case(world):
+    client, _ = client_for(world)
+
+    reply = login(client, email="  OWNER@BRIGID.DEMO  ")
+
+    assert reply.status_code == 200
+    assert reply.json()["user"]["role"] == "owner"
 
 
 # --- Older endpoints with a session -------------------------------------------------------------
@@ -121,6 +194,28 @@ def test_a_role_that_disagrees_with_the_session_is_refused(world):
     refused_chat = client.post("/api/chat", json={"role": "staff", "text": "halo"})
 
     assert refused_pending.status_code == refused_chat.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "path, body",
+    [
+        ("/api/confirm", {"role": "bookkeeper", "subject_id": "any"}),
+        ("/api/cancel", {"role": "bookkeeper", "subject_id": "any"}),
+        ("/api/mandate", {"role": "bookkeeper"}),
+        ("/api/reset", {"role": "bookkeeper"}),
+    ],
+)
+def test_a_body_role_that_disagrees_with_the_session_is_refused_before_anything_runs(
+    world, path, body
+):
+    client, _ = client_for(world)
+    login(client, "owner")
+
+    refused = client.post(path, json=body)
+
+    assert refused.status_code == 403
+    # The session mismatch refuses it, not the endpoint's own role check.
+    assert refused.json()["detail"] == "That role does not match your session."
 
 
 def test_an_older_endpoint_without_a_session_or_a_role_is_refused(world):
@@ -266,6 +361,19 @@ def test_a_receivable_detail_has_no_supplier_and_an_unknown_id_is_not_found(worl
 
     assert detail["supplier"] is None
     assert client.get("/api/invoices/no-such-invoice").status_code == 404
+
+
+def test_the_flagged_invoice_detail_is_marked_for_review(world):
+    client, _ = client_for(world)
+    login(client, "owner")
+
+    body = client.get("/api/invoices/inv-0094").json()
+
+    assert body["invoice"]["needs_review"] is True
+    assert body["invoice"]["document_text"]
+    assert body["invoice"]["stated_account"] == "•••• 0111"
+    assert body["supplier"]["id"] == "sup-gula"
+    assert body["supplier"]["verified_account"].startswith("••••")
 
 
 def test_a_payable_whose_supplier_is_unknown_still_returns_the_invoice(world, owner):

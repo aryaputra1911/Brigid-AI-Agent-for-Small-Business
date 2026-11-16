@@ -191,6 +191,19 @@ def test_another_website_cannot_drive_the_api(ready, large):
     assert same_site.json()["status"] == "executed"
 
 
+def test_a_json_media_type_in_any_letter_case_is_accepted(world):
+    client, _ = client_for(world, say("Halo."))
+
+    reply = client.post(
+        "/api/chat",
+        content='{"role": "owner", "text": "halo"}',
+        headers={"Content-Type": "Application/JSON; charset=utf-8"},
+    )
+
+    assert reply.status_code == 200
+    assert reply.json()["reply"] == "Halo."
+
+
 def test_a_website_that_rebinds_its_name_to_this_computer_is_refused(ready, large):
     client, _, reply = propose(ready, large)
     subject = reply.json()["new_requests"][0]["subject_id"]

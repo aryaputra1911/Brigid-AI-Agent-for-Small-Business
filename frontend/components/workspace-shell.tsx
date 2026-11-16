@@ -343,7 +343,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           <div className="paper-product">
             <Link href="/chat">
               <BrigidLogo className="paper-brand-logo" decorative />
-              <span>Wali</span>
+              <span>Brigid</span>
             </Link>
             <span className="paper-simulation">Simulation</span>
             <button
@@ -393,17 +393,29 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                 }}
                 onBlur={(event) => {
                   if (
-                    event.relatedTarget &&
-                    !event.currentTarget.contains(event.relatedTarget) &&
-                    event.relatedTarget !== avatarRef.current
+                    event.relatedTarget === avatarRef.current ||
+                    (event.relatedTarget &&
+                      event.currentTarget.contains(event.relatedTarget))
                   )
-                    closeSettings(false);
+                    return;
+                  // Opening from the drawer unmounts the focused button and can drop
+                  // focus on body mid-handoff, so decide on the next frame whether
+                  // focus really left the dialog (Tab past its last focusable must
+                  // still close it).
+                  requestAnimationFrame(() => {
+                    if (
+                      !settingsRef.current?.contains(document.activeElement)
+                    ) {
+                      setSettingsOpen(false);
+                      settingsTriggerRef.current = null;
+                    }
+                  });
                 }}
               >
                 <div className="paper-settings-heading">
                   <div>
                     <h2 id="settings-title">Settings and help</h2>
-                    <p>Wali workspace</p>
+                    <p>Brigid workspace</p>
                   </div>
                   <button
                     className="paper-icon-button"
@@ -447,9 +459,9 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                 </section>
                 <section
                   className="paper-settings-help"
-                  aria-labelledby="wali-help-title"
+                  aria-labelledby="brigid-help-title"
                 >
-                  <h3 id="wali-help-title">Using Wali</h3>
+                  <h3 id="brigid-help-title">Using Brigid</h3>
                   <p>
                     Ask about transactions, cash flow, or invoices. Review
                     requests in Approvals before confirming. New chat resets

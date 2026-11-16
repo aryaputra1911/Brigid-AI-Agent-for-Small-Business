@@ -1,13 +1,38 @@
-const { chromium } = require("playwright");
+const { launchBrowser } = require("./browser.cjs");
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+
+// Click the toggle and read the width CSSTransition the click creates. The
+// transition object lives for its whole 240 ms regardless of how many frames the
+// browser paints, so this stays deterministic while still failing on a snap.
+async function sidebarWidthTransition(page) {
+  await page.evaluate(() =>
+    document.querySelector('[aria-label="Toggle sidebar"]').click(),
+  );
+  return page.evaluate(() => {
+    const transition = document
+      .querySelector(".paper-sidebar")
+      .getAnimations()
+      .find(
+        (animation) =>
+          animation instanceof CSSTransition &&
+          animation.transitionProperty === "width",
+      );
+    if (!transition) return null;
+    const keyframes = transition.effect.getKeyframes();
+    return {
+      from: keyframes[0].width,
+      to: keyframes[keyframes.length - 1].width,
+    };
+  });
+}
 
 async function main() {
   const origin = process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000";
   const output = path.resolve(__dirname, "../test-results");
   await fs.mkdir(output, { recursive: true });
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser();
   try {
     const page = await browser.newPage({
       viewport: { width: 1864, height: 836 },
@@ -30,13 +55,8 @@ async function main() {
     await page.locator(".paper-welcome").waitFor();
     const sidebar = page.locator(".paper-sidebar");
     const toggle = page.getByRole("button", { name: "Toggle sidebar" });
-    await toggle.click();
-    await page.waitForFunction(() => {
-      const width = document
-        .querySelector(".paper-sidebar")
-        .getBoundingClientRect().width;
-      return width > 64 && width < 280;
-    });
+    const collapse = await sidebarWidthTransition(page);
+    assert.deepEqual(collapse, { from: "280px", to: "64px" });
     await page.waitForFunction(
       () => document.querySelector(".paper-sidebar").offsetWidth === 64,
     );
@@ -68,13 +88,8 @@ async function main() {
       "rgb(99, 34, 104)",
     );
     await page.screenshot({ path: path.join(output, "sidebar-collapsed.png") });
-    await toggle.click();
-    await page.waitForFunction(() => {
-      const width = document
-        .querySelector(".paper-sidebar")
-        .getBoundingClientRect().width;
-      return width > 64 && width < 280;
-    });
+    const expand = await sidebarWidthTransition(page);
+    assert.deepEqual(expand, { from: "64px", to: "280px" });
     await page.waitForFunction(
       () => document.querySelector(".paper-sidebar").offsetWidth === 280,
     );

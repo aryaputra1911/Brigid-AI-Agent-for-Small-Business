@@ -38,7 +38,7 @@ export function FinanceHeading({
               Acting as <strong>{role}</strong>
             </>
           ) : (
-            "Connecting to Wali"
+            "Connecting to Brigid"
           )}
         </span>
         {children}
