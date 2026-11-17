@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource/poppins/latin-500.css";
 import "@fontsource/poppins/latin-600.css";
+import { PwaRegister } from "@/components/pwa-register";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -8,12 +9,19 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   interactiveWidget: "resizes-content",
+  themeColor: "#07020a",
 };
 
 export const metadata: Metadata = {
   title: "Brigid | AI finance agent for small business",
   description:
     "A local simulation workspace for financial conversations and approvals.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Brigid",
+    statusBarStyle: "black-translucent",
+  },
   icons: {
     icon: [
       { url: "/brand/brigid.svg", type: "image/svg+xml" },
@@ -30,7 +38,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <PwaRegister />
+        {children}
+      </body>
     </html>
   );
 }

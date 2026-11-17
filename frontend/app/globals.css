@@ -22,9 +22,9 @@ html {
 
 body {
   margin: 0;
-  color: var(--ink);
-  background: #fff;
-  font-family: Arial, sans-serif;
+  color: #ffffff;
+  background: #07020a;
+  font-family: "Outfit", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 

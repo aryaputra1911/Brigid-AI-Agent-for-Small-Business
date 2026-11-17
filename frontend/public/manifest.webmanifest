@@ -1,0 +1,30 @@
+{
+  "name": "Brigid",
+  "short_name": "Brigid",
+  "description": "AI finance agent for small business",
+  "start_url": "/chat",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#07020a",
+  "theme_color": "#07020a",
+  "icons": [
+    {
+      "src": "/brand/brigid-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/brigid-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/brigid-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
