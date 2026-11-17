@@ -66,7 +66,6 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
       if (!viewport || Math.abs(viewport.scale - 1) < 0.01) {
         const heights = [
           window.innerHeight,
-          document.documentElement.clientHeight,
           viewport?.height ?? window.innerHeight,
         ].filter((height) => height > 0);
         const minHeight = Math.min(...heights);
