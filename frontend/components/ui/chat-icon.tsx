@@ -19,6 +19,9 @@ const paths = {
   down: "M17 14V4h3v10h-3zm0 0l-4 7c-1.5 0-2.5-1-2.2-2.6L11.4 15H5a2 2 0 0 1-2-2.4l1.4-7A2 2 0 0 1 6.4 4H17",
   refresh: "M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5",
   copy: "M5 15V6a2 2 0 0 1 2-2h8",
+  user: "M20 21a8 8 0 0 0-16 0",
+  chevronLeft: "M15 6l-6 6 6 6",
+  chevronRight: "M9 6l6 6-6 6",
 } as const;
 
 export type ChatIconName = keyof typeof paths;
@@ -43,6 +46,7 @@ export function ChatIcon({ name }: { name: ChatIconName }) {
       )}
       {name === "mic" && <rect x="9" y="3" width="6" height="11" rx="3" />}
       {name === "copy" && <rect x="9" y="9" width="11" height="11" rx="2" />}
+      {name === "user" && <circle cx="12" cy="8" r="4" />}
       {name === "tools" && (
         <>
           <circle cx="16" cy="7" r="2" />

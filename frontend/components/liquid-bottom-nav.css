@@ -1,0 +1,173 @@
+.brigid-bnav-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 35;
+  display: flex;
+  justify-content: center;
+  padding: 0 12px;
+  pointer-events: none;
+}
+
+@media (min-width: 761px) {
+  .brigid-bnav-wrap {
+    display: none;
+  }
+}
+
+.brigid-bnav {
+  position: relative;
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  max-width: 420px;
+  padding: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.04) 48%,
+      rgba(211, 231, 241, 0.08) 100%
+    ),
+    rgba(14, 10, 18, 0.54);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -1px 0 rgba(211, 231, 241, 0.14),
+    0 14px 34px rgba(0, 0, 0, 0.48);
+  touch-action: pan-y;
+  user-select: none;
+  will-change: transform, opacity;
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms ease;
+}
+
+.brigid-bnav.is-dragging {
+  transition: none;
+}
+
+.brigid-bnav.is-hidden-left {
+  transform: translateX(calc(-100% - 32px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.brigid-bnav.is-hidden-right {
+  transform: translateX(calc(100% + 32px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.brigid-bnav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 46px;
+  padding: 6px 4px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+.brigid-bnav-item span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brigid-bnav-item.is-active {
+  color: #ffffff;
+  background: rgba(211, 231, 241, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 2px 10px rgba(0, 0, 0, 0.22);
+}
+
+.brigid-bnav-item:focus-visible,
+.brigid-bnav-handle:focus-visible {
+  outline: 2px solid #d3e7f1;
+  outline-offset: 2px;
+}
+
+.brigid-bnav-badge {
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #d3e7f1;
+  color: #07020a;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.brigid-bnav-handle {
+  position: fixed;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 36;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 48px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.05) 55%,
+      rgba(211, 231, 241, 0.1) 100%
+    ),
+    rgba(14, 10, 18, 0.62);
+  backdrop-filter: blur(22px) saturate(185%);
+  -webkit-backdrop-filter: blur(22px) saturate(185%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 10px 24px rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  touch-action: pan-y;
+  cursor: pointer;
+}
+
+.brigid-bnav-handle.is-left {
+  left: 10px;
+}
+
+.brigid-bnav-handle.is-right {
+  right: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brigid-bnav,
+  .brigid-bnav-item {
+    transition: none;
+  }
+}
