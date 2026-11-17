@@ -119,6 +119,7 @@
   border-radius: 999px;
   background: #d3e7f1;
   color: #07020a;
+  box-shadow: 0 0 0 2px rgba(14, 10, 18, 0.85);
   font-size: 10px;
   font-weight: 700;
   line-height: 16px;
