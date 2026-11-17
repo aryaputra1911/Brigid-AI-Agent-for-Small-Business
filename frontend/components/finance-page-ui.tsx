@@ -10,6 +10,7 @@ export function FinanceHeading({
   icon,
   role,
   headingRef,
+  stackContext = false,
   children,
 }: {
   id: string;
@@ -19,6 +20,7 @@ export function FinanceHeading({
   icon: ChatIconName;
   role: string;
   headingRef?: Ref<HTMLHeadingElement>;
+  stackContext?: boolean;
   children?: ReactNode;
 }) {
   return (
@@ -31,7 +33,9 @@ export function FinanceHeading({
         {title}
       </h1>
       <p>{description}</p>
-      <div className="paper-finance-context">
+      <div
+        className={`paper-finance-context${stackContext ? " paper-finance-context-stack" : ""}`}
+      >
         <span>
           {role ? (
             <>

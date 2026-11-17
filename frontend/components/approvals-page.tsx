@@ -58,12 +58,12 @@ export function ApprovalsPage() {
         icon="check"
         headingRef={headingRef}
         role={role}
+        stackContext
         description="Review the requests waiting for your role, then confirm or decline."
       >
         {queueState === "ready" && !infoError && (
-          <span className="paper-finance-pill">
-            {requests.length} pending{" "}
-            {requests.length === 1 ? "request" : "requests"}
+          <span>
+            Pending results: <strong>{requests.length}</strong>
           </span>
         )}
       </FinanceHeading>
