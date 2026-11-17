@@ -84,7 +84,7 @@ class Settings(BaseModel):
     # Let the API re-run a request on another model if a safety classifier declines it.
     # None means: on for Anthropic's own endpoint, off when llm_base_url is set.
     llm_refusal_fallback: bool | None = None
-    llm_timeout_seconds: float = Field(120.0, gt=0, le=600)
+    llm_timeout_seconds: float = Field(25.0, gt=0, le=600)
 
     # Guard signing key (Ed25519, base64 of the raw 32 bytes).
     guard_private_key: SecretStr | None = None

@@ -128,7 +128,7 @@ class OpenAICompatibleLLM:
         api_key: str,
         max_tokens: int = 16000,
         temperature: float | None = None,
-        timeout_seconds: float = 120.0,
+        timeout_seconds: float = 25.0,
         client: httpx.Client | None = None,
         sleep: Callable[[float], None] = time.sleep,
     ) -> None:
