@@ -98,14 +98,13 @@ export function TransactionsPage() {
           Inspect incoming and outgoing bank transactions. Open any entry to
           review its memo and reference.
         </p>
-        <div className="paper-finance-context">
+        <div className="paper-finance-context paper-finance-context-stack">
           <span>
             Role: <strong>{effectiveRole || "connecting"}</strong>
           </span>
           {state === "ready" && (
-            <span className="paper-finance-pill">
-              {transactions.length}{" "}
-              {transactions.length === 1 ? "transaction" : "transactions"}
+            <span>
+              Number transactions: <strong>{transactions.length}</strong>
             </span>
           )}
         </div>
@@ -206,9 +205,6 @@ export function TransactionsPage() {
                 <div className="brigid-list-card-main">
                   <div className="brigid-list-card-title">
                     <span>{tx.counterparty}</span>
-                    <span className="brigid-badge">
-                      {tx.direction === "in" ? "In" : "Out"}
-                    </span>
                     {tx.needs_review && (
                       <span className="brigid-badge brigid-badge-warn">
                         Needs review
