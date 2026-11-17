@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AmbientVideoBg } from "./ambient-video-bg";
+import { FooterCutoutVideo } from "./footer-cutout-video";
 import { CornerButton } from "./corner-button";
 import { FooterLauncher } from "./footer-launcher";
 import { LandingHeader } from "./landing-interactions";
@@ -282,19 +283,7 @@ export function LandingPage() {
 
           <div>
             <div className="rre-footer__cutout" aria-hidden="true">
-              <video
-                className="rre-footer__cutout-video"
-                width={640}
-                height={260}
-                poster="/media/brigid-demo-poster.webp"
-                muted
-                loop
-                playsInline
-                autoPlay
-                preload="metadata"
-              >
-                <source src="/media/brigid-demo.mp4" type="video/mp4" />
-              </video>
+              <FooterCutoutVideo />
               <div className="rre-footer__cutout-bars">
                 <div className="rre-cutout-bar-v" />
                 <div className="rre-cutout-bar-h" />
