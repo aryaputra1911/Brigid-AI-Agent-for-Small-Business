@@ -117,7 +117,11 @@ export function InvoiceDetailPage({ id }: { id: string }) {
               <span className="brigid-badge">{detail.invoice.kind}</span>
               <span
                 className={`brigid-badge ${
-                  detail.invoice.status === "paid" ? "brigid-badge-ok" : ""
+                  detail.invoice.status === "paid"
+                    ? "brigid-badge-ok"
+                    : detail.invoice.status === "void"
+                      ? "brigid-badge-muted"
+                      : ""
                 }`}
               >
                 {detail.invoice.status}

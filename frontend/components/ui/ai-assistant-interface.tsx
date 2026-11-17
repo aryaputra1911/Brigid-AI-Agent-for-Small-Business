@@ -421,6 +421,12 @@ export function AIAssistantInterface() {
             rows={1}
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={onComposerKeyDown}
+            onFocus={() => {
+              if (window.innerWidth <= 760) {
+                window.scrollTo(0, 0);
+                requestAnimationFrame(() => window.scrollTo(0, 0));
+              }
+            }}
             maxLength={4000}
             placeholder="Ask Brigid about your business"
             aria-describedby="composer-instructions"
