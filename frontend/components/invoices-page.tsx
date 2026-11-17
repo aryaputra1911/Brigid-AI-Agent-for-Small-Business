@@ -88,13 +88,13 @@ export function InvoicesPage() {
           Review payable and receivable invoices. Open any invoice to inspect
           stated account details or ask Brigid to prepare a payment.
         </p>
-        <div className="paper-finance-context">
+        <div className="paper-finance-context paper-finance-context-stack">
           <span>
             Role: <strong>{effectiveRole || "connecting"}</strong>
           </span>
           {state === "ready" && (
-            <span className="paper-finance-pill">
-              {invoices.length} {invoices.length === 1 ? "invoice" : "invoices"}
+            <span>
+              Number invoices: <strong>{invoices.length}</strong>
             </span>
           )}
         </div>
@@ -190,18 +190,6 @@ export function InvoicesPage() {
                 <div className="brigid-list-card-main">
                   <div className="brigid-list-card-title">
                     <span>{invoice.counterparty_name}</span>
-                    <span className="brigid-badge">{invoice.kind}</span>
-                    <span
-                      className={`brigid-badge ${
-                        invoice.status === "paid"
-                          ? "brigid-badge-ok"
-                          : invoice.status === "void"
-                            ? "brigid-badge-muted"
-                            : ""
-                      }`}
-                    >
-                      {invoice.status}
-                    </span>
                     {invoice.needs_review && (
                       <span className="brigid-badge brigid-badge-warn">
                         Needs review
