@@ -366,32 +366,21 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
               <BrigidLogo className="paper-brand-logo" decorative />
               <span>Brigid</span>
             </Link>
-            <span className="paper-simulation">Simulation</span>
-            <button
-              className="paper-model-placeholder"
-              type="button"
-              disabled
-              aria-label="Model selection, coming soon"
-              title="Model selection: Coming soon"
-            >
-              <ChatIcon name="chevron" />
-              <span>Coming soon</span>
-            </button>
           </div>
           <button
             ref={avatarRef}
-            className="paper-avatar"
+            className="paper-icon-button"
             type="button"
             aria-haspopup="dialog"
             aria-expanded={settingsOpen}
             aria-controls="profile-settings"
-            aria-label={`Settings, acting as ${role || "connecting"}`}
-            title={`Acting as ${role || "connecting"}`}
+            aria-label={`Settings and help, acting as ${role || "connecting"}`}
+            title={`Settings and help (acting as ${role || "connecting"})`}
             onClick={(event) =>
               settingsOpen ? closeSettings() : openSettings(event.currentTarget)
             }
           >
-            {role ? role[0].toUpperCase() : "…"}
+            <ChatIcon name="settings" />
           </button>
           <AnimatePresence initial={false}>
             {settingsOpen && (
