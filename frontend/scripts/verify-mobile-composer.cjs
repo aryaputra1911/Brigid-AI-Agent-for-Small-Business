@@ -124,7 +124,29 @@ async function main() {
       JSON.stringify(keyboardSend),
     );
     await page.evaluate(() => {
+      Object.defineProperty(window.visualViewport, "height", {
+        configurable: true,
+        get: () => 260,
+      });
+      Object.defineProperty(window.visualViewport, "offsetTop", {
+        configurable: true,
+        get: () => 80,
+      });
+      window.visualViewport.dispatchEvent(new Event("resize"));
+      window.visualViewport.dispatchEvent(new Event("scroll"));
+    });
+    await page.waitForFunction(
+      () =>
+        document.querySelector(".paper-shell")?.getAttribute("data-keyboard-open") ===
+          "true" &&
+        Math.round(
+          document.querySelector(".paper-header")?.getBoundingClientRect().top ??
+            -1,
+        ) === 80,
+    );
+    await page.evaluate(() => {
       delete window.visualViewport.height;
+      delete window.visualViewport.offsetTop;
       window.visualViewport.dispatchEvent(new Event("resize"));
     });
     assert.equal(
