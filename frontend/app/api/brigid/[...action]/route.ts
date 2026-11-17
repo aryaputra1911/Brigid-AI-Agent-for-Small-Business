@@ -25,7 +25,8 @@ const ALLOWED_QUERY_PARAMS: Record<string, readonly string[]> = {
   transactions: ["direction", "from", "to"],
 };
 const BACKEND = process.env.BRIGID_API_ORIGIN ?? "http://127.0.0.1:8000";
-const UPSTREAM_TIMEOUT_MS = 30_000;
+// Exceeds the 25s backend LLM timeout so clean LLMError replies arrive, while staying under the 33s browser timeout.
+const UPSTREAM_TIMEOUT_MS = 28_000;
 
 type Context = { params: Promise<{ action: string[] }> };
 

@@ -172,3 +172,16 @@ test("a request timeout reports a clear timeout message", async () => {
       "Brigid took too long to respond. Please check the server and retry.",
   });
 });
+
+test("every request attaches an AbortSignal timeout and surfaces proxy 504 errors", async () => {
+  useFetch(() =>
+    jsonResponse(504, {
+      detail: "The Brigid API timed out waiting for a response. Please retry.",
+    }),
+  );
+
+  await assert.rejects(brigidPost("chat", { role: "owner", text: "hi" }), {
+    message: "The Brigid API timed out waiting for a response. Please retry.",
+  });
+  assert.ok(calls[0].init?.signal instanceof AbortSignal);
+});
