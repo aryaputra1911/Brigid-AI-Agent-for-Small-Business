@@ -120,7 +120,7 @@ async function main() {
         await page
           .locator(".paper-disclaimer")
           .evaluate((el) => getComputedStyle(el).opacity),
-        "0.5",
+        "1",
       );
       await page.locator("#message-input").fill("Test intro only");
       assert.equal(await running(), 0);
@@ -161,7 +161,7 @@ async function main() {
           await page
             .locator(".paper-disclaimer")
             .evaluate((el) => getComputedStyle(el).opacity),
-          "0.5",
+          "1",
         );
       }
       if (!reduced)

@@ -335,12 +335,13 @@ export function AIAssistantInterface() {
               <span data-chat-intro="question">How can I help you today?</span>
             </h1>
             <div className="paper-prompts" aria-label="Suggested prompts">
-              {prompts.map((prompt) => (
+              {prompts.map((prompt, index) => (
                 <PromptCard
                   key={prompt.icon}
                   text={prompt.text}
                   icon={prompt.icon}
                   disabled={!role || busy}
+                  meshDelayMs={index * 45}
                   onSelect={() => {
                     setDraft(`${prompt.text}.`);
                     composerRef.current?.focus();
@@ -445,10 +446,7 @@ export function AIAssistantInterface() {
             </div>
           </div>
         </form>
-        <p
-          className="paper-disclaimer my-4 opacity-50"
-          data-chat-intro="caption"
-        >
+        <p className="paper-disclaimer my-4" data-chat-intro="caption">
           Brigid can make mistakes. Check its answers. Local simulation only.
           Attachments, tools & voice: Coming soon
         </p>
