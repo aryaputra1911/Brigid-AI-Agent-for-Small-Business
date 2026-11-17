@@ -206,11 +206,7 @@ export function TransactionsPage() {
                 <div className="brigid-list-card-main">
                   <div className="brigid-list-card-title">
                     <span>{tx.counterparty}</span>
-                    <span
-                      className={`brigid-badge ${
-                        tx.direction === "in" ? "brigid-badge-ok" : ""
-                      }`}
-                    >
+                    <span className="brigid-badge">
                       {tx.direction === "in" ? "In" : "Out"}
                     </span>
                     {tx.needs_review && (

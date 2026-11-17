@@ -55,15 +55,15 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 28px;
-  padding: 4px 10px;
-  border: 1px solid var(--hairline);
-  border-radius: 4px;
+  min-height: 26px;
+  padding: 3px 9px;
+  border: 1px solid var(--hairline-subtle);
+  border-radius: 2px;
   color: var(--ice);
   background: #141e27;
   font-size: 12px;
   font-weight: 500;
-  line-height: 20px;
+  line-height: 18px;
   font-variant-numeric: tabular-nums;
 }
 .paper-finance-state {
@@ -260,16 +260,12 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--hairline-subtle);
-  background: rgba(211, 231, 241, 0.07);
   color: var(--ice);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  line-height: 18px;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 20px;
+  text-transform: capitalize;
 }
 .paper-request-expiry {
   color: var(--text-muted);
@@ -724,53 +720,43 @@
 .brigid-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  min-height: 24px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--hairline-subtle);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  min-height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
   line-height: 18px;
-  text-transform: uppercase;
-  color: var(--ice);
-  background: rgba(211, 231, 241, 0.08);
-}
-
-.brigid-badge-ok::before,
-.brigid-badge-warn::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  flex-shrink: 0;
+  text-transform: capitalize;
+  color: var(--text-muted);
 }
 
 .brigid-badge-warn {
-  border-color: rgba(251, 191, 36, 0.45);
-  background: rgba(120, 53, 15, 0.38);
-  color: #fef3c7;
-}
-
-.brigid-badge-warn::before {
-  background: #fbbf24;
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid rgba(251, 191, 36, 0.34);
+  background: rgba(120, 53, 15, 0.28);
+  color: #fde68a;
+  font-size: 11px;
+  text-transform: none;
 }
 
 .brigid-badge-ok {
-  border-color: rgba(74, 222, 128, 0.42);
-  background: rgba(20, 83, 45, 0.38);
-  color: #dcfce7;
-}
-
-.brigid-badge-ok::before {
-  background: #4ade80;
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid rgba(74, 222, 128, 0.28);
+  background: rgba(20, 83, 45, 0.24);
+  color: #bbf7d0;
+  font-size: 11px;
 }
 
 .brigid-badge-muted {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-secondary);
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid var(--hairline-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
 }
 
 .brigid-back-link {

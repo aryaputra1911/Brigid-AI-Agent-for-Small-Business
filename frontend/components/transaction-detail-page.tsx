@@ -121,11 +121,7 @@ export function TransactionDetailPage({ id }: { id: string }) {
             </span>
             <h1>{detail.transaction.counterparty}</h1>
             <div className="paper-finance-context">
-              <span
-                className={`brigid-badge ${
-                  detail.transaction.direction === "in" ? "brigid-badge-ok" : ""
-                }`}
-              >
+              <span className="brigid-badge">
                 {detail.transaction.direction === "in"
                   ? "Incoming"
                   : "Outgoing"}
