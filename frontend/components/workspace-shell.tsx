@@ -69,10 +69,28 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           document.documentElement.clientHeight,
           viewport?.height ?? window.innerHeight,
         ].filter((height) => height > 0);
+        const minHeight = Math.min(...heights);
+        const offsetTop = Math.max(0, Math.round(viewport?.offsetTop ?? 0));
         shellRef.current?.style.setProperty(
           "--paper-viewport-height",
-          `${Math.min(...heights)}px`,
+          `${minHeight}px`,
         );
+        shellRef.current?.style.setProperty(
+          "--paper-viewport-offset-top",
+          `${offsetTop}px`,
+        );
+        const keyboardLikely =
+          window.innerWidth <= 760 &&
+          viewport != null &&
+          viewport.height < window.innerHeight - 120;
+        if (keyboardLikely) {
+          shellRef.current?.setAttribute("data-keyboard-open", "true");
+        } else {
+          shellRef.current?.removeAttribute("data-keyboard-open");
+        }
+        if (window.innerWidth <= 760 && window.scrollY !== 0) {
+          window.scrollTo(0, 0);
+        }
       }
     }
     resize();
