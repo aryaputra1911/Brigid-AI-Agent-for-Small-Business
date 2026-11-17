@@ -71,7 +71,7 @@ class AnthropicLLM:
         max_tokens: int = 16000,
         effort: str | None = None,
         refusal_fallback: bool | None = None,
-        timeout_seconds: float = 120.0,
+        timeout_seconds: float = 25.0,
         client: anthropic.Anthropic | None = None,
     ) -> None:
         if not model:

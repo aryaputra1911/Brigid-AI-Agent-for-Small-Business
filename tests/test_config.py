@@ -116,3 +116,8 @@ def test_env_file_is_read_and_overridden_by_env(tmp_path):
 
 def test_missing_env_file_is_fine(tmp_path):
     assert read_env_file(tmp_path / "absent.env") == {}
+
+
+def test_default_llm_timeout_fits_proxy_budget():
+    settings = load_settings(env={}, env_file=None)
+    assert settings.llm_timeout_seconds == 25.0

@@ -98,7 +98,7 @@ export type ChatResult = {
 
 export type DecisionResult = { status: string; message: string };
 
-const REQUEST_TIMEOUT_MS = 30_000;
+const REQUEST_TIMEOUT_MS = 33_000;
 
 export async function brigidGet<T>(
   action: "info" | "pending",

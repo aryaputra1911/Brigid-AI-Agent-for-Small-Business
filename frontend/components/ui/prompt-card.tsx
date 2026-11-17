@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChatIcon, type ChatIconName } from "./chat-icon";
 import { useWebGlSupport } from "@/lib/use-webgl-support";
 
@@ -11,16 +11,28 @@ export function PromptCard({
   text,
   icon,
   disabled,
+  meshDelayMs = 0,
   onSelect,
 }: {
   text: string;
   icon: ChatIconName;
   disabled: boolean;
+  meshDelayMs?: number;
   onSelect: () => void;
 }) {
   const supported = useWebGlSupport();
+  const [meshReady, setMeshReady] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!supported) return;
+    const timer = window.setTimeout(
+      () => setMeshReady(true),
+      Math.max(0, meshDelayMs),
+    );
+    return () => window.clearTimeout(timer);
+  }, [supported, meshDelayMs]);
   return (
     <button
       className="paper-prompt"
@@ -39,7 +51,9 @@ export function PromptCard({
       onBlur={() => setFocused(false)}
     >
       <span className="paper-prompt-surface" aria-hidden="true">
-        {supported && <PromptMesh active={!disabled && (hovered || focused)} />}
+        {supported && meshReady && (
+          <PromptMesh active={!disabled && (hovered || focused)} />
+        )}
       </span>
       <span className="paper-prompt-text">{text}</span>
       <span className="paper-prompt-icon">

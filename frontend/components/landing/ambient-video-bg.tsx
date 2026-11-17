@@ -3,6 +3,7 @@
 import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@/lib/use-media-query";
+import { useSaveData } from "@/lib/use-save-data";
 
 /**
  * Full-viewport fixed background video for the RRE-inspired editorial layout.
@@ -16,9 +17,10 @@ export function AmbientVideoBg() {
     "(prefers-reduced-motion: reduce)",
     false,
   );
+  const saveData = useSaveData();
   const [userPaused, setUserPaused] = useState(false);
 
-  const shouldPlay = !reducedMotion && !userPaused;
+  const shouldPlay = !reducedMotion && !userPaused && !saveData;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -69,8 +71,8 @@ export function AmbientVideoBg() {
           muted
           loop
           playsInline
-          autoPlay={!reducedMotion}
-          preload="metadata"
+          autoPlay={!reducedMotion && !saveData}
+          preload={shouldPlay ? "metadata" : "none"}
         >
           <source src="/media/brigid-demo.mp4" type="video/mp4" />
         </video>
