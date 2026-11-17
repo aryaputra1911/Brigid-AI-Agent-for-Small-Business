@@ -973,7 +973,7 @@
     right: 0;
     bottom: auto;
     left: 0;
-    height: min(100%, 100svh, var(--paper-viewport-height, 100svh));
+    height: min(100%, 100dvh, var(--paper-viewport-height, 100dvh));
     overflow: hidden;
   }
   .paper-shell[data-keyboard-open="true"] .brigid-bnav-wrap {
@@ -988,8 +988,8 @@
     z-index: 5;
     flex-shrink: 0;
     background: var(--surface);
-    height: 64px;
-    padding: 0 12px;
+    height: calc(64px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 12px 0;
     gap: 8px;
   }
   .paper-mobile-menu {
@@ -1024,7 +1024,8 @@
     width: min(280px, calc(100vw - 32px));
     height: 100dvh;
     display: flex;
-    padding-inline: 12px;
+    padding: max(12px, env(safe-area-inset-top)) 12px
+      max(12px, env(safe-area-inset-bottom));
     transition: none;
   }
   .paper-shell:not([data-mobile]) .paper-sidebar {
