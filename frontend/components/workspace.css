@@ -205,7 +205,7 @@
   height: 22px;
   padding: 0 6px;
   margin-left: auto;
-  border-radius: 4px;
+  border-radius: 2px;
   background: rgba(211, 231, 241, 0.12);
   border: 1px solid var(--hairline);
   color: var(--ice);
