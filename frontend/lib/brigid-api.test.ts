@@ -1,7 +1,17 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 
-import { brigidGet, brigidPost } from "./brigid-api.ts";
+import {
+  brigidGet,
+  brigidInvoice,
+  brigidInvoices,
+  brigidLogin,
+  brigidLogout,
+  brigidMe,
+  brigidPost,
+  brigidTransaction,
+  brigidTransactions,
+} from "./brigid-api.ts";
 
 const realFetch = globalThis.fetch;
 const calls: { path: string; init: RequestInit | undefined }[] = [];
@@ -95,5 +105,70 @@ test("a server error without a detail message names the status", async () => {
 
   await assert.rejects(brigidGet("info"), {
     message: "Brigid request failed (500).",
+  });
+});
+
+test("brigidLogin, brigidMe, and brigidLogout call the session proxy endpoints", async () => {
+  useFetch((path) => {
+    if (path === "/api/brigid/login") {
+      return jsonResponse(200, {
+        token: "tok",
+        user: { user_id: "u1", role: "owner", business_id: "b1", name: "Sari" },
+      });
+    }
+    if (path === "/api/brigid/me") {
+      return jsonResponse(200, {
+        user_id: "u1",
+        role: "owner",
+        business_id: "b1",
+        name: "Sari",
+      });
+    }
+    return jsonResponse(200, { status: "logged_out" });
+  });
+
+  const login = await brigidLogin("owner@brigid.demo", "brigid123");
+  const me = await brigidMe();
+  const logout = await brigidLogout();
+
+  assert.equal(calls[0].path, "/api/brigid/login");
+  assert.equal(login.user.role, "owner");
+  assert.equal(calls[1].path, "/api/brigid/me");
+  assert.equal(me.name, "Sari");
+  assert.equal(calls[2].path, "/api/brigid/logout");
+  assert.equal(logout.status, "logged_out");
+});
+
+test("brigidInvoices and brigidTransactions build query parameters and detail paths", async () => {
+  useFetch(() => jsonResponse(200, {}));
+
+  await brigidInvoices({ kind: "payable", status: "open" });
+  await brigidInvoice("inv/1");
+  await brigidTransactions({
+    direction: "out",
+    from: "2026-01-01",
+    to: "2026-02-01",
+  });
+  await brigidTransaction("tx_01");
+
+  assert.equal(calls[0].path, "/api/brigid/invoices?kind=payable&status=open");
+  assert.equal(calls[1].path, "/api/brigid/invoices/inv%2F1");
+  assert.equal(
+    calls[2].path,
+    "/api/brigid/transactions?direction=out&from=2026-01-01&to=2026-02-01",
+  );
+  assert.equal(calls[3].path, "/api/brigid/transactions/tx_01");
+});
+
+test("a request timeout reports a clear timeout message", async () => {
+  useFetch(() => {
+    const err = new Error("The operation timed out");
+    err.name = "TimeoutError";
+    throw err;
+  });
+
+  await assert.rejects(brigidGet("info"), {
+    message:
+      "Brigid took too long to respond. Please check the server and retry.",
   });
 });

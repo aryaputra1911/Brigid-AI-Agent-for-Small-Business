@@ -11,12 +11,16 @@ import {
 import type { ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+  type BrigidInfo,
   type ChatResult,
   type DecisionResult,
   type PendingRequest,
   type Role,
-  type BrigidInfo,
+  type UserSession,
   brigidGet,
+  brigidLogin,
+  brigidLogout,
+  brigidMe,
   brigidPost,
 } from "@/lib/brigid-api";
 import { decisionTone } from "@/lib/decision-tone";
@@ -33,6 +37,8 @@ export type QueueState = "loading" | "ready" | "error";
 type WorkspaceContextValue = {
   info: BrigidInfo | null;
   infoError: string;
+  user: UserSession | null;
+  sessionChecked: boolean;
   role: Role | "";
   draft: string;
   setDraft: (text: string) => void;
@@ -50,6 +56,9 @@ type WorkspaceContextValue = {
   mandateNotice: Notice | null;
   composerFocusVersion: number;
   changeRole: (role: Role) => void;
+  signIn: (email: string, password: string) => Promise<UserSession>;
+  signOut: () => Promise<void>;
+  refreshSession: () => Promise<void>;
   retryInfo: () => Promise<void>;
   retryPending: () => Promise<void>;
   sendMessage: () => Promise<void>;
@@ -76,6 +85,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const promptParam = (searchParams.get("prompt") ?? "").trim().slice(0, 4000);
   const [info, setInfo] = useState<BrigidInfo | null>(null);
   const [infoError, setInfoError] = useState("");
+  const [user, setUser] = useState<UserSession | null>(null);
+  const [sessionChecked, setSessionChecked] = useState(false);
   const [role, setRole] = useState<Role | "">("");
   // The landing footer opens Chat with ?prompt=...: seed the composer draft as plain
   // text only. Nothing is sent automatically, and the value is capped at the composer
@@ -119,15 +130,29 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    void brigidGet<BrigidInfo>("info")
-      .then((result) => {
+    const hasSession =
+      typeof window !== "undefined" &&
+      window.sessionStorage.getItem("brigid_has_session") === "1";
+    const mePromise = hasSession ? brigidMe() : Promise.resolve(null);
+    void Promise.allSettled([brigidGet<BrigidInfo>("info"), mePromise]).then(
+      ([infoResult, meResult]) => {
         if (!active) return;
-        setInfo(result);
-        setRole(result.roles[0] ?? "");
-      })
-      .catch((error: unknown) => {
-        if (active) setInfoError(errorText(error));
-      });
+        const signedUser =
+          meResult.status === "fulfilled" ? meResult.value : null;
+        if (hasSession && !signedUser && typeof window !== "undefined") {
+          window.sessionStorage.removeItem("brigid_has_session");
+        }
+        setUser(signedUser);
+        setSessionChecked(true);
+        if (infoResult.status === "fulfilled") {
+          setInfo(infoResult.value);
+          setRole(signedUser?.role ?? infoResult.value.roles[0] ?? "");
+        } else {
+          setInfoError(errorText(infoResult.reason));
+          if (signedUser) setRole(signedUser.role);
+        }
+      },
+    );
     return () => {
       active = false;
     };
@@ -311,6 +336,53 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function signIn(email: string, password: string): Promise<UserSession> {
+    const result = await brigidLogin(email, password);
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem("brigid_has_session", "1");
+    }
+    setUser(result.user);
+    setSessionChecked(true);
+    pendingGeneration.current += 1;
+    setRole(result.user.role);
+    setQueueState("loading");
+    setRequests([]);
+    setMessages([]);
+    setChatNotice(null);
+    setQueueNotice(null);
+    setMandateNotice(null);
+    return result.user;
+  }
+
+  async function signOut(): Promise<void> {
+    await brigidLogout();
+    if (typeof window !== "undefined") {
+      window.sessionStorage.removeItem("brigid_has_session");
+    }
+    setUser(null);
+    setSessionChecked(true);
+    pendingGeneration.current += 1;
+    setRole(info?.roles[0] ?? "");
+    setQueueState("loading");
+    setRequests([]);
+    setMessages([]);
+    setChatNotice(null);
+    setQueueNotice(null);
+    setMandateNotice(null);
+  }
+
+  async function refreshSession(): Promise<void> {
+    try {
+      const me = await brigidMe();
+      setUser(me);
+      setRole(me.role);
+    } catch {
+      setUser(null);
+    } finally {
+      setSessionChecked(true);
+    }
+  }
+
   const busy = sending || resetting || mandating || Boolean(processingId);
 
   return (
@@ -318,6 +390,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       value={{
         info,
         infoError,
+        user,
+        sessionChecked,
         role,
         draft,
         setDraft,
@@ -335,6 +409,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         mandateNotice,
         composerFocusVersion,
         changeRole,
+        signIn,
+        signOut,
+        refreshSession,
         retryInfo,
         retryPending,
         sendMessage,
