@@ -9,13 +9,17 @@ import type { Role } from "@/lib/brigid-api";
 import { useWorkspace } from "@/components/workspace-provider";
 import { ChatIcon, type ChatIconName } from "@/components/ui/chat-icon";
 import { BrigidLogo } from "@/components/ui/brigid-logo";
+import { LiquidBottomNav } from "@/components/liquid-bottom-nav";
 import { useMediaQuery } from "@/lib/use-media-query";
 import "./workspace.css";
 
 const destinations: { href: string; label: string; icon: ChatIconName }[] = [
   { href: "/chat", label: "Chat", icon: "chat" },
+  { href: "/invoices", label: "Invoices", icon: "invoice" },
+  { href: "/transactions", label: "Transactions", icon: "chart" },
   { href: "/approvals", label: "Approvals", icon: "check" },
   { href: "/mandate", label: "Mandate", icon: "rules" },
+  { href: "/profile", label: "Profile", icon: "user" },
 ];
 
 export function WorkspaceShell({ children }: { children: ReactNode }) {
@@ -485,6 +489,11 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
+      {!menuOpen && (
+        <LiquidBottomNav
+          pendingCount={queueState === "ready" ? requests.length : 0}
+        />
+      )}
     </div>
   );
 }
