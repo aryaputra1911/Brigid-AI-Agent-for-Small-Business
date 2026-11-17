@@ -193,7 +193,11 @@ export function InvoicesPage() {
                     <span className="brigid-badge">{invoice.kind}</span>
                     <span
                       className={`brigid-badge ${
-                        invoice.status === "paid" ? "brigid-badge-ok" : ""
+                        invoice.status === "paid"
+                          ? "brigid-badge-ok"
+                          : invoice.status === "void"
+                            ? "brigid-badge-muted"
+                            : ""
                       }`}
                     >
                       {invoice.status}

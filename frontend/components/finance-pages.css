@@ -54,12 +54,13 @@
 .paper-finance-pill {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 28px;
   padding: 4px 10px;
   border: 1px solid var(--hairline);
-  border-radius: 2px;
+  border-radius: 4px;
   color: var(--ice);
-  background: #18232d;
+  background: #141e27;
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
@@ -258,11 +259,16 @@
 .paper-request-kind {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--hairline-subtle);
+  background: rgba(211, 231, 241, 0.07);
   color: var(--ice);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  line-height: 22px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 18px;
   text-transform: uppercase;
 }
 .paper-request-expiry {
@@ -718,28 +724,53 @@
 .brigid-badge {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   min-height: 24px;
   padding: 2px 8px;
   border-radius: 4px;
   border: 1px solid var(--hairline-subtle);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.04em;
+  line-height: 18px;
   text-transform: uppercase;
   color: var(--ice);
   background: rgba(211, 231, 241, 0.08);
 }
 
+.brigid-badge-ok::before,
+.brigid-badge-warn::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
 .brigid-badge-warn {
   border-color: rgba(251, 191, 36, 0.45);
-  background: rgba(120, 53, 15, 0.35);
-  color: #fde68a;
+  background: rgba(120, 53, 15, 0.38);
+  color: #fef3c7;
+}
+
+.brigid-badge-warn::before {
+  background: #fbbf24;
 }
 
 .brigid-badge-ok {
-  border-color: rgba(74, 222, 128, 0.4);
-  background: rgba(20, 83, 45, 0.35);
-  color: #bbf7d0;
+  border-color: rgba(74, 222, 128, 0.42);
+  background: rgba(20, 83, 45, 0.38);
+  color: #dcfce7;
+}
+
+.brigid-badge-ok::before {
+  background: #4ade80;
+}
+
+.brigid-badge-muted {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
 }
 
 .brigid-back-link {
