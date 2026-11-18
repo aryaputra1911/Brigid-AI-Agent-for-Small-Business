@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { type InvoiceDetailResult, brigidInvoice } from "@/lib/brigid-api";
 import { FinanceState } from "@/components/finance-page-ui";
+import { Bars } from "@/components/loading-ui/bars";
 import "./finance-pages.css";
 
 function formatAmount(amount: string | number, currency: string): string {
@@ -72,11 +73,9 @@ export function InvoiceDetailPage({ id }: { id: string }) {
       </Link>
 
       {state === "loading" && (
-        <FinanceState
-          icon="rules"
-          title="Loading invoice"
-          description="Fetching invoice and supplier verification status."
-        />
+        <div className="flex min-h-[220px] items-center justify-center">
+          <Bars className="h-6 w-6 text-white/75" />
+        </div>
       )}
 
       {state === "error" && (
