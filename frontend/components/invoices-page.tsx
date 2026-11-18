@@ -82,7 +82,6 @@ export function InvoicesPage() {
   return (
     <div className="paper-finance-page">
       <header className="paper-finance-heading">
-        <span className="paper-finance-kicker">Ledger</span>
         <h1>Invoices</h1>
         <p>
           Review payable and receivable invoices. Open any invoice to inspect

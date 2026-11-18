@@ -92,7 +92,6 @@ export function TransactionsPage() {
   return (
     <div className="paper-finance-page">
       <header className="paper-finance-heading">
-        <span className="paper-finance-kicker">Cash flow</span>
         <h1>Transactions</h1>
         <p>
           Inspect incoming and outgoing bank transactions. Open any entry to
@@ -206,8 +205,8 @@ export function TransactionsPage() {
                   <div className="brigid-list-card-title">
                     <span>{tx.counterparty}</span>
                     {tx.needs_review && (
-                      <span className="brigid-badge brigid-badge-warn">
-                        Needs review
+                      <span className="text-sm font-normal text-amber-300">
+                        | needs review
                       </span>
                     )}
                   </div>

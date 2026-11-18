@@ -36,3 +36,5 @@ wali-agent/
 
 # Browser automation captures (runtime artifacts)
 .playwright-mcp/
+.vercel
+.env*

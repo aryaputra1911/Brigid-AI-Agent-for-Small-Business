@@ -16,8 +16,8 @@ export function FinanceHeading({
   id: string;
   title: string;
   description: string;
-  kicker: string;
-  icon: ChatIconName;
+  kicker?: string;
+  icon?: ChatIconName;
   role: string;
   headingRef?: Ref<HTMLHeadingElement>;
   stackContext?: boolean;
@@ -25,10 +25,12 @@ export function FinanceHeading({
 }) {
   return (
     <header className="paper-finance-heading">
-      <span className="paper-finance-kicker">
-        <ChatIcon name={icon} />
-        {kicker}
-      </span>
+      {kicker && (
+        <span className="paper-finance-kicker">
+          {icon && <ChatIcon name={icon} />}
+          {kicker}
+        </span>
+      )}
       <h1 id={id} ref={headingRef} tabIndex={-1}>
         {title}
       </h1>
