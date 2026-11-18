@@ -10,6 +10,7 @@ import {
 } from "@/lib/brigid-api";
 import { useWorkspace } from "@/components/workspace-provider";
 import { FinanceState } from "@/components/finance-page-ui";
+import { Bars } from "@/components/loading-ui/bars";
 import "./finance-pages.css";
 
 function formatAmount(amount: string | number, currency: string): string {
@@ -136,11 +137,9 @@ export function InvoicesPage() {
       </div>
 
       {state === "loading" && (
-        <FinanceState
-          icon="rules"
-          title="Loading invoices"
-          description="Fetching invoice records from your workspace."
-        />
+        <div className="flex min-h-[220px] items-center justify-center">
+          <Bars className="h-6 w-6 text-white/75" />
+        </div>
       )}
 
       {state === "error" && (
