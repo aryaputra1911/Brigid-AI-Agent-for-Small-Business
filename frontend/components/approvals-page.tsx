@@ -54,8 +54,6 @@ export function ApprovalsPage() {
       <FinanceHeading
         id="approvals-title"
         title="Approvals"
-        kicker="Review & decide"
-        icon="check"
         headingRef={headingRef}
         role={role}
         stackContext

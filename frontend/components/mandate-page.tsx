@@ -32,13 +32,9 @@ export function MandatePage() {
       <FinanceHeading
         id="mandate-title"
         title="Business mandate"
-        kicker="Spending rules"
-        icon="rules"
         role={role}
         description="Set the boundaries for Brigid's financial actions. Draft the rules, then review them before they take effect."
-      >
-        <span className="paper-finance-pill">Owner approval</span>
-      </FinanceHeading>
+      />
       <div className="paper-mandate-flow">
         <span className="paper-mandate-icon">
           <ChatIcon name="rules" />
@@ -111,7 +107,7 @@ export function MandatePage() {
         ) : role === "owner" ? (
           <div className="paper-mandate-create">
             <button
-              className="paper-action paper-action-primary"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-white/30 bg-[linear-gradient(180deg,rgba(255,255,255,0.22)_0%,rgba(211,231,241,0.1)_55%,rgba(255,255,255,0.06)_100%)] px-5 py-2.5 text-sm font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.45),inset_0_-1px_0_rgba(211,231,241,0.18),0_10px_24px_rgba(0,0,0,0.42)] backdrop-blur-xl backdrop-saturate-150 transition-all hover:border-[#d3e7f1]/60 hover:bg-[linear-gradient(180deg,rgba(255,255,255,0.3)_0%,rgba(211,231,241,0.18)_55%,rgba(255,255,255,0.1)_100%)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
               type="button"
               disabled={busy}
               onClick={() => void draftMandate()}

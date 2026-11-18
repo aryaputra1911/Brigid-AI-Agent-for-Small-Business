@@ -63,6 +63,13 @@
   }
 }
 
+.login-glass-input:focus,
+.login-glass-input:focus-visible {
+  outline: none;
+  outline-offset: 0;
+  box-shadow: 0 1px 0 0 #d3e7f1;
+}
+
 .login-glass-btn {
   position: relative;
   background:

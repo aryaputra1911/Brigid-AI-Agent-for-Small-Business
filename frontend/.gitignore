@@ -6,3 +6,5 @@
 *.tsbuildinfo
 /.npm-cache
 /test-results
+.vercel
+.env*

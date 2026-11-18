@@ -260,7 +260,7 @@ export function LoginForm({
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             disabled={submitting}
-            className="block py-2.5 px-0 w-full min-h-[44px] text-sm text-[#F1F7FF] bg-transparent border-0 border-b-2 border-white/35 appearance-none focus:border-[#d3e7f1] focus-visible:outline-2 focus-visible:outline-[#d3e7f1] focus-visible:outline-offset-4 disabled:opacity-60 peer"
+            className="login-glass-input block py-2.5 px-0 w-full min-h-[44px] text-sm text-[#F1F7FF] bg-transparent border-0 border-b-2 border-white/35 appearance-none focus:border-[#d3e7f1] disabled:opacity-60 peer"
             placeholder=" "
             required
           />
@@ -288,7 +288,7 @@ export function LoginForm({
               disabled={submitting}
               aria-invalid={activeError ? true : undefined}
               aria-describedby={activeError ? "login-error-text" : undefined}
-              className="block py-2.5 px-0 w-full min-h-[44px] text-sm text-[#F1F7FF] bg-transparent border-0 border-b-2 border-white/35 appearance-none focus:border-[#d3e7f1] focus-visible:outline-2 focus-visible:outline-[#d3e7f1] focus-visible:outline-offset-4 disabled:opacity-60 peer"
+              className="login-glass-input block py-2.5 px-0 w-full min-h-[44px] text-sm text-[#F1F7FF] bg-transparent border-0 border-b-2 border-white/35 appearance-none focus:border-[#d3e7f1] disabled:opacity-60 peer"
               placeholder=" "
               required
             />
