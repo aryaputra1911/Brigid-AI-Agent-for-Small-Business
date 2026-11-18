@@ -477,7 +477,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
-      {!menuOpen && (
+      {isMobile && !menuOpen && (
         <LiquidBottomNav
           pendingCount={queueState === "ready" ? requests.length : 0}
         />

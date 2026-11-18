@@ -72,6 +72,7 @@ class BrigidApp:
     # Whether the sentinel's model layer is on, for an interface to show.
     sentinel_model_enabled: bool = False
     _sessions: dict[tuple[str, str], Session] = field(default_factory=dict, repr=False)
+    _session_locks: dict[tuple[str, str], threading.RLock] = field(default_factory=dict, repr=False)
     _inbox: list[ConfirmationRequest] = field(default_factory=list, repr=False)
     _session_counter: int = 0
     _lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
@@ -109,13 +110,22 @@ class BrigidApp:
             self._sessions[key] = session
         return session
 
+    def _session_lock(self, key: tuple[str, str]) -> threading.RLock:
+        with self._lock:
+            lock = self._session_locks.get(key)
+            if lock is None:
+                lock = threading.RLock()
+                self._session_locks[key] = lock
+            return lock
+
     def chat(self, principal: Principal, text: str, *, channel: str = "cli") -> ChatResult:
         """Answer one message from an authenticated principal."""
-        with self._lock:
+        with self._session_lock((channel, principal.user_id)):
             return self._chat(principal, text, channel)
 
     def _chat(self, principal: Principal, text: str, channel: str) -> ChatResult:
-        session = self._session(principal, channel)
+        with self._lock:
+            session = self._session(principal, channel)
         session.pending_proposals[:] = [
             p for p in session.pending_proposals if self.guard.is_pending(p["proposal_id"])
         ]
@@ -141,12 +151,15 @@ class BrigidApp:
             replace_pending=is_correction(text),
         )
         reply = self._agent.respond(session, registry, text)
-        return ChatResult(reply=reply, new_confirmations=tuple(self._collect()))
+        with self._lock:
+            new_confirmations = tuple(self._collect())
+        return ChatResult(reply=reply, new_confirmations=new_confirmations)
 
     def reset(self, principal: Principal, *, channel: str = "cli") -> None:
         """Forget the conversation with this principal on this channel."""
-        with self._lock:
-            self._sessions.pop((channel, principal.user_id), None)
+        key = (channel, principal.user_id)
+        with self._session_lock(key), self._lock:
+            self._sessions.pop(key, None)
 
     # --- Confirmation inbox --------------------------------------------------------------
 

@@ -33,6 +33,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from brigid.app import BrigidApp, SetupError, build_app
 from brigid.config import ConfigError, load_settings
+from brigid.guard.sentinel import heuristic_verdict
 from brigid.interfaces.common import SIMULATION_NOTE, draft_demo_mandate, request_view
 from brigid.models import BankTransaction, Direction, Invoice, Principal
 from brigid.tools.base import AccessDenied, NotFound, ToolFailure
@@ -171,18 +172,11 @@ def create_web_app(
         tail = significant[-4:] if len(significant) >= 4 else ""
         return f"•••• {tail}" if tail else "••••"
 
-    def needs_review(text: str | None, p: Principal, origin: str) -> bool:
-        """Screen one untrusted free-text field; only the verdict leaves the guard."""
+    def needs_review(text: str | None) -> bool:
+        """Screen one untrusted free-text field via cached heuristics; only the verdict leaves."""
         if not text or not text.strip():
             return False
-        verdict = app.guard.screen_untrusted(
-            text,
-            principal=p,
-            session_id=f"web-api:{p.user_id}",
-            source="data",
-            origin=origin,
-        )
-        return verdict.suspicious
+        return heuristic_verdict(text, "data").suspicious
 
     def user_view(p: Principal) -> dict:
         account = next((a for a in DEMO_ACCOUNTS if a.role == p.role), None)
@@ -193,19 +187,15 @@ def create_web_app(
             "name": account.name if account else p.user_id,
         }
 
-    def invoice_view(invoice: Invoice, p: Principal) -> dict:
+    def invoice_view(invoice: Invoice) -> dict:
         data = invoice.model_dump(mode="json")
         data["stated_account"] = mask_account(invoice.stated_account)
-        data["needs_review"] = needs_review(
-            invoice.document_text, p, origin=f"invoice:{invoice.id}:document_text"
-        )
+        data["needs_review"] = needs_review(invoice.document_text)
         return data
 
-    def transaction_view(transaction: BankTransaction, p: Principal) -> dict:
+    def transaction_view(transaction: BankTransaction) -> dict:
         data = transaction.model_dump(mode="json")
-        data["needs_review"] = needs_review(
-            transaction.memo, p, origin=f"transaction:{transaction.id}:memo"
-        )
+        data["needs_review"] = needs_review(transaction.memo)
         return data
 
     @api.middleware("http")
@@ -291,21 +281,24 @@ def create_web_app(
                 + read_env(lambda: app.env.list_invoices(p, "receivable", status=status)),
                 key=lambda invoice: (invoice.due_date, invoice.id),
             )
-        return {"invoices": [invoice_view(invoice, p) for invoice in items]}
+        return {"invoices": [invoice_view(invoice) for invoice in items]}
 
     @api.get("/api/invoices/{invoice_id}")
     def invoice_detail(invoice_id: str, request: Request) -> dict:
         p = signed_in(request)
-        # Staff may only ever see receivables, so a payable id is simply not found for them.
-        kinds = ("receivable",) if p.role == "staff" else ("payable", "receivable")
-        match = None
-        for kind in kinds:
-            found = read_env(lambda kind=kind: app.env.list_invoices(p, kind))
-            match = next((invoice for invoice in found if invoice.id == invoice_id), None)
-            if match is not None:
-                break
-        if match is None:
-            raise HTTPException(404, "No invoice with that id.")
+        if hasattr(app.env, "get_invoice"):
+            match = read_env(lambda: app.env.get_invoice(p, invoice_id))
+        else:
+            # Staff may only ever see receivables, so a payable id is simply not found for them.
+            kinds = ("receivable",) if p.role == "staff" else ("payable", "receivable")
+            match = None
+            for kind in kinds:
+                found = read_env(lambda kind=kind: app.env.list_invoices(p, kind))
+                match = next((invoice for invoice in found if invoice.id == invoice_id), None)
+                if match is not None:
+                    break
+            if match is None:
+                raise HTTPException(404, "No invoice with that id.")
         supplier = None
         if p.role != "staff" and match.kind == "payable":
             try:
@@ -324,7 +317,7 @@ def create_web_app(
                     "verified_account": mask_account(found.verified_account),
                 }
             )
-        return {"invoice": invoice_view(match, p), "supplier": supplier}
+        return {"invoice": invoice_view(match), "supplier": supplier}
 
     @api.get("/api/transactions")
     def transactions(
@@ -341,17 +334,20 @@ def create_web_app(
         items = read_env(lambda: app.env.list_transactions(p, start, end))
         if direction is not None:
             items = [t for t in items if t.direction == direction]
-        return {"transactions": [transaction_view(t, p) for t in items]}
+        return {"transactions": [transaction_view(t) for t in items]}
 
     @api.get("/api/transactions/{transaction_id}")
     def transaction_detail(transaction_id: str, request: Request) -> dict:
         p = signed_in(request)
-        end = app.today() + dt.timedelta(days=365)
-        items = read_env(lambda: app.env.list_transactions(p, dt.date(2000, 1, 1), end))
-        found = next((t for t in items if t.id == transaction_id), None)
-        if found is None:
-            raise HTTPException(404, "No transaction with that id.")
-        return {"transaction": transaction_view(found, p)}
+        if hasattr(app.env, "get_transaction"):
+            found = read_env(lambda: app.env.get_transaction(p, transaction_id))
+        else:
+            end = app.today() + dt.timedelta(days=365)
+            items = read_env(lambda: app.env.list_transactions(p, dt.date(2000, 1, 1), end))
+            found = next((t for t in items if t.id == transaction_id), None)
+            if found is None:
+                raise HTTPException(404, "No transaction with that id.")
+        return {"transaction": transaction_view(found)}
 
     @api.get("/api/suppliers/{supplier_id}")
     def supplier_detail(supplier_id: str, request: Request) -> dict:

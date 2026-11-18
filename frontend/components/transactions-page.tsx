@@ -9,6 +9,7 @@ import {
 } from "@/lib/brigid-api";
 import { useWorkspace } from "@/components/workspace-provider";
 import { FinanceState } from "@/components/finance-page-ui";
+import { Bars } from "@/components/loading-ui/bars";
 import "./finance-pages.css";
 
 function formatAmount(
@@ -109,45 +110,45 @@ export function TransactionsPage() {
         </div>
       </header>
 
-      <div className="brigid-filter-bar" role="region" aria-label="Filters">
-        <div className="brigid-filter-group">
-          <label htmlFor="tx-direction-filter">Direction</label>
-          <select
-            id="tx-direction-filter"
-            value={direction}
-            onChange={(event) => {
-              setState("loading");
-              setDirection(event.target.value as TransactionDirection | "");
-            }}
-          >
-            <option value="">All directions</option>
-            <option value="in">Incoming (in)</option>
-            <option value="out">Outgoing (out)</option>
-          </select>
+      {state !== "loading" && (
+        <div className="brigid-filter-bar" role="region" aria-label="Filters">
+          <div className="brigid-filter-group">
+            <label htmlFor="tx-direction-filter">Direction</label>
+            <select
+              id="tx-direction-filter"
+              value={direction}
+              onChange={(event) => {
+                setState("loading");
+                setDirection(event.target.value as TransactionDirection | "");
+              }}
+            >
+              <option value="">All directions</option>
+              <option value="in">Incoming (in)</option>
+              <option value="out">Outgoing (out)</option>
+            </select>
+          </div>
+          <div className="brigid-filter-group">
+            <label htmlFor="tx-period-filter">Period</label>
+            <select
+              id="tx-period-filter"
+              value={period}
+              onChange={(event) => {
+                setState("loading");
+                setPeriod(event.target.value as "30" | "90" | "365");
+              }}
+            >
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="365">Last 365 days</option>
+            </select>
+          </div>
         </div>
-        <div className="brigid-filter-group">
-          <label htmlFor="tx-period-filter">Period</label>
-          <select
-            id="tx-period-filter"
-            value={period}
-            onChange={(event) => {
-              setState("loading");
-              setPeriod(event.target.value as "30" | "90" | "365");
-            }}
-          >
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 90 days</option>
-            <option value="365">Last 365 days</option>
-          </select>
-        </div>
-      </div>
+      )}
 
       {state === "loading" && (
-        <FinanceState
-          icon="rules"
-          title="Loading transactions"
-          description="Fetching bank transactions from your workspace."
-        />
+        <div className="flex min-h-[220px] items-center justify-center">
+          <Bars className="h-6 w-6 text-white/75" />
+        </div>
       )}
 
       {state === "error" && (

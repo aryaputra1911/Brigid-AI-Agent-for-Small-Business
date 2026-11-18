@@ -7,6 +7,7 @@ import {
   brigidTransaction,
 } from "@/lib/brigid-api";
 import { FinanceState } from "@/components/finance-page-ui";
+import { Bars } from "@/components/loading-ui/bars";
 import "./finance-pages.css";
 
 function formatAmount(
@@ -79,11 +80,9 @@ export function TransactionDetailPage({ id }: { id: string }) {
       </Link>
 
       {state === "loading" && (
-        <FinanceState
-          icon="rules"
-          title="Loading transaction"
-          description="Fetching transaction record."
-        />
+        <div className="flex min-h-[220px] items-center justify-center">
+          <Bars className="h-6 w-6 text-white/75" />
+        </div>
       )}
 
       {state === "error" && (

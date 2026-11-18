@@ -169,6 +169,7 @@ export function LandingPage() {
                   <Link
                     key={cell.label}
                     href={cell.href}
+                    prefetch={false}
                     className="rre-area-cell"
                   >
                     {cell.label}
@@ -230,6 +231,7 @@ export function LandingPage() {
                 <Link
                   key={row.title}
                   href={row.href}
+                  prefetch={false}
                   className="rre-latest-row"
                 >
                   {row.hasPreview ? (
