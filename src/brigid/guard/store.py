@@ -71,6 +71,9 @@ class GuardStore:
             Path(path).parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(str(path), check_same_thread=False, isolation_level=None)
         self._conn.row_factory = sqlite3.Row
+        if path != ":memory:":
+            self._conn.execute("PRAGMA journal_mode=WAL;")
+            self._conn.execute("PRAGMA synchronous=NORMAL;")
         self._conn.executescript(_SCHEMA)
         self._lock = threading.RLock()
 
