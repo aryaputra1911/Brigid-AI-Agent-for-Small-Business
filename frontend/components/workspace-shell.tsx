@@ -277,20 +277,20 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
             <ChatIcon name="close" />
           </button>
         </div>
-        <button
-          className="paper-new-chat"
-          type="button"
-          disabled={!role || busy}
-          aria-label={resetting ? "Starting new chat" : "New chat"}
-          title="New chat"
-          onClick={() => void newChat()}
-        >
-          <ChatIcon name="plus" />
-          <span className="paper-sidebar-label">
-            {resetting ? "Starting…" : "New chat"}
-          </span>
-        </button>
         <nav className="paper-navigation" aria-label="Pages">
+          <button
+            className="paper-new-chat paper-nav-link"
+            type="button"
+            disabled={!role || busy}
+            aria-label={resetting ? "Starting new chat" : "New chat"}
+            title="New chat"
+            onClick={() => void newChat()}
+          >
+            <ChatIcon name="plus" />
+            <span className="paper-sidebar-label">
+              {resetting ? "Starting…" : "New chat"}
+            </span>
+          </button>
           {destinations.map((item) => (
             <Link
               key={item.href}

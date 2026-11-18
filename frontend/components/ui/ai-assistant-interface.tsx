@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { animate, motion } from "motion/react";
-import type { FormEvent, KeyboardEvent, ReactNode } from "react";
+import { Mic, Paperclip, SlidersHorizontal } from "lucide-react";
+import type { ReactNode } from "react";
 import { useWorkspace, type Message } from "@/components/workspace-provider";
 import { ChatIcon, type ChatIconName } from "./chat-icon";
 import { BrigidLogo } from "./brigid-logo";
 import { ChatBackground } from "./chat-background";
 import { PromptCard } from "./prompt-card";
+import {
+  ChatComposerAction,
+  ChatComposerFooter,
+  ChatComposerFrame,
+  ChatComposerInput,
+  ChatComposerProvider,
+  ChatComposerSubmit,
+} from "./chat-composer";
 import { useMediaQuery } from "@/lib/use-media-query";
 
 const prompts: { text: string; icon: ChatIconName }[] = [
@@ -253,29 +262,31 @@ export function AIAssistantInterface() {
       scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 100;
   }
 
-  useEffect(() => {
-    const input = composerRef.current;
-    if (!input) return;
-    input.style.height = "auto";
-    input.style.height = `${Math.min(input.scrollHeight, 160)}px`;
-  }, [draft]);
-
-  function submit(event: FormEvent) {
-    event.preventDefault();
+  const handleComposerSubmit = useCallback(() => {
     followMessages.current = true;
     void sendMessage();
-  }
-  function onComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (
-      event.key === "Enter" &&
-      !event.shiftKey &&
-      !event.nativeEvent.isComposing
-    ) {
-      event.preventDefault();
-      followMessages.current = true;
-      void sendMessage();
-    }
-  }
+  }, [sendMessage]);
+
+  const composerState = useMemo(
+    () => ({
+      value: draft,
+      attachments: [],
+      submitting: sending,
+      disabled: !role || busy,
+      canSubmit: Boolean(role && draft.trim() && !busy),
+    }),
+    [draft, sending, role, busy],
+  );
+
+  const composerActions = useMemo(
+    () => ({
+      setValue: setDraft,
+      addAttachments: () => {},
+      removeAttachment: () => {},
+      submit: handleComposerSubmit,
+    }),
+    [setDraft, handleComposerSubmit],
+  );
 
   return (
     <section
@@ -406,52 +417,72 @@ export function AIAssistantInterface() {
             {chatNotice.text}
           </div>
         )}
-        <form
-          className="paper-composer"
-          data-chat-intro="composer"
-          onSubmit={submit}
+        <ChatComposerProvider
+          state={composerState}
+          actions={composerActions}
+          inputRef={composerRef}
         >
-          <label className="sr-only" htmlFor="message-input">
-            Message Brigid
-          </label>
-          <textarea
-            id="message-input"
-            ref={composerRef}
-            value={draft}
-            rows={1}
-            onChange={(event) => setDraft(event.target.value)}
-            onKeyDown={onComposerKeyDown}
-            onFocus={() => {
-              if (window.innerWidth <= 760) {
-                window.scrollTo(0, 0);
-                requestAnimationFrame(() => window.scrollTo(0, 0));
-              }
-            }}
-            maxLength={4000}
-            placeholder="Ask Brigid about your business"
-            aria-describedby="composer-instructions"
-            disabled={!role || busy}
-          />
-          <div className="paper-composer-toolbar">
-            <div className="paper-composer-options">
-              <FutureControl icon="plus" label="Attach file" />
-              <FutureControl icon="tools" label="Tools" text="Tools" />
-              <span className="paper-coming-soon">Coming soon</span>
-            </div>
-            <div className="paper-composer-options">
-              <FutureControl icon="mic" label="Microphone" />
-              <button
-                className="paper-send paper-icon-button"
-                type="submit"
-                disabled={!role || !draft.trim() || busy}
-                aria-label={sending ? "Sending message" : "Send message"}
-                title="Send message"
-              >
-                <ChatIcon name="arrow" />
-              </button>
-            </div>
-          </div>
-        </form>
+          <ChatComposerFrame
+            className="paper-composer"
+            data-chat-intro="composer"
+          >
+            <label className="sr-only" htmlFor="message-input">
+              Message Brigid
+            </label>
+            <ChatComposerInput
+              id="message-input"
+              maxLength={4000}
+              placeholder="Ask Brigid about your business"
+              aria-describedby="composer-instructions"
+              onFocus={() => {
+                if (window.innerWidth <= 760) {
+                  window.scrollTo(0, 0);
+                  requestAnimationFrame(() => window.scrollTo(0, 0));
+                }
+              }}
+            />
+            <ChatComposerFooter className="paper-composer-toolbar">
+              <div className="paper-composer-options">
+                {/* TODO: Wire file attachments once backend upload API is ready */}
+                <ChatComposerAction
+                  label="Attach file, coming soon"
+                  title="Attach file: Coming soon"
+                  disabled
+                  className="paper-future-control paper-icon-button"
+                >
+                  <Paperclip className="size-4" aria-hidden="true" />
+                </ChatComposerAction>
+                {/* TODO: Wire tool selector once workspace tools are configurable */}
+                <ChatComposerAction
+                  label="Tools, coming soon"
+                  title="Tools: Coming soon"
+                  disabled
+                  className="paper-future-control paper-icon-button"
+                >
+                  <SlidersHorizontal className="size-4" aria-hidden="true" />
+                  <span>Tools</span>
+                </ChatComposerAction>
+                <span className="paper-coming-soon">Coming soon</span>
+              </div>
+              <div className="paper-composer-options">
+                {/* TODO: Wire voice input once speech-to-text is enabled */}
+                <ChatComposerAction
+                  label="Microphone, coming soon"
+                  title="Microphone: Coming soon"
+                  disabled
+                  className="paper-future-control paper-icon-button"
+                >
+                  <Mic className="size-4" aria-hidden="true" />
+                </ChatComposerAction>
+                <ChatComposerSubmit
+                  className="paper-send paper-icon-button"
+                  aria-label={sending ? "Sending message" : "Send message"}
+                  title="Send message"
+                />
+              </div>
+            </ChatComposerFooter>
+          </ChatComposerFrame>
+        </ChatComposerProvider>
         <p className="paper-disclaimer my-4" data-chat-intro="caption">
           Brigid can make mistakes. Check its answers. Local simulation only.
           Attachments, tools & voice: Coming soon
