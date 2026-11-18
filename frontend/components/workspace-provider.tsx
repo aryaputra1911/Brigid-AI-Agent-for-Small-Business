@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Suspense,
   createContext,
   useCallback,
   useContext,
@@ -78,11 +79,27 @@ function errorText(error: unknown): string {
     : "Something went wrong. Please retry.";
 }
 
+function SearchPromptSync({
+  onPrompt,
+}: {
+  onPrompt: (text: string) => void;
+}) {
+  const searchParams = useSearchParams();
+  const promptParam = (searchParams.get("prompt") ?? "").trim().slice(0, 4000);
+  const lastPromptRef = useRef("");
+  useEffect(() => {
+    if (promptParam && promptParam !== lastPromptRef.current) {
+      lastPromptRef.current = promptParam;
+      onPrompt(promptParam);
+    }
+  }, [promptParam, onPrompt]);
+  return null;
+}
+
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const nextMessageId = useRef(0);
   const pendingGeneration = useRef(0);
-  const searchParams = useSearchParams();
-  const promptParam = (searchParams.get("prompt") ?? "").trim().slice(0, 4000);
+  const prefetchedOwnerPending = useRef(false);
   const [info, setInfo] = useState<BrigidInfo | null>(null);
   const [infoError, setInfoError] = useState("");
   const [user, setUser] = useState<UserSession | null>(null);
@@ -91,12 +108,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   // The landing footer opens Chat with ?prompt=...: seed the composer draft as plain
   // text only. Nothing is sent automatically, and the value is capped at the composer
   // maximum because maxLength does not apply to programmatic values.
-  const [draft, setDraft] = useState(promptParam);
-  const [lastPromptParam, setLastPromptParam] = useState(promptParam);
-  if (promptParam !== lastPromptParam) {
-    setLastPromptParam(promptParam);
-    if (promptParam) setDraft(promptParam);
-  }
+  const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [sending, setSending] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -134,25 +146,42 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       typeof window !== "undefined" &&
       window.sessionStorage.getItem("brigid_has_session") === "1";
     const mePromise = hasSession ? brigidMe() : Promise.resolve(null);
-    void Promise.allSettled([brigidGet<BrigidInfo>("info"), mePromise]).then(
-      ([infoResult, meResult]) => {
-        if (!active) return;
-        const signedUser =
-          meResult.status === "fulfilled" ? meResult.value : null;
-        if (hasSession && !signedUser && typeof window !== "undefined") {
-          window.sessionStorage.removeItem("brigid_has_session");
-        }
-        setUser(signedUser);
-        setSessionChecked(true);
-        if (infoResult.status === "fulfilled") {
-          setInfo(infoResult.value);
-          setRole(signedUser?.role ?? infoResult.value.roles[0] ?? "");
-        } else {
-          setInfoError(errorText(infoResult.reason));
-          if (signedUser) setRole(signedUser.role);
-        }
-      },
+    const ownerPendingPromise = brigidGet<{ requests: PendingRequest[] }>(
+      "pending",
+      "owner",
     );
+    void Promise.allSettled([
+      brigidGet<BrigidInfo>("info"),
+      mePromise,
+      ownerPendingPromise,
+    ]).then(([infoResult, meResult, ownerPendingResult]) => {
+      if (!active) return;
+      const signedUser =
+        meResult.status === "fulfilled" ? meResult.value : null;
+      if (hasSession && !signedUser && typeof window !== "undefined") {
+        window.sessionStorage.removeItem("brigid_has_session");
+      }
+      setUser(signedUser);
+      setSessionChecked(true);
+      let resolvedRole: Role | "" = "";
+      if (infoResult.status === "fulfilled") {
+        setInfo(infoResult.value);
+        resolvedRole = signedUser?.role ?? infoResult.value.roles[0] ?? "";
+      } else {
+        setInfoError(errorText(infoResult.reason));
+        if (signedUser) resolvedRole = signedUser.role;
+      }
+      if (
+        resolvedRole === "owner" &&
+        ownerPendingResult.status === "fulfilled"
+      ) {
+        prefetchedOwnerPending.current = true;
+        setRequests(ownerPendingResult.value.requests);
+        setQueueError("");
+        setQueueState("ready");
+      }
+      setRole(resolvedRole);
+    });
     return () => {
       active = false;
     };
@@ -160,6 +189,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!role) return;
+    if (role === "owner" && prefetchedOwnerPending.current) {
+      prefetchedOwnerPending.current = false;
+      return;
+    }
     const generation = ++pendingGeneration.current;
     void brigidGet<{ requests: PendingRequest[] }>("pending", role)
       .then((result) => {
@@ -420,6 +453,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         decide,
       }}
     >
+      <Suspense fallback={null}>
+        <SearchPromptSync onPrompt={setDraft} />
+      </Suspense>
       {children}
     </WorkspaceContext.Provider>
   );
