@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource/poppins/latin-500.css";
-import "@fontsource/poppins/latin-600.css";
+import "@fontsource/outfit/latin-400.css";
+import "@fontsource/outfit/latin-500.css";
 import { PwaRegister } from "@/components/pwa-register";
 import "./globals.css";
 
