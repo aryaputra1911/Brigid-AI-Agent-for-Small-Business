@@ -1,18 +1,21 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
-import { ChatIcon, type ChatIconName } from "@/components/ui/chat-icon";
+import { useMemo, useRef, useState } from "react";
+import {
+  ChartColumn,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  MessageSquare,
+  ReceiptText,
+  User,
+} from "lucide-react";
+import {
+  LiquidNavbar,
+  type LiquidNavItem,
+} from "@/components/ui/liquid-glass-navbar";
 import "./liquid-bottom-nav.css";
-
-const ITEMS: { href: string; label: string; icon: ChatIconName }[] = [
-  { href: "/chat", label: "Chat", icon: "chat" },
-  { href: "/invoices", label: "Invoices", icon: "invoice" },
-  { href: "/transactions", label: "Cash", icon: "chart" },
-  { href: "/approvals", label: "Approvals", icon: "check" },
-  { href: "/profile", label: "Profile", icon: "user" },
-];
 
 const SWIPE_THRESHOLD_PX = 60;
 
@@ -26,6 +29,52 @@ export function LiquidBottomNav({ pendingCount }: { pendingCount: number }) {
     null,
   );
   const suppressClickRef = useRef(false);
+
+  const items = useMemo<LiquidNavItem[]>(
+    () => [
+      {
+        href: "/chat",
+        label: "Chat",
+        icon: <MessageSquare size={18} strokeWidth={1.8} aria-hidden="true" />,
+        fx: "glow",
+      },
+      {
+        href: "/invoices",
+        label: "Invoices",
+        icon: <ReceiptText size={18} strokeWidth={1.8} aria-hidden="true" />,
+        fx: "pop",
+      },
+      {
+        href: "/transactions",
+        label: "Cash",
+        icon: <ChartColumn size={18} strokeWidth={1.8} aria-hidden="true" />,
+        fx: "wave",
+      },
+      {
+        href: "/approvals",
+        label: "Approvals",
+        icon: <Check size={18} strokeWidth={1.8} aria-hidden="true" />,
+        fx: "drop",
+        badge: pendingCount,
+      },
+      {
+        href: "/profile",
+        label: "Profile",
+        icon: <User size={18} strokeWidth={1.8} aria-hidden="true" />,
+        fx: "pop",
+      },
+    ],
+    [pendingCount],
+  );
+
+  const activeIndex = useMemo(() => {
+    const idx = items.findIndex(
+      (item) =>
+        item.href &&
+        (pathname === item.href || pathname.startsWith(`${item.href}/`)),
+    );
+    return idx >= 0 ? idx : 0;
+  }, [items, pathname]);
 
   function onNavPointerDown(event: React.PointerEvent<HTMLElement>) {
     if (hiddenSide !== null) return;
@@ -93,45 +142,26 @@ export function LiquidBottomNav({ pendingCount }: { pendingCount: number }) {
 
   return (
     <div className="brigid-bnav-wrap">
-      <nav
-        aria-label="Mobile navigation"
+      <LiquidNavbar
+        items={items}
+        active={activeIndex}
+        tone="dark"
+        ariaLabel="Mobile navigation"
+        ariaHidden={hiddenSide !== null}
+        tabIndex={hiddenSide !== null ? -1 : undefined}
+        draggableItems={false}
         className={navClass}
-        aria-hidden={hiddenSide !== null}
+        itemClassName="brigid-bnav-item"
+        badgeClassName="brigid-bnav-badge"
         style={dragging ? { transform: `translateX(${dragX}px)` } : undefined}
+        onItemClick={(event) => {
+          if (suppressClickRef.current) event.preventDefault();
+        }}
         onPointerDown={onNavPointerDown}
         onPointerMove={onNavPointerMove}
         onPointerUp={onNavPointerEnd}
         onPointerCancel={onNavPointerEnd}
-      >
-        {ITEMS.map((item) => {
-          const active =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              draggable={false}
-              tabIndex={hiddenSide !== null ? -1 : undefined}
-              className={`brigid-bnav-item${active ? " is-active" : ""}`}
-              aria-current={active ? "page" : undefined}
-              onClick={(event) => {
-                if (suppressClickRef.current) event.preventDefault();
-              }}
-            >
-              <ChatIcon name={item.icon} />
-              <span>{item.label}</span>
-              {item.href === "/approvals" && pendingCount > 0 && (
-                <span
-                  className="brigid-bnav-badge"
-                  aria-label={`${pendingCount} pending`}
-                >
-                  {pendingCount}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
+      />
 
       {hiddenSide !== null && (
         <button
@@ -149,9 +179,11 @@ export function LiquidBottomNav({ pendingCount }: { pendingCount: number }) {
           onPointerUp={onHandlePointerEnd}
           onClick={() => setHiddenSide(null)}
         >
-          <ChatIcon
-            name={hiddenSide === "left" ? "chevronRight" : "chevronLeft"}
-          />
+          {hiddenSide === "left" ? (
+            <ChevronRight size={20} strokeWidth={1.8} aria-hidden="true" />
+          ) : (
+            <ChevronLeft size={20} strokeWidth={1.8} aria-hidden="true" />
+          )}
         </button>
       )}
     </div>
