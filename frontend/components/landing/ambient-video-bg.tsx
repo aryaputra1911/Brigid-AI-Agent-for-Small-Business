@@ -4,6 +4,7 @@ import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { useSaveData } from "@/lib/use-save-data";
+import "./ambient-video-bg.css";
 
 /**
  * Full-viewport fixed background video for the RRE-inspired editorial layout.
