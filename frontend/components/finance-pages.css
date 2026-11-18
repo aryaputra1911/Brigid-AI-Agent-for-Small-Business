@@ -89,12 +89,12 @@
   padding: 36px;
   border: 1px solid rgba(211, 231, 241, 0.24);
   border-radius: 12px;
-  background-color: rgba(16, 9, 20, 0.72);
+  background-color: rgba(10, 10, 10, 0.72);
   background-image: linear-gradient(
     160deg,
     rgba(211, 231, 241, 0.09) 0%,
-    rgba(16, 9, 20, 0.42) 60%,
-    rgba(7, 2, 10, 0.52) 100%
+    rgba(10, 10, 10, 0.42) 60%,
+    rgba(0, 0, 0, 0.52) 100%
   );
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
@@ -207,7 +207,7 @@
   border-color: var(--white);
 }
 .paper-action-secondary {
-  background: #07020a;
+  background: #000000;
   color: var(--white);
   border-color: var(--hairline);
 }
@@ -216,7 +216,7 @@
   border-color: var(--ice);
 }
 .paper-action-decline {
-  background: #07020a;
+  background: #000000;
   color: #ffb4a2;
   border-color: rgba(255, 180, 162, 0.55);
 }
@@ -253,12 +253,12 @@
   padding: 28px;
   border: 1px solid rgba(211, 231, 241, 0.24);
   border-radius: 12px;
-  background-color: rgba(16, 9, 20, 0.72);
+  background-color: rgba(10, 10, 10, 0.72);
   background-image: linear-gradient(
     160deg,
     rgba(211, 231, 241, 0.08) 0%,
-    rgba(16, 9, 20, 0.44) 60%,
-    rgba(7, 2, 10, 0.54) 100%
+    rgba(10, 10, 10, 0.44) 60%,
+    rgba(0, 0, 0, 0.54) 100%
   );
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
@@ -290,7 +290,7 @@
       rgba(255, 255, 255, 0.04) 50%,
       rgba(211, 231, 241, 0.08) 100%
     ),
-    rgba(14, 10, 18, 0.56);
+    rgba(10, 10, 10, 0.56);
   backdrop-filter: blur(14px) saturate(180%);
   -webkit-backdrop-filter: blur(14px) saturate(180%);
   box-shadow:
@@ -430,12 +430,12 @@
   padding: 32px;
   border: 1px solid rgba(211, 231, 241, 0.24);
   border-radius: 12px;
-  background-color: rgba(16, 9, 20, 0.72);
+  background-color: rgba(10, 10, 10, 0.72);
   background-image: linear-gradient(
     160deg,
     rgba(211, 231, 241, 0.09) 0%,
-    rgba(16, 9, 20, 0.42) 60%,
-    rgba(7, 2, 10, 0.52) 100%
+    rgba(10, 10, 10, 0.42) 60%,
+    rgba(0, 0, 0, 0.52) 100%
   );
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
@@ -678,7 +678,7 @@
   padding: 8px 12px;
   border: 1px solid var(--hairline);
   border-radius: 8px;
-  background: #100914;
+  background: #111111;
   color: var(--white);
   font-family: var(--font-body);
   font-size: 16px;
@@ -690,7 +690,7 @@
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 400;
-  background: #100914;
+  background: #111111;
   color: var(--white);
 }
 
@@ -716,13 +716,13 @@
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.14) 0%,
-      rgba(255, 255, 255, 0.04) 50%,
-      rgba(211, 231, 241, 0.08) 100%
+      rgba(255, 255, 255, 0.09) 0%,
+      rgba(255, 255, 255, 0.02) 50%,
+      rgba(211, 231, 241, 0.05) 100%
     ),
-    rgba(14, 10, 18, 0.3);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+    rgba(10, 10, 10, 0.16);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.24),
     inset 0 -1px 0 rgba(211, 231, 241, 0.1),
@@ -739,11 +739,11 @@
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.18) 0%,
-      rgba(255, 255, 255, 0.06) 50%,
-      rgba(211, 231, 241, 0.12) 100%
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(211, 231, 241, 0.09) 100%
     ),
-    rgba(14, 10, 18, 0.4);
+    rgba(10, 10, 10, 0.26);
 }
 
 .brigid-list-card-main {
@@ -811,7 +811,7 @@
       rgba(255, 255, 255, 0.04) 50%,
       rgba(211, 231, 241, 0.08) 100%
     ),
-    rgba(14, 10, 18, 0.56);
+    rgba(10, 10, 10, 0.56);
   backdrop-filter: blur(14px) saturate(180%);
   -webkit-backdrop-filter: blur(14px) saturate(180%);
   box-shadow:
@@ -862,7 +862,7 @@
       rgba(255, 255, 255, 0.03) 55%,
       rgba(255, 255, 255, 0.05) 100%
     ),
-    rgba(14, 10, 18, 0.52);
+    rgba(10, 10, 10, 0.52);
   color: var(--text-secondary);
 }
 
@@ -887,7 +887,7 @@
   padding: 28px;
   border: 1px solid var(--hairline-subtle);
   border-radius: 12px;
-  background: rgba(16, 9, 20, 0.85);
+  background: rgba(10, 10, 10, 0.85);
   margin-bottom: 20px;
 }
 

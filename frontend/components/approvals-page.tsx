@@ -121,7 +121,6 @@ export function ApprovalsPage() {
         <FinanceState
           title="Nothing waiting"
           description={`There are no requests for ${role || "this role"} right now. Continue your conversation with Brigid; anything that needs a decision will appear here.`}
-          icon="check"
         >
           <Link className="paper-action paper-action-secondary" href="/chat">
             <ChatIcon name="chat" />

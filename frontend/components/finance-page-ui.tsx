@@ -63,7 +63,7 @@ export function FinanceState({
 }: {
   title: string;
   description: string;
-  icon: ChatIconName;
+  icon?: ChatIconName;
   tone?: "neutral" | "error";
   role?: "alert" | "status";
   children?: ReactNode;
@@ -73,9 +73,11 @@ export function FinanceState({
       className={`paper-finance-state paper-finance-state-${tone}`}
       role={role}
     >
-      <span className="paper-finance-state-icon">
-        <ChatIcon name={icon} />
-      </span>
+      {icon && (
+        <span className="paper-finance-state-icon">
+          <ChatIcon name={icon} />
+        </span>
+      )}
       <h2>{title}</h2>
       <p>{description}</p>
       {children}
