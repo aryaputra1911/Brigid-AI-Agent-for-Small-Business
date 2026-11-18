@@ -346,6 +346,18 @@ class SimEnvironment:
             )
             return [BankTransaction.model_validate(dict(row)) for row in rows]
 
+    def get_transaction(self, p: Principal, transaction_id: str) -> BankTransaction:
+        with self._lock:
+            self._authorize(p, "owner", "bookkeeper")
+            self._maybe_fail("list_transactions")
+            row = self._conn.execute(
+                "SELECT * FROM bank_transactions WHERE id = ?",
+                (transaction_id,),
+            ).fetchone()
+            if row is None:
+                raise NotFound("No transaction with that id.")
+            return BankTransaction.model_validate(dict(row))
+
     def list_invoices(
         self,
         p: Principal,
@@ -372,6 +384,21 @@ class SimEnvironment:
                 params.append(due_before.isoformat())
             rows = self._conn.execute(query + " ORDER BY due_date, id", params)
             return [Invoice.model_validate(dict(row)) for row in rows]
+
+    def get_invoice(self, p: Principal, invoice_id: str) -> Invoice:
+        with self._lock:
+            self._authorize(p, "owner", "bookkeeper", "staff")
+            self._maybe_fail("list_invoices")
+            row = self._conn.execute(
+                "SELECT * FROM invoices WHERE id = ?",
+                (invoice_id,),
+            ).fetchone()
+            if row is None:
+                raise NotFound("No invoice with that id.")
+            invoice = Invoice.model_validate(dict(row))
+            if p.role == "staff" and invoice.kind != "receivable":
+                raise NotFound("No invoice with that id.")
+            return invoice
 
     def _supplier(self, supplier_id: str) -> Supplier | None:
         row = self._conn.execute("SELECT * FROM suppliers WHERE id = ?", (supplier_id,)).fetchone()

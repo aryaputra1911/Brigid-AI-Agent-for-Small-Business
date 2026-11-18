@@ -286,16 +286,19 @@ def create_web_app(
     @api.get("/api/invoices/{invoice_id}")
     def invoice_detail(invoice_id: str, request: Request) -> dict:
         p = signed_in(request)
-        # Staff may only ever see receivables, so a payable id is simply not found for them.
-        kinds = ("receivable",) if p.role == "staff" else ("payable", "receivable")
-        match = None
-        for kind in kinds:
-            found = read_env(lambda kind=kind: app.env.list_invoices(p, kind))
-            match = next((invoice for invoice in found if invoice.id == invoice_id), None)
-            if match is not None:
-                break
-        if match is None:
-            raise HTTPException(404, "No invoice with that id.")
+        if hasattr(app.env, "get_invoice"):
+            match = read_env(lambda: app.env.get_invoice(p, invoice_id))
+        else:
+            # Staff may only ever see receivables, so a payable id is simply not found for them.
+            kinds = ("receivable",) if p.role == "staff" else ("payable", "receivable")
+            match = None
+            for kind in kinds:
+                found = read_env(lambda kind=kind: app.env.list_invoices(p, kind))
+                match = next((invoice for invoice in found if invoice.id == invoice_id), None)
+                if match is not None:
+                    break
+            if match is None:
+                raise HTTPException(404, "No invoice with that id.")
         supplier = None
         if p.role != "staff" and match.kind == "payable":
             try:
@@ -336,11 +339,14 @@ def create_web_app(
     @api.get("/api/transactions/{transaction_id}")
     def transaction_detail(transaction_id: str, request: Request) -> dict:
         p = signed_in(request)
-        end = app.today() + dt.timedelta(days=365)
-        items = read_env(lambda: app.env.list_transactions(p, dt.date(2000, 1, 1), end))
-        found = next((t for t in items if t.id == transaction_id), None)
-        if found is None:
-            raise HTTPException(404, "No transaction with that id.")
+        if hasattr(app.env, "get_transaction"):
+            found = read_env(lambda: app.env.get_transaction(p, transaction_id))
+        else:
+            end = app.today() + dt.timedelta(days=365)
+            items = read_env(lambda: app.env.list_transactions(p, dt.date(2000, 1, 1), end))
+            found = next((t for t in items if t.id == transaction_id), None)
+            if found is None:
+                raise HTTPException(404, "No transaction with that id.")
         return {"transaction": transaction_view(found)}
 
     @api.get("/api/suppliers/{supplier_id}")
