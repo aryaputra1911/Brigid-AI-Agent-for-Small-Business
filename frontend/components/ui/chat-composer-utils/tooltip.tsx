@@ -77,7 +77,7 @@ function TooltipContent({
       id={ctx.id}
       role="tooltip"
       className={cn(
-        "pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-white/20 bg-[#100914] px-2.5 py-1 text-xs text-white shadow-md",
+        "pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-white/20 bg-[#111111] px-2.5 py-1 text-xs text-white shadow-md",
         className,
       )}
       {...props}

@@ -3,11 +3,11 @@
 
 .paper-shell {
   color-scheme: dark;
-  --ink: #07020a;
+  --ink: #000000;
   --white: #ffffff;
   --ice: #d3e7f1;
-  --surface: #07020a;
-  --surface-elevated: #100914;
+  --surface: #000000;
+  --surface-elevated: #111111;
   --surface-hover: rgba(255, 255, 255, 0.08);
   --hairline: rgba(255, 255, 255, 0.24);
   --hairline-subtle: rgba(255, 255, 255, 0.14);
@@ -15,8 +15,8 @@
   --text-secondary: rgba(255, 255, 255, 0.78);
   --text-muted: rgba(255, 255, 255, 0.68);
   --brand: #d3e7f1;
-  --brand-strong: #07020a;
-  --sidebar-surface: #0d0711;
+  --brand-strong: #000000;
+  --sidebar-surface: #0a0a0a;
   --sidebar-active: #d3e7f1;
   display: flex;
   height: min(100dvh, var(--paper-viewport-height, 100dvh));
@@ -207,7 +207,7 @@
       rgba(255, 255, 255, 0.04) 48%,
       rgba(211, 231, 241, 0.08) 100%
     ),
-    rgba(14, 10, 18, 0.56);
+    rgba(10, 10, 10, 0.56);
   border: 1px solid rgba(255, 255, 255, 0.24);
   backdrop-filter: blur(14px) saturate(180%);
   -webkit-backdrop-filter: blur(14px) saturate(180%);
@@ -220,7 +220,7 @@
   font-variant-numeric: tabular-nums;
 }
 .paper-nav-active .paper-nav-count {
-  background: rgba(7, 2, 10, 0.65);
+  background: rgba(0, 0, 0, 0.65);
   color: var(--ice);
   border-color: rgba(211, 231, 241, 0.4);
 }
@@ -285,7 +285,7 @@
   flex-shrink: 0;
   padding: 0 24px;
   border-bottom: 1px solid var(--hairline-subtle);
-  background: rgba(7, 2, 10, 0.85);
+  background: rgba(0, 0, 0, 0.85);
 }
 .paper-product {
   display: flex;
@@ -315,7 +315,7 @@
       rgba(255, 255, 255, 0.04) 48%,
       rgba(211, 231, 241, 0.08) 100%
     ),
-    rgba(14, 10, 18, 0.56);
+    rgba(10, 10, 10, 0.56);
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 999px;
   backdrop-filter: blur(16px) saturate(180%);
@@ -498,7 +498,7 @@
       rgba(211, 231, 241, 0.22),
       transparent 70%
     ),
-    linear-gradient(135deg, #07020a, #142634 65%, #2b4c65);
+    linear-gradient(135deg, #000000, #142634 65%, #2b4c65);
   opacity: 0.72;
 }
 .paper-prompt-surface::after {
@@ -698,12 +698,12 @@
 .paper-composer {
   border: 1px solid rgba(211, 231, 241, 0.26);
   border-radius: 16px;
-  background-color: rgba(16, 9, 20, 0.68);
+  background-color: rgba(10, 10, 10, 0.68);
   background-image: linear-gradient(
     160deg,
     rgba(211, 231, 241, 0.1) 0%,
-    rgba(16, 9, 20, 0.42) 60%,
-    rgba(7, 2, 10, 0.52) 100%
+    rgba(10, 10, 10, 0.42) 60%,
+    rgba(0, 0, 0, 0.52) 100%
   );
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
@@ -818,7 +818,7 @@
   box-shadow: 0 16px 48px rgb(0 0 0 / 65%);
   transform-origin: top right;
   color: var(--white);
-  background: #0e0812;
+  background: #000000;
   font-family: var(--font-body);
 }
 .paper-settings:focus {
@@ -854,7 +854,7 @@
   padding: 16px;
   border: 1px solid var(--hairline-subtle);
   border-radius: 4px;
-  background: #17111b;
+  background: #111111;
 }
 .paper-settings-simulation,
 .paper-settings-help {

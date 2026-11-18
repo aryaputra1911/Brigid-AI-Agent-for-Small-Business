@@ -21,7 +21,7 @@ export default function PromptMesh({ active }: { active: boolean }) {
       distortion={0.8}
       swirl={0.1}
       frame={24216.3}
-      colors={["#07020a", "#142634", "#2b4c65", "#d3e7f1"]}
+      colors={["#000000", "#142634", "#2b4c65", "#d3e7f1"]}
       minPixelRatio={1}
       maxPixelCount={30_000}
       style={{ width: "100%", height: "100%" }}
