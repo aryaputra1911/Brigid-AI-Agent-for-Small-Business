@@ -54,8 +54,6 @@ export function ApprovalsPage() {
       <FinanceHeading
         id="approvals-title"
         title="Approvals"
-        kicker="Review & decide"
-        icon="check"
         headingRef={headingRef}
         role={role}
         stackContext
@@ -123,7 +121,6 @@ export function ApprovalsPage() {
         <FinanceState
           title="Nothing waiting"
           description={`There are no requests for ${role || "this role"} right now. Continue your conversation with Brigid; anything that needs a decision will appear here.`}
-          icon="check"
         >
           <Link className="paper-action paper-action-secondary" href="/chat">
             <ChatIcon name="chat" />

@@ -454,7 +454,6 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                     id="role-select"
                     value={role}
                     disabled={!info || busy}
-                    aria-describedby="role-help"
                     onChange={(event) => changeRole(event.target.value as Role)}
                   >
                     {!role && <option value="">Loading roles</option>}
@@ -464,36 +463,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                       </option>
                     ))}
                   </select>
-                  <p id="role-help" className="paper-settings-note">
-                    For testing, not a login. Switching roles clears the visible
-                    conversation.
-                  </p>
                 </div>
-                <section
-                  className="paper-settings-simulation"
-                  aria-label="Simulation information"
-                >
-                  <span className="paper-simulation">Local simulation</span>
-                  <p>
-                    {info?.simulation ||
-                      "Synthetic data. No real bank or real money."}
-                  </p>
-                </section>
-                <section
-                  className="paper-settings-help"
-                  aria-labelledby="brigid-help-title"
-                >
-                  <h3 id="brigid-help-title">Using Brigid</h3>
-                  <p>
-                    Ask about transactions, cash flow, or invoices. Review
-                    requests in Approvals before confirming. New chat resets
-                    your current role’s conversation.
-                  </p>
-                  <p className="paper-settings-note">
-                    Model selection, uploads, voice, feedback, regeneration, and
-                    saved history are coming soon.
-                  </p>
-                </section>
               </motion.div>
             )}
           </AnimatePresence>

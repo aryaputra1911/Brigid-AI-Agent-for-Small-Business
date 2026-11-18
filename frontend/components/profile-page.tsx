@@ -64,7 +64,6 @@ export function ProfilePage() {
   return (
     <div className="paper-finance-page">
       <header className="paper-finance-heading">
-        <span className="paper-finance-kicker">Account</span>
         <h1>Profile</h1>
         <p>Inspect your active session details and environment.</p>
       </header>

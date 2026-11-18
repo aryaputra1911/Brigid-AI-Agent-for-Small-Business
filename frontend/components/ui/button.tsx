@@ -9,7 +9,7 @@ type ButtonVariant =
 type ButtonSize = "default" | "sm" | "lg" | "icon";
 
 const variantClasses: Record<ButtonVariant, string> = {
-  default: "bg-[#d3e7f1] text-[#07020a] hover:bg-white",
+  default: "bg-[#d3e7f1] text-[#000000] hover:bg-white",
   destructive: "bg-red-500/90 text-white hover:bg-red-500",
   outline: "border border-white/20 bg-transparent text-white hover:bg-white/10",
   secondary: "bg-white/12 text-white hover:bg-white/20",
