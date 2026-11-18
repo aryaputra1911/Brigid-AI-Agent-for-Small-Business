@@ -591,11 +591,21 @@ class Sentinel:
     def model_enabled(self) -> bool:
         return self._model is not None
 
-    def screen(self, texts: Sequence[str], *, source: Source = "data") -> list[Verdict]:
+    def screen(
+        self, texts: Sequence[str], *, source: Source = "data", use_model: bool = True
+    ) -> list[Verdict]:
         """One verdict per text, in order. Never raises."""
         verdicts = [heuristic_verdict(text, source) for text in texts]
         if self._model is None:
             return verdicts
+        if not use_model:
+            with self._lock:
+                return [
+                    self._cache.get(_cache_key(text, source), verdict)
+                    if not verdict.suspicious and _worth_asking(text, source)
+                    else verdict
+                    for text, verdict in zip(texts, verdicts, strict=True)
+                ]
 
         # Ask the model only about text the rules passed and that is long enough to matter.
         wanted: dict[str, str] = {}
