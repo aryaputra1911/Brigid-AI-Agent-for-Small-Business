@@ -155,14 +155,16 @@ async function main() {
     const offlineRes = await page.request.get(`${BASE}/offline.html`);
     assert.equal(offlineRes.status(), 200, "offline.html must return 200");
 
-    // 2. Login page -> demo account -> redirects to /chat
+    // 2. Login page -> submit credentials -> redirects to /chat
     await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
     const manifestLink = await page
       .locator('link[rel="manifest"]')
       .getAttribute("href");
     assert.equal(manifestLink, "/manifest.webmanifest");
 
-    await page.getByRole("button", { name: /Sari \(Owner\)/i }).click();
+    await page.getByLabel("Email Address").fill("owner@brigid.demo");
+    await page.getByLabel("Password").fill("brigid123");
+    await page.getByRole("button", { name: /^Sign In$/i }).click();
     await page.waitForURL("**/chat");
 
     // 3. Liquid Glass Bottom Nav (5 items, tap targets >= 44px, swipe sideways to hide)
