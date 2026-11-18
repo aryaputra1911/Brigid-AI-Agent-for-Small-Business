@@ -1,6 +1,48 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-input-subtle: var(--input-subtle);
+  --color-input-subtle-hover: var(--input-subtle-hover);
+  --color-ring-subtle: var(--ring-subtle);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-destructive-subtle: var(--destructive-subtle);
+  --color-destructive-subtle-hover: var(--destructive-subtle-hover);
+  --color-destructive-ring: var(--destructive-ring);
+  --animate-progress-indeterminate: progress-indeterminate 1.4s ease-in-out
+    infinite;
+}
+
+@keyframes progress-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
 :root {
+  --input-subtle: oklch(1 0 0 / 5%);
+  --input-subtle-hover: oklch(1 0 0 / 10%);
+  --ring-subtle: color-mix(in oklch, #d3e7f1 40%, transparent);
+  --primary-hover: color-mix(in oklch, #ffffff 85%, transparent);
+  --secondary-hover: var(--color-neutral-700);
+  --destructive-subtle: color-mix(
+    in oklch,
+    var(--color-red-400) 20%,
+    transparent
+  );
+  --destructive-subtle-hover: color-mix(
+    in oklch,
+    var(--color-red-400) 30%,
+    transparent
+  );
+  --destructive-ring: color-mix(
+    in oklch,
+    var(--color-red-400) 40%,
+    transparent
+  );
   color-scheme: light;
   --ink: #12213d;
   --muted: #586681;
