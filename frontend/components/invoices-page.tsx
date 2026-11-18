@@ -100,41 +100,43 @@ export function InvoicesPage() {
         </div>
       </header>
 
-      <div className="brigid-filter-bar" role="region" aria-label="Filters">
-        {!isStaff && (
+      {state !== "loading" && (
+        <div className="brigid-filter-bar" role="region" aria-label="Filters">
+          {!isStaff && (
+            <div className="brigid-filter-group">
+              <label htmlFor="invoice-kind-filter">Kind</label>
+              <select
+                id="invoice-kind-filter"
+                value={kind}
+                onChange={(event) => {
+                  setState("loading");
+                  setKind(event.target.value as InvoiceKind | "");
+                }}
+              >
+                <option value="">All kinds</option>
+                <option value="payable">Payable</option>
+                <option value="receivable">Receivable</option>
+              </select>
+            </div>
+          )}
           <div className="brigid-filter-group">
-            <label htmlFor="invoice-kind-filter">Kind</label>
+            <label htmlFor="invoice-status-filter">Status</label>
             <select
-              id="invoice-kind-filter"
-              value={kind}
+              id="invoice-status-filter"
+              value={status}
               onChange={(event) => {
                 setState("loading");
-                setKind(event.target.value as InvoiceKind | "");
+                setStatus(event.target.value as InvoiceStatus | "");
               }}
             >
-              <option value="">All kinds</option>
-              <option value="payable">Payable</option>
-              <option value="receivable">Receivable</option>
+              <option value="">All statuses</option>
+              <option value="open">Open</option>
+              <option value="paid">Paid</option>
+              <option value="void">Void</option>
             </select>
           </div>
-        )}
-        <div className="brigid-filter-group">
-          <label htmlFor="invoice-status-filter">Status</label>
-          <select
-            id="invoice-status-filter"
-            value={status}
-            onChange={(event) => {
-              setState("loading");
-              setStatus(event.target.value as InvoiceStatus | "");
-            }}
-          >
-            <option value="">All statuses</option>
-            <option value="open">Open</option>
-            <option value="paid">Paid</option>
-            <option value="void">Void</option>
-          </select>
         </div>
-      </div>
+      )}
 
       {state === "loading" && (
         <div className="flex min-h-[220px] items-center justify-center">
