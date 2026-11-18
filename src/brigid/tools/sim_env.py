@@ -244,6 +244,9 @@ class SimEnvironment:
                 raise FileExistsError(f"{db_path} already exists. Use SimEnvironment.open().")
             Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(str(db_path), check_same_thread=False, isolation_level=None)
+        if db_path != ":memory:":
+            conn.execute("PRAGMA journal_mode=WAL;")
+            conn.execute("PRAGMA synchronous=NORMAL;")
         try:
             conn.executescript(_SCHEMA + _INDEXES)
             conn.execute("BEGIN")
@@ -262,6 +265,9 @@ class SimEnvironment:
         if not Path(db_path).is_file():
             raise FileNotFoundError(f"{db_path} does not exist. Use SimEnvironment.create().")
         conn = sqlite3.connect(str(db_path), check_same_thread=False, isolation_level=None)
+        if db_path != ":memory:":
+            conn.execute("PRAGMA journal_mode=WAL;")
+            conn.execute("PRAGMA synchronous=NORMAL;")
         try:
             conn.executescript(_INDEXES)
             return cls(conn, guard_public_key, **options)
