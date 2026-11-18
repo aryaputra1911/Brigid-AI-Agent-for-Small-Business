@@ -278,6 +278,18 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           </button>
         </div>
         <nav className="paper-navigation" aria-label="Pages">
+          {pathname !== "/" && (
+            <Link
+              href="/"
+              title="Back"
+              aria-label="Back"
+              className="paper-nav-link"
+              onClick={() => setMenuOpen(false)}
+            >
+              <ChatIcon name="chevronLeft" />
+              <span className="paper-sidebar-label">Back</span>
+            </Link>
+          )}
           <button
             className="paper-new-chat paper-nav-link"
             type="button"
