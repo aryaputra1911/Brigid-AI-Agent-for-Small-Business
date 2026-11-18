@@ -40,6 +40,11 @@ CREATE TABLE IF NOT EXISTS review_items (
     status TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS counters (name TEXT PRIMARY KEY, value INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_mandates_active ON mandates (active);
+CREATE INDEX IF NOT EXISTS idx_executions_executed_at ON executions (executed_at);
+CREATE INDEX IF NOT EXISTS idx_proposal_events_user_at ON proposal_events (user_id, at);
+CREATE INDEX IF NOT EXISTS idx_review_items_inv_reason_status
+    ON review_items (invoice_id, reason_code, status);
 """
 
 

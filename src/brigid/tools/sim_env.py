@@ -95,6 +95,13 @@ CREATE TABLE payments (
 );
 """
 
+_INDEXES = """
+CREATE INDEX IF NOT EXISTS idx_bank_tx_date_id ON bank_transactions (date, id);
+CREATE INDEX IF NOT EXISTS idx_book_entries_date_id ON book_entries (date, id);
+CREATE INDEX IF NOT EXISTS idx_invoices_kind_status_due_id ON invoices (kind, status, due_date, id);
+CREATE INDEX IF NOT EXISTS idx_invoices_kind_due_id ON invoices (kind, due_date, id);
+"""
+
 
 class SeedDataError(ValueError):
     """Raised when a seed file is missing or malformed."""
@@ -222,6 +229,10 @@ class SimEnvironment:
         if row is None:
             raise SeedDataError("The database holds no business")
         self._business = _Business.model_validate(dict(row))
+        self._users_by_id: dict[str, tuple[str, str]] = {
+            r["id"]: (r["role"], r["business_id"])
+            for r in self._conn.execute("SELECT id, role, business_id FROM users")
+        }
 
     @classmethod
     def create(
@@ -234,7 +245,7 @@ class SimEnvironment:
             Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(str(db_path), check_same_thread=False, isolation_level=None)
         try:
-            conn.executescript(_SCHEMA)
+            conn.executescript(_SCHEMA + _INDEXES)
             conn.execute("BEGIN")
             _load_seed(conn, Path(seed_dir))
             conn.execute("COMMIT")
@@ -252,6 +263,7 @@ class SimEnvironment:
             raise FileNotFoundError(f"{db_path} does not exist. Use SimEnvironment.create().")
         conn = sqlite3.connect(str(db_path), check_same_thread=False, isolation_level=None)
         try:
+            conn.executescript(_INDEXES)
             return cls(conn, guard_public_key, **options)
         except BaseException:
             conn.close()
@@ -306,10 +318,8 @@ class SimEnvironment:
         claimed one, and that role must be allowed. A claimed role alone is never enough."""
         if p.business_id != self._business.id:
             raise AccessDenied("This business is not available to you.")
-        row = self._conn.execute(
-            "SELECT role, business_id FROM users WHERE id = ?", (p.user_id,)
-        ).fetchone()
-        if row is None or row["role"] != p.role or row["business_id"] != p.business_id:
+        user = self._users_by_id.get(p.user_id)
+        if user is None or user[0] != p.role or user[1] != p.business_id:
             raise AccessDenied("Your identity could not be verified.")
         if p.role not in allowed:
             raise AccessDenied("Your role does not allow this.")
