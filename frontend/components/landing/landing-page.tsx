@@ -2,9 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { AmbientVideoBg } from "./ambient-video-bg";
 import { FooterCutoutVideo } from "./footer-cutout-video";
-import { CornerButton } from "./corner-button";
 import { FooterLauncher } from "./footer-launcher";
-import { LandingHeader } from "./landing-interactions";
+import {
+  LandingHeader,
+  SystemCornerButton,
+  SystemLink,
+} from "./landing-interactions";
 import { RreAccordions } from "./rre-accordions";
 import { RreScenarioSlider } from "./rre-scenario-slider";
 import "./landing.css";
@@ -101,12 +104,12 @@ export function LandingPage() {
                 on synthetic business data so you can inspect every step safely.
               </p>
               <div className="rre-hero__actions">
-                <CornerButton href="/chat" variant="light">
+                <SystemCornerButton href="/chat" variant="light">
                   OPEN WORKSPACE
-                </CornerButton>
-                <CornerButton href="/approvals" variant="light">
+                </SystemCornerButton>
+                <SystemCornerButton href="/approvals" variant="light">
                   REVIEW APPROVALS
-                </CornerButton>
+                </SystemCornerButton>
               </div>
             </div>
           </div>
@@ -130,9 +133,9 @@ export function LandingPage() {
                   Every proposal goes through fixed policy checks before it ever
                   reaches your approval queue.
                 </p>
-                <CornerButton href="/approvals" variant="dark">
+                <SystemCornerButton href="/approvals" variant="dark">
                   REVIEW APPROVALS
-                </CornerButton>
+                </SystemCornerButton>
               </div>
 
               <div className="rre-guardrails">
@@ -166,14 +169,14 @@ export function LandingPage() {
 
               <div className="rre-areas-grid">
                 {capabilityLinks.map((cell) => (
-                  <Link
+                  <SystemLink
                     key={cell.label}
                     href={cell.href}
                     prefetch={false}
                     className="rre-area-cell"
                   >
                     {cell.label}
-                  </Link>
+                  </SystemLink>
                 ))}
               </div>
             </div>
@@ -195,9 +198,9 @@ export function LandingPage() {
                   Conversation handles analysis and drafting. Policy rules and
                   human owners handle every final decision.
                 </p>
-                <CornerButton href="/mandate" variant="dark">
+                <SystemCornerButton href="/mandate" variant="dark">
                   DRAFT A MANDATE
-                </CornerButton>
+                </SystemCornerButton>
               </div>
 
               <RreAccordions />
@@ -221,14 +224,14 @@ export function LandingPage() {
               <h2 id="workspace-heading" className="rre-h2">
                 Inside the workspace
               </h2>
-              <CornerButton href="/chat" variant="light">
+              <SystemCornerButton href="/chat" variant="light">
                 OPEN CHAT
-              </CornerButton>
+              </SystemCornerButton>
             </div>
 
             <div className="rre-latest-list">
               {workspaceRows.map((row) => (
-                <Link
+                <SystemLink
                   key={row.title}
                   href={row.href}
                   prefetch={false}
@@ -247,7 +250,7 @@ export function LandingPage() {
                   )}
                   <span className="rre-latest-row__title">{row.title}</span>
                   <span className="rre-latest-row__tag">{row.tag}</span>
-                </Link>
+                </SystemLink>
               ))}
             </div>
           </section>
@@ -262,15 +265,15 @@ export function LandingPage() {
               <Link href="#top" className="rre-footer__big-link">
                 Home
               </Link>
-              <Link href="/chat" className="rre-footer__big-link">
+              <SystemLink href="/chat" className="rre-footer__big-link">
                 Chat
-              </Link>
-              <Link href="/approvals" className="rre-footer__big-link">
+              </SystemLink>
+              <SystemLink href="/approvals" className="rre-footer__big-link">
                 Approvals
-              </Link>
-              <Link href="/mandate" className="rre-footer__big-link">
+              </SystemLink>
+              <SystemLink href="/mandate" className="rre-footer__big-link">
                 Mandate
-              </Link>
+              </SystemLink>
             </nav>
 
             <div className="rre-footer__sublinks">
@@ -301,12 +304,12 @@ export function LandingPage() {
           <p className="rre-footer__meta">LOCAL SIMULATION MODE</p>
           <p className="rre-footer__meta">SYNTHETIC BUSINESS DATA ONLY</p>
           <div className="rre-footer__bottom-actions">
-            <CornerButton href="/chat" variant="light">
+            <SystemCornerButton href="/chat" variant="light">
               OPEN CHAT
-            </CornerButton>
-            <CornerButton href="/approvals" variant="light">
+            </SystemCornerButton>
+            <SystemCornerButton href="/approvals" variant="light">
               APPROVALS
-            </CornerButton>
+            </SystemCornerButton>
           </div>
         </div>
       </footer>

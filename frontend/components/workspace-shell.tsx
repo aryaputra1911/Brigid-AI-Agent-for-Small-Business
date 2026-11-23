@@ -296,13 +296,13 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           {pathname !== "/" && (
             <Link
               href="/"
-              title="Back"
-              aria-label="Back"
+              title="Homepage"
+              aria-label="Homepage"
               className="paper-nav-link"
               onClick={() => setMenuOpen(false)}
             >
-              <ChatIcon name="chevronLeft" />
-              <span className="paper-sidebar-label">Back</span>
+              <ChatIcon name="home" />
+              <span className="paper-sidebar-label">Homepage</span>
             </Link>
           )}
           <button

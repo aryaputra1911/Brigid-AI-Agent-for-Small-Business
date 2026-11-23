@@ -2,7 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { hasStoredSession } from "@/lib/brigid-api";
 import { CornerButton } from "./corner-button";
+import { toAuthAwareHref } from "./landing-interactions";
 
 export function FooterLauncher() {
   const router = useRouter();
@@ -17,7 +19,8 @@ export function FooterLauncher() {
       return;
     }
     setError("");
-    router.push(`/chat?prompt=${encodeURIComponent(trimmed)}`);
+    const target = `/chat?prompt=${encodeURIComponent(trimmed)}`;
+    router.push(toAuthAwareHref(target, hasStoredSession()));
   };
 
   return (
