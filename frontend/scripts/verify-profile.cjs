@@ -13,22 +13,32 @@ async function main() {
     });
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("brigid_has_session", "1");
+    });
     await page.route("**/api/brigid/**", async (route) => {
       const action = new URL(route.request().url()).pathname.split("/").at(-1);
       assert(
-        ["info", "pending"].includes(action),
+        ["info", "pending", "me"].includes(action),
         `Unexpected action: ${action}`,
       );
       await route.fulfill({
         json:
-          action === "info"
+          action === "me"
             ? {
-                roles: ["owner", "bookkeeper", "staff"],
-                simulation:
-                  "Local simulation. No real money or bank connections.",
-                screening_model: false,
+                user_id: "user-owner",
+                role: "owner",
+                business_id: "biz-demo",
+                name: "Sari",
               }
-            : { requests: [] },
+            : action === "info"
+              ? {
+                  roles: ["owner", "bookkeeper", "staff"],
+                  simulation:
+                    "Local simulation. No real money or bank connections.",
+                  screening_model: false,
+                }
+              : { requests: [] },
       });
     });
     await page.goto(

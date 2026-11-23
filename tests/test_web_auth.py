@@ -300,3 +300,25 @@ def test_oauth_prepare_prompts_role_only_for_new_signup(world, tmp_path):
     assert prep_existing.status_code == 200
     assert prep_existing.json()["status"] == "authenticated"
     assert prep_existing.json()["user"]["role"] == "bookkeeper"
+
+
+def test_demo_endpoint_issues_owner_session_named_demo(world):
+    client = _client(world)
+
+    demo = client.post("/api/demo", json={})
+    assert demo.status_code == 200
+    body = demo.json()
+    assert body["token"]
+    assert body["user"]["name"] == "Demo"
+    assert body["user"]["role"] == "owner"
+    assert client.cookies.get("brigid_session") == body["token"]
+
+    me = client.get("/api/me")
+    assert me.status_code == 200
+    assert me.json()["name"] == "Demo"
+
+    invoices = client.get("/api/invoices")
+    assert invoices.status_code == 200
+
+    client.post("/api/logout", json={})
+    assert client.get("/api/me").status_code == 401

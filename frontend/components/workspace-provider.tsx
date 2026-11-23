@@ -18,11 +18,14 @@ import {
   type PendingRequest,
   type Role,
   type UserSession,
+  brigidDemo,
   brigidGet,
   brigidLogin,
   brigidLogout,
   brigidMe,
   brigidPost,
+  hasStoredSession,
+  markStoredSession,
 } from "@/lib/brigid-api";
 import { decisionTone } from "@/lib/decision-tone";
 
@@ -38,6 +41,7 @@ export type QueueState = "loading" | "ready" | "error";
 type WorkspaceContextValue = {
   info: BrigidInfo | null;
   infoError: string;
+  demoError: string;
   user: UserSession | null;
   sessionChecked: boolean;
   role: Role | "";
@@ -60,6 +64,7 @@ type WorkspaceContextValue = {
   signIn: (email: string, password: string) => Promise<UserSession>;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
+  retryDemo: () => Promise<void>;
   retryInfo: () => Promise<void>;
   retryPending: () => Promise<void>;
   sendMessage: () => Promise<void>;
@@ -79,11 +84,7 @@ function errorText(error: unknown): string {
     : "Something went wrong. Please retry.";
 }
 
-function SearchPromptSync({
-  onPrompt,
-}: {
-  onPrompt: (text: string) => void;
-}) {
+function SearchPromptSync({ onPrompt }: { onPrompt: (text: string) => void }) {
   const searchParams = useSearchParams();
   const promptParam = (searchParams.get("prompt") ?? "").trim().slice(0, 4000);
   const lastPromptRef = useRef("");
@@ -102,6 +103,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const prefetchedOwnerPending = useRef(false);
   const [info, setInfo] = useState<BrigidInfo | null>(null);
   const [infoError, setInfoError] = useState("");
+  const [demoError, setDemoError] = useState("");
   const [user, setUser] = useState<UserSession | null>(null);
   const [sessionChecked, setSessionChecked] = useState(false);
   const [role, setRole] = useState<Role | "">("");
@@ -140,42 +142,128 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const startDemoSession = useCallback(async () => {
+    setDemoError("");
+    const [infoResult, demoResult] = await Promise.allSettled([
+      brigidGet<BrigidInfo>("info"),
+      brigidDemo(),
+    ]);
+    if (demoResult.status === "fulfilled") {
+      markStoredSession(true);
+      const demoUser = demoResult.value.user;
+      setUser(demoUser);
+      setSessionChecked(true);
+      if (infoResult.status === "fulfilled") {
+        setInfo(infoResult.value);
+        setInfoError("");
+      } else {
+        setInfoError(errorText(infoResult.reason));
+      }
+      setRole(demoUser.role);
+      return;
+    }
+    markStoredSession(false);
+    setUser(null);
+    setRole("");
+    setDemoError(errorText(demoResult.reason));
+    setSessionChecked(true);
+  }, []);
+
   useEffect(() => {
     let active = true;
-    const isOAuthReturn =
-      typeof window !== "undefined" &&
-      new URLSearchParams(window.location.search).get("oauth") === "1";
+    const params =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search)
+        : null;
+    const isDemoEntry = params?.get("demo") === "1";
+    const isOAuthReturn = params?.get("oauth") === "1";
+
+    if (isDemoEntry && typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("demo");
+      window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+      void Promise.allSettled([
+        brigidGet<BrigidInfo>("info"),
+        brigidDemo(),
+      ]).then(([infoResult, demoResult]) => {
+        if (!active) return;
+        if (demoResult.status === "fulfilled") {
+          markStoredSession(true);
+          const demoUser = demoResult.value.user;
+          setUser(demoUser);
+          setDemoError("");
+          setSessionChecked(true);
+          if (infoResult.status === "fulfilled") {
+            setInfo(infoResult.value);
+            setInfoError("");
+          } else {
+            setInfoError(errorText(infoResult.reason));
+          }
+          setRole(demoUser.role);
+        } else {
+          markStoredSession(false);
+          setUser(null);
+          setRole("");
+          setDemoError(errorText(demoResult.reason));
+          setSessionChecked(true);
+        }
+      });
+      return () => {
+        active = false;
+      };
+    }
+
     if (isOAuthReturn && typeof window !== "undefined") {
-      window.sessionStorage.setItem("brigid_has_session", "1");
+      markStoredSession(true);
       const url = new URL(window.location.href);
       url.searchParams.delete("oauth");
       window.history.replaceState({}, "", url.pathname + url.search + url.hash);
     }
-    const hasSession =
-      typeof window !== "undefined" &&
-      window.sessionStorage.getItem("brigid_has_session") === "1";
-    const mePromise = hasSession ? brigidMe() : Promise.resolve(null);
+
+    const hasSession = isOAuthReturn || hasStoredSession();
+    if (!hasSession) {
+      void Promise.resolve().then(() => {
+        if (!active) return;
+        setUser(null);
+        setSessionChecked(true);
+      });
+      void brigidGet<BrigidInfo>("info")
+        .then((result) => {
+          if (!active) return;
+          setInfo(result);
+        })
+        .catch((error: unknown) => {
+          if (!active) return;
+          setInfoError(errorText(error));
+        });
+      return () => {
+        active = false;
+      };
+    }
+
     const ownerPendingPromise = brigidGet<{ requests: PendingRequest[] }>(
       "pending",
       "owner",
     );
     void Promise.allSettled([
       brigidGet<BrigidInfo>("info"),
-      mePromise,
+      brigidMe(),
       ownerPendingPromise,
     ]).then(([infoResult, meResult, ownerPendingResult]) => {
       if (!active) return;
       const signedUser =
         meResult.status === "fulfilled" ? meResult.value : null;
-      if (hasSession && !signedUser && typeof window !== "undefined") {
-        window.sessionStorage.removeItem("brigid_has_session");
+      if (!signedUser) {
+        markStoredSession(false);
       }
       setUser(signedUser);
       setSessionChecked(true);
       let resolvedRole: Role | "" = "";
       if (infoResult.status === "fulfilled") {
         setInfo(infoResult.value);
-        resolvedRole = signedUser?.role ?? infoResult.value.roles[0] ?? "";
+        if (signedUser) {
+          resolvedRole = signedUser.role;
+        }
       } else {
         setInfoError(errorText(infoResult.reason));
         if (signedUser) resolvedRole = signedUser.role;
@@ -380,9 +468,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   async function signIn(email: string, password: string): Promise<UserSession> {
     const result = await brigidLogin(email, password);
-    if (typeof window !== "undefined") {
-      window.sessionStorage.setItem("brigid_has_session", "1");
-    }
+    markStoredSession(true);
+    setDemoError("");
     setUser(result.user);
     setSessionChecked(true);
     pendingGeneration.current += 1;
@@ -398,13 +485,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   async function signOut(): Promise<void> {
     await brigidLogout();
-    if (typeof window !== "undefined") {
-      window.sessionStorage.removeItem("brigid_has_session");
-    }
+    markStoredSession(false);
+    setDemoError("");
     setUser(null);
     setSessionChecked(true);
     pendingGeneration.current += 1;
-    setRole(info?.roles[0] ?? "");
+    setRole("");
     setQueueState("loading");
     setRequests([]);
     setMessages([]);
@@ -432,6 +518,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       value={{
         info,
         infoError,
+        demoError,
         user,
         sessionChecked,
         role,
@@ -454,6 +541,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         signIn,
         signOut,
         refreshSession,
+        retryDemo: startDemoSession,
         retryInfo,
         retryPending,
         sendMessage,

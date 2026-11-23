@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 
 import {
+  brigidDemo,
   brigidGet,
   brigidInvoice,
   brigidInvoices,
@@ -137,6 +138,27 @@ test("brigidLogin, brigidMe, and brigidLogout call the session proxy endpoints",
   assert.equal(me.name, "Sari");
   assert.equal(calls[2].path, "/api/brigid/logout");
   assert.equal(logout.status, "logged_out");
+});
+
+test("brigidDemo calls the demo session proxy endpoint", async () => {
+  useFetch(() =>
+    jsonResponse(200, {
+      token: "demo-tok",
+      user: {
+        user_id: "user-owner",
+        role: "owner",
+        business_id: "b1",
+        name: "Demo",
+      },
+    }),
+  );
+
+  const demo = await brigidDemo();
+
+  assert.equal(calls[0].path, "/api/brigid/demo");
+  assert.equal(calls[0].init?.method, "POST");
+  assert.equal(demo.user.name, "Demo");
+  assert.equal(demo.user.role, "owner");
 });
 
 test("brigidInvoices and brigidTransactions build query parameters and detail paths", async () => {

@@ -19,7 +19,16 @@ import {
   brigidOAuthFinalize,
   brigidOAuthPending,
   brigidSignup,
+  markStoredSession,
 } from "@/lib/brigid-api";
+
+function safeNextPath(raw: string | null): string {
+  if (!raw) return "/chat";
+  if (!raw.startsWith("/") || raw.startsWith("//") || raw.startsWith("/\\")) {
+    return "/chat";
+  }
+  return raw;
+}
 
 function LoginFormContainer() {
   const router = useRouter();
@@ -28,6 +37,7 @@ function LoginFormContainer() {
     searchParams.get("mode") === "signup" ? "signup" : "login";
   const queryStep = searchParams.get("step");
   const queryError = searchParams.get("error") ?? "";
+  const nextPath = safeNextPath(searchParams.get("next"));
 
   const [modeOverride, setModeOverride] = useState<AuthMode | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -108,10 +118,8 @@ function LoginFormContainer() {
       } else {
         await brigidLogin(nextEmail, nextPassword);
       }
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem("brigid_has_session", "1");
-      }
-      router.push("/chat");
+      markStoredSession(true);
+      router.push(nextPath);
       router.refresh();
     } catch (err) {
       setErrorOverride(
@@ -137,10 +145,8 @@ function LoginFormContainer() {
     setSubmitting(true);
     try {
       await brigidOAuthFinalize(role);
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem("brigid_has_session", "1");
-      }
-      router.push("/chat");
+      markStoredSession(true);
+      router.push(nextPath);
       router.refresh();
     } catch (err) {
       setErrorOverride(

@@ -233,6 +233,25 @@ async function main() {
       );
       assert.equal(overflow, false, `No horizontal overflow on ${routePath} at 320px`);
     }
+    const signOutButton = page.getByRole("button", { name: "Sign out", exact: true });
+    await signOutButton.waitFor({ state: "visible" });
+    const signOutRgb = await signOutButton.evaluate((el) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1;
+      canvas.height = 1;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = getComputedStyle(el).backgroundColor;
+      ctx.fillRect(0, 0, 1, 1);
+      const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+      return { r, g, b, a };
+    });
+    assert.ok(
+      signOutRgb.a > 0 &&
+        signOutRgb.r > 120 &&
+        signOutRgb.r > signOutRgb.g * 2 &&
+        signOutRgb.r > signOutRgb.b * 2,
+      `Sign out badge must be styled red, got: ${JSON.stringify(signOutRgb)}`,
+    );
 
     assert.deepEqual(errors, [], `Unexpected page errors: ${errors.join("; ")}`);
     console.log("PASS: Critical PWA, pages, list->detail, and Liquid Glass swipe nav verified.");

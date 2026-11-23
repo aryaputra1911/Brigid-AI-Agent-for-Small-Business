@@ -16,6 +16,9 @@ async function main() {
       const errors = [];
       page.setDefaultNavigationTimeout(120_000);
       page.on("pageerror", (error) => errors.push(error.message));
+      await page.addInitScript(() => {
+        window.sessionStorage.setItem("brigid_has_session", "1");
+      });
       if (fallback)
         await page.addInitScript(() => {
           const original = HTMLCanvasElement.prototype.getContext;
@@ -29,22 +32,29 @@ async function main() {
         const action = new URL(route.request().url()).pathname
           .split("/")
           .at(-1);
-        assert(["info", "pending", "chat"].includes(action));
+        assert(["info", "pending", "chat", "me"].includes(action));
         return route.fulfill({
           json:
-            action === "info"
+            action === "me"
               ? {
-                  roles: ["owner"],
-                  simulation: "Test simulation",
-                  screening_model: false,
+                  user_id: "user-owner",
+                  role: "owner",
+                  business_id: "biz-demo",
+                  name: "Sari",
                 }
-              : action === "pending"
-                ? { requests: [] }
-                : {
-                    reply: "Test reply. No financial action performed.",
-                    blocked: false,
-                    new_requests: [],
-                  },
+              : action === "info"
+                ? {
+                    roles: ["owner"],
+                    simulation: "Test simulation",
+                    screening_model: false,
+                  }
+                : action === "pending"
+                  ? { requests: [] }
+                  : {
+                      reply: "Test reply. No financial action performed.",
+                      blocked: false,
+                      new_requests: [],
+                    },
         });
       });
       await page.goto(

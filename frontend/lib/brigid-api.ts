@@ -130,6 +130,43 @@ export async function brigidLogin(
   });
 }
 
+export async function brigidDemo(): Promise<LoginResult> {
+  return brigidRequest<LoginResult>("/api/brigid/demo", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  });
+}
+
+const SESSION_FLAG_KEY = "brigid_has_session";
+
+export function hasStoredSession(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return (
+      window.sessionStorage.getItem(SESSION_FLAG_KEY) === "1" ||
+      window.localStorage.getItem(SESSION_FLAG_KEY) === "1"
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function markStoredSession(active: boolean): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (active) {
+      window.sessionStorage.setItem(SESSION_FLAG_KEY, "1");
+      window.localStorage.setItem(SESSION_FLAG_KEY, "1");
+    } else {
+      window.sessionStorage.removeItem(SESSION_FLAG_KEY);
+      window.localStorage.removeItem(SESSION_FLAG_KEY);
+    }
+  } catch {
+    // Ignore storage errors in restricted browser contexts.
+  }
+}
+
 export async function brigidSignup(
   name: string,
   email: string,

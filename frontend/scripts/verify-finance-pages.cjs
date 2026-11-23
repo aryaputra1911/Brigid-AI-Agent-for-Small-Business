@@ -99,6 +99,9 @@ async function main() {
       });
     }
     page.on("pageerror", (error) => errors.push(error.message));
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("brigid_has_session", "1");
+    });
     let requests = structuredClone(fixtures),
       failPending = false,
       failInfo = false,
@@ -112,7 +115,14 @@ async function main() {
       calls.push(action);
       let status = 200,
         body = {};
-      if (action === "info") {
+      if (action === "me") {
+        body = {
+          user_id: "user-owner",
+          role: "owner",
+          business_id: "biz-demo",
+          name: "Sari",
+        };
+      } else if (action === "info") {
         status = failInfo ? 503 : 200;
         body = failInfo
           ? { detail: "Test connection unavailable" }

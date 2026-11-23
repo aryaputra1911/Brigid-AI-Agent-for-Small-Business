@@ -16,6 +16,7 @@ async function main() {
       const errors = [];
       page.on("pageerror", (error) => errors.push(error.message));
       await page.addInitScript(() => {
+        window.sessionStorage.setItem("brigid_has_session", "1");
         window.__chatIntroTimings = [];
         const original = Element.prototype.animate;
         Element.prototype.animate = function (keyframes, options) {
@@ -37,21 +38,28 @@ async function main() {
         const action = new URL(route.request().url()).pathname
           .split("/")
           .at(-1);
-        assert(["info", "pending", "chat", "reset"].includes(action));
+        assert(["info", "pending", "chat", "reset", "me"].includes(action));
         if (action === "info") await ready;
         return route.fulfill({
           json:
-            action === "info"
+            action === "me"
               ? {
-                  roles: ["owner"],
-                  simulation: "Test simulation",
-                  screening_model: false,
+                  user_id: "user-owner",
+                  role: "owner",
+                  business_id: "biz-demo",
+                  name: "Sari",
                 }
-              : action === "pending"
-                ? { requests: [] }
-                : action === "chat"
-                  ? { reply: "Test reply", blocked: false, new_requests: [] }
-                  : { status: "reset" },
+              : action === "info"
+                ? {
+                    roles: ["owner"],
+                    simulation: "Test simulation",
+                    screening_model: false,
+                  }
+                : action === "pending"
+                  ? { requests: [] }
+                  : action === "chat"
+                    ? { reply: "Test reply", blocked: false, new_requests: [] }
+                    : { status: "reset" },
         });
       });
       await page.goto(

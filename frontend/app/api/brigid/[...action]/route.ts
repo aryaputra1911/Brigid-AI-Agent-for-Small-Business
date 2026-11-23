@@ -13,6 +13,7 @@ const DETAIL_GET_PREFIXES = new Set(["invoices", "transactions", "suppliers"]);
 const POST_ACTIONS = new Set([
   "login",
   "signup",
+  "demo",
   "logout",
   "chat",
   "confirm",
