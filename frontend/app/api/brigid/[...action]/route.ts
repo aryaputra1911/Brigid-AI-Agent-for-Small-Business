@@ -12,6 +12,7 @@ const SINGLE_GET_ACTIONS = new Set([
 const DETAIL_GET_PREFIXES = new Set(["invoices", "transactions", "suppliers"]);
 const POST_ACTIONS = new Set([
   "login",
+  "signup",
   "logout",
   "chat",
   "confirm",

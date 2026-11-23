@@ -142,6 +142,15 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    const isOAuthReturn =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("oauth") === "1";
+    if (isOAuthReturn && typeof window !== "undefined") {
+      window.sessionStorage.setItem("brigid_has_session", "1");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("oauth");
+      window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+    }
     const hasSession =
       typeof window !== "undefined" &&
       window.sessionStorage.getItem("brigid_has_session") === "1";
