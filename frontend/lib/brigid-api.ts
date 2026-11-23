@@ -130,6 +130,19 @@ export async function brigidLogin(
   });
 }
 
+export async function brigidSignup(
+  name: string,
+  email: string,
+  password: string,
+  role: Role = "owner",
+): Promise<LoginResult> {
+  return brigidRequest<LoginResult>("/api/brigid/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password, role }),
+  });
+}
+
 export async function brigidLogout(): Promise<{ status: string }> {
   return brigidRequest<{ status: string }>("/api/brigid/logout", {
     method: "POST",

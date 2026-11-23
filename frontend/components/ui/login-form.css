@@ -57,7 +57,19 @@
 
 @media (prefers-reduced-motion: reduce) {
   .login-glass-card::before,
-  .login-glass-btn::before {
+  .login-glass-btn:disabled,
+.login-oauth-btn:disabled {
+  cursor: not-allowed;
+}
+
+.login-oauth-btn {
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.login-glass-btn::before {
     animation: none;
     opacity: 0.85;
   }
@@ -72,6 +84,7 @@
 
 .login-glass-btn {
   position: relative;
+  cursor: pointer;
   background:
     linear-gradient(
       180deg,
@@ -102,6 +115,18 @@
       rgba(211, 231, 241, 0.18) 100%
     ),
     rgba(14, 10, 18, 0.32);
+}
+
+.login-glass-btn:disabled,
+.login-oauth-btn:disabled {
+  cursor: not-allowed;
+}
+
+.login-oauth-btn {
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .login-glass-btn::before {

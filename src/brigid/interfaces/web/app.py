@@ -17,6 +17,8 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import hmac
+import os
+import re
 import secrets
 import sys
 import threading
@@ -35,6 +37,7 @@ from brigid.app import BrigidApp, SetupError, build_app
 from brigid.config import ConfigError, load_settings
 from brigid.guard.sentinel import heuristic_verdict
 from brigid.interfaces.common import SIMULATION_NOTE, draft_demo_mandate, request_view
+from brigid.interfaces.web.auth import AccountConflictError, AccountStore, OAuthProvider
 from brigid.models import BankTransaction, Direction, Invoice, Principal
 from brigid.tools.base import AccessDenied, NotFound, ToolFailure
 
@@ -96,8 +99,32 @@ class LoginBody(BaseModel):
     password: str
 
 
+class SignupBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    name: str = Field(min_length=1, max_length=100)
+    email: str = Field(min_length=3, max_length=254)
+    password: str = Field(min_length=8, max_length=128)
+    role: Role = "owner"
+
+
+class OAuthCompleteBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    provider: OAuthProvider
+    provider_user_id: str = Field(min_length=1, max_length=200)
+    email: str = Field(min_length=3, max_length=254)
+    name: str = Field(min_length=1, max_length=100)
+    intent: Literal["signup", "login"]
+    role: Role = "owner"
+
+
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
 def create_web_app(
-    app: BrigidApp, principals: Mapping[str, Principal], hosts: Sequence[str] = LOCAL_HOSTS
+    app: BrigidApp,
+    principals: Mapping[str, Principal],
+    hosts: Sequence[str] = LOCAL_HOSTS,
+    account_store: AccountStore | None = None,
 ) -> FastAPI:
     """The FastAPI application. ``principals`` maps each role the page offers to the user it
     acts as. ``hosts`` are the host names this server answers to; any other ``Host`` header is
@@ -108,8 +135,11 @@ def create_web_app(
     allowed = [f"[{host}]" if ":" in host else host for host in hosts]
     api.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed)
 
-    # Server-side sessions: token -> principal. Small, in memory, and gone on restart.
-    sessions: dict[str, Principal] = {}
+    accounts = account_store or AccountStore()
+    demo_emails = [account.email for account in DEMO_ACCOUNTS]
+
+    # Server-side sessions: token -> (principal, display_name).
+    sessions: dict[str, tuple[Principal, str | None]] = {}
     session_lock = threading.Lock()
 
     def principal(role: str) -> Principal:
@@ -127,13 +157,13 @@ def create_web_app(
             tokens.append(cookie)
         return [token for token in tokens if token]
 
-    def session_of(request: Request) -> tuple[str, Principal] | None:
+    def session_of(request: Request) -> tuple[str, Principal, str | None] | None:
         """The session for a request, from the Bearer header or the session cookie."""
         for token in presented_tokens(request):
             with session_lock:
                 found = sessions.get(token)
             if found is not None:
-                return token, found
+                return token, found[0], found[1]
         return None
 
     def signed_in(request: Request) -> Principal:
@@ -178,14 +208,27 @@ def create_web_app(
             return False
         return heuristic_verdict(text, "data").suspicious
 
-    def user_view(p: Principal) -> dict:
+    def user_view(p: Principal, display_name: str | None = None) -> dict:
         account = next((a for a in DEMO_ACCOUNTS if a.role == p.role), None)
         return {
             "user_id": p.user_id,
             "role": p.role,
             "business_id": p.business_id,
-            "name": account.name if account else p.user_id,
+            "name": display_name or (account.name if account else p.user_id),
         }
+
+    def issue_session(
+        request: Request, response: Response, found: Principal, display_name: str | None = None
+    ) -> dict:
+        # A fresh sign-in retires the session the request presented, so a re-login leaves
+        # no stale token behind.
+        with session_lock:
+            for token in presented_tokens(request):
+                sessions.pop(token, None)
+            token = secrets.token_urlsafe(32)
+            sessions[token] = (found, display_name)
+        response.set_cookie(SESSION_COOKIE, token, httponly=True, samesite="lax", path="/")
+        return {"token": token, "user": user_view(found, display_name)}
 
     def invoice_view(invoice: Invoice) -> dict:
         data = invoice.model_dump(mode="json")
@@ -233,23 +276,88 @@ def create_web_app(
     @api.post("/api/login")
     def login(body: LoginBody, request: Request, response: Response) -> dict:
         email = body.email.strip().lower()
-        account = next((a for a in DEMO_ACCOUNTS if a.email == email), None)
-        if account is None or not hmac.compare_digest(
-            account.password.encode(), body.password.encode()
-        ):
+        demo = next((a for a in DEMO_ACCOUNTS if a.email == email), None)
+        if demo is not None:
+            if not hmac.compare_digest(demo.password.encode(), body.password.encode()):
+                raise HTTPException(401, "Invalid email or password.")
+            found = principals.get(demo.role)
+            if found is None:
+                raise HTTPException(401, "Invalid email or password.")
+            return issue_session(request, response, found, demo.name)
+
+        registered = accounts.authenticate_email(email, body.password)
+        if registered is None:
             raise HTTPException(401, "Invalid email or password.")
-        found = principals.get(account.role)
+        found = principals.get(registered.role)
         if found is None:
             raise HTTPException(401, "Invalid email or password.")
-        # A fresh sign-in retires the session the request presented, so a re-login leaves
-        # no stale token behind.
-        with session_lock:
-            for token in presented_tokens(request):
-                sessions.pop(token, None)
-            token = secrets.token_urlsafe(32)
-            sessions[token] = found
-        response.set_cookie(SESSION_COOKIE, token, httponly=True, samesite="lax", path="/")
-        return {"token": token, "user": user_view(found)}
+        return issue_session(request, response, found, registered.name)
+
+    @api.post("/api/signup")
+    def signup(body: SignupBody, request: Request, response: Response) -> dict:
+        email = body.email.strip().lower()
+        name = body.name.strip()
+        if not name:
+            raise HTTPException(422, "Name is required.")
+        if not _EMAIL_RE.match(email):
+            raise HTTPException(422, "Enter a valid email address.")
+        found = principals.get(body.role)
+        if found is None:
+            raise HTTPException(422, f"Role '{body.role}' is not available in this business.")
+        try:
+            created = accounts.create_email_account(
+                name=name,
+                email=email,
+                password=body.password,
+                role=found.role,
+                reserved_emails=demo_emails,
+            )
+        except AccountConflictError as error:
+            raise HTTPException(409, str(error)) from None
+        return issue_session(request, response, found, created.name)
+
+    @api.post("/api/oauth/complete")
+    def oauth_complete(body: OAuthCompleteBody, request: Request, response: Response) -> dict:
+        internal_secret = os.environ.get("BRIGID_INTERNAL_AUTH_SECRET", "")
+        if internal_secret:
+            presented = request.headers.get("x-brigid-internal-secret", "")
+            if not hmac.compare_digest(presented.encode(), internal_secret.encode()):
+                raise HTTPException(403, "Refused.")
+
+        email = body.email.strip().lower()
+        if not _EMAIL_RE.match(email):
+            raise HTTPException(422, "A valid email address is required from the OAuth provider.")
+
+        if body.intent == "signup":
+            found = principals.get(body.role)
+            if found is None:
+                raise HTTPException(
+                    422, f"Role '{body.role}' is not available in this business."
+                )
+            try:
+                account = accounts.signup_oauth_account(
+                    provider=body.provider,
+                    provider_user_id=body.provider_user_id,
+                    email=email,
+                    name=body.name,
+                    role=found.role,
+                    reserved_emails=demo_emails,
+                )
+            except AccountConflictError as error:
+                raise HTTPException(409, str(error)) from None
+            return issue_session(request, response, found, account.name)
+
+        account = accounts.authenticate_oauth(body.provider, body.provider_user_id)
+        if account is None:
+            provider_label = "Google" if body.provider == "google" else "GitHub"
+            raise HTTPException(
+                401,
+                f"No account found for this {provider_label} account. Please sign up first.",
+            )
+        found = principals.get(account.role)
+        if found is None:
+            raise HTTPException(401, "Account role is not available in this business.")
+        return issue_session(request, response, found, account.name)
 
     @api.post("/api/logout")
     def logout(request: Request, response: Response) -> dict:
@@ -263,7 +371,10 @@ def create_web_app(
 
     @api.get("/api/me")
     def me(request: Request) -> dict:
-        return user_view(signed_in(request))
+        found = session_of(request)
+        if found is None:
+            raise HTTPException(401, "Please sign in.")
+        return user_view(found[1], found[2])
 
     @api.get("/api/invoices")
     def invoices(
@@ -430,5 +541,11 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"{SIMULATION_NOTE} Open http://{args.host}:{args.port}/")
     hosts = (*LOCAL_HOSTS, args.host)
-    uvicorn.run(create_web_app(app, app.env.principals(), hosts), host=args.host, port=args.port)
+    auth_db_path = Path(os.environ.get("BRIGID_AUTH_DB_PATH", "data/auth.db"))
+    account_store = AccountStore(auth_db_path)
+    uvicorn.run(
+        create_web_app(app, app.env.principals(), hosts, account_store=account_store),
+        host=args.host,
+        port=args.port,
+    )
     return 0
