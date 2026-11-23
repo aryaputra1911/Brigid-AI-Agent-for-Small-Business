@@ -187,7 +187,7 @@ export function LoginPage() {
     <div className="relative min-h-[100dvh] w-full overflow-x-hidden bg-[#07020a] text-white">
       <AmbientVideoBg />
 
-      <header className="relative z-10 flex items-center justify-between px-4 py-4 sm:px-8">
+      <header className="relative z-10 flex items-center justify-between pt-[calc(1rem+env(safe-area-inset-top))] pb-4 pl-[calc(1rem+env(safe-area-inset-left))] pr-[calc(1rem+env(safe-area-inset-right))] sm:pl-[calc(2rem+env(safe-area-inset-left))] sm:pr-[calc(2rem+env(safe-area-inset-right))]">
         <Link
           href="/"
           className="inline-flex min-h-[44px] items-center gap-2.5 rounded-lg px-2 text-base font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400"
@@ -197,7 +197,7 @@ export function LoginPage() {
         </Link>
       </header>
 
-      <main className="relative z-10 flex min-h-[calc(100dvh-76px)] items-center justify-center px-4 pb-20 pt-4">
+      <main className="relative z-10 flex min-h-[calc(100dvh-76px-env(safe-area-inset-top))] items-center justify-center pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pl-[calc(1rem+env(safe-area-inset-left))] pr-[calc(1rem+env(safe-area-inset-right))]">
         <Suspense
           fallback={
             <div className="login-glass-card w-full max-w-sm rounded-2xl p-8 text-center text-sm text-[#F1F7FF]/75">
