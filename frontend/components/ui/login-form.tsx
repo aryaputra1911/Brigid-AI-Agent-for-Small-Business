@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ArrowRight,
   ChevronDown,
   Lock,
   Mail,
@@ -207,13 +206,9 @@ export function OAuthRoleStep({
           <button
             type="submit"
             disabled={submitting}
-            className="login-glass-btn group w-full min-h-[44px] flex items-center justify-center py-3 px-4 rounded-lg text-[#F1F7FF] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
+            className="login-glass-btn w-full min-h-[44px] flex items-center justify-center py-3 px-4 rounded-lg text-[#F1F7FF] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
           >
             {submitting ? "Creating account..." : "Complete Sign Up"}
-            <ArrowRight
-              className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform"
-              aria-hidden="true"
-            />
           </button>
 
           <button
@@ -312,41 +307,6 @@ export function LoginForm({
     <div
       className={`login-glass-card w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl text-[#F1F7FF] ${className}`}
     >
-      <div
-        role="tablist"
-        aria-label="Authentication mode"
-        className="grid grid-cols-2 gap-1 rounded-xl border border-white/15 bg-black/25 p-1"
-      >
-        <button
-          type="button"
-          role="tab"
-          aria-selected={!isSignup}
-          disabled={busy}
-          onClick={() => switchMode("login")}
-          className={`min-h-[44px] cursor-pointer rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:cursor-not-allowed disabled:opacity-60 ${
-            !isSignup
-              ? "bg-white/18 text-[#F1F7FF]"
-              : "text-[#F1F7FF]/70 hover:text-[#F1F7FF]"
-          }`}
-        >
-          Sign In
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={isSignup}
-          disabled={busy}
-          onClick={() => switchMode("signup")}
-          className={`min-h-[44px] cursor-pointer rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:cursor-not-allowed disabled:opacity-60 ${
-            isSignup
-              ? "bg-white/18 text-[#F1F7FF]"
-              : "text-[#F1F7FF]/70 hover:text-[#F1F7FF]"
-          }`}
-        >
-          Sign Up
-        </button>
-      </div>
-
       <div className="text-center">
         <h1 className="text-3xl font-bold text-[#F1F7FF]">
           {isSignup ? "Create Account" : "Welcome Back"}
@@ -466,7 +426,7 @@ export function LoginForm({
         <button
           type="submit"
           disabled={busy}
-          className="login-glass-btn group w-full min-h-[44px] flex items-center justify-center py-3 px-4 rounded-lg text-[#F1F7FF] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
+          className="login-glass-btn w-full min-h-[44px] flex items-center justify-center py-3 px-4 rounded-lg text-[#F1F7FF] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
         >
           {submitting
             ? isSignup
@@ -475,10 +435,6 @@ export function LoginForm({
             : isSignup
               ? "Create Account"
               : "Sign In"}
-          <ArrowRight
-            className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform"
-            aria-hidden="true"
-          />
         </button>
       </form>
 
@@ -488,12 +444,12 @@ export function LoginForm({
         <span className="h-px flex-1 bg-white/20" aria-hidden="true" />
       </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         <button
           type="button"
           disabled={busy}
           onClick={() => handleOAuth("google")}
-          className="login-oauth-btn flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-lg border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-medium text-[#F1F7FF] hover:bg-white/16 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
+          className="login-glass-btn flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-lg px-4 py-3 text-[#F1F7FF] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
         >
           <GoogleIcon />
           <span>
@@ -509,7 +465,7 @@ export function LoginForm({
           type="button"
           disabled={busy}
           onClick={() => handleOAuth("github")}
-          className="login-oauth-btn flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-lg border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-medium text-[#F1F7FF] hover:bg-white/16 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
+          className="login-glass-btn flex min-h-[44px] w-full items-center justify-center gap-2.5 rounded-lg px-4 py-3 text-[#F1F7FF] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
         >
           <GitHubIcon />
           <span>
