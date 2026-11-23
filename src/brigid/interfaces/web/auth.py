@@ -256,3 +256,23 @@ class AccountStore:
     ) -> AccountRecord | None:
         with self._lock:
             return self._find_by_oauth_unlocked(provider, provider_user_id)
+
+    def check_oauth_signup_status(
+        self,
+        *,
+        provider: OAuthProvider,
+        provider_user_id: str,
+        email: str,
+        reserved_emails: Iterable[str] = (),
+    ) -> Literal["existing", "new"]:
+        normalized_email = email.strip().lower()
+        reserved = {item.strip().lower() for item in reserved_emails}
+        with self._lock:
+            if self._find_by_oauth_unlocked(provider, provider_user_id) is not None:
+                return "existing"
+            if normalized_email in reserved or self._find_by_email_unlocked(normalized_email):
+                raise AccountConflictError(
+                    "An account with this email already exists. "
+                    "Please sign in with your existing method."
+                )
+            return "new"

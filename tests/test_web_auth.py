@@ -232,3 +232,71 @@ def test_signup_preserves_selected_role_for_email_and_oauth(world, tmp_path):
     )
     assert oauth_login.status_code == 200
     assert oauth_login.json()["user"]["role"] == "staff"
+
+
+def test_oauth_prepare_prompts_role_only_for_new_signup(world, tmp_path):
+    client = _client(world, tmp_path)
+
+    # New user signing up via Google gets needs_role without creating account yet.
+    prep_new = client.post(
+        "/api/oauth/prepare",
+        json={
+            "provider": "google",
+            "provider_user_id": "g-prep-1",
+            "email": "new.google@example.com",
+            "name": "New Google",
+            "intent": "signup",
+        },
+    )
+    assert prep_new.status_code == 200
+    assert prep_new.json() == {
+        "status": "needs_role",
+        "provider": "google",
+        "email": "new.google@example.com",
+        "name": "New Google",
+    }
+
+    # Trying to log in before completing role selection is still refused.
+    prep_login_before = client.post(
+        "/api/oauth/prepare",
+        json={
+            "provider": "google",
+            "provider_user_id": "g-prep-1",
+            "email": "new.google@example.com",
+            "name": "New Google",
+            "intent": "login",
+        },
+    )
+    assert prep_login_before.status_code == 401
+
+    # Completing signup with selected role creates the account.
+    complete = client.post(
+        "/api/oauth/complete",
+        json={
+            "provider": "google",
+            "provider_user_id": "g-prep-1",
+            "email": "new.google@example.com",
+            "name": "New Google",
+            "intent": "signup",
+            "role": "bookkeeper",
+        },
+    )
+    assert complete.status_code == 200
+    assert complete.json()["user"]["role"] == "bookkeeper"
+
+    client.post("/api/logout", json={})
+
+    # Returning Google signup skips role selection and authenticates immediately.
+    prep_existing = client.post(
+        "/api/oauth/prepare",
+        json={
+            "provider": "google",
+            "provider_user_id": "g-prep-1",
+            "email": "new.google@example.com",
+            "name": "New Google",
+            "intent": "signup",
+        },
+    )
+    assert prep_existing.status_code == 200
+    assert prep_existing.json()["status"] == "authenticated"
+    assert prep_existing.json()["user"]["role"] == "bookkeeper"

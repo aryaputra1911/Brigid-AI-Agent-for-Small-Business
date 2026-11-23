@@ -2,17 +2,22 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { AmbientVideoBg } from "@/components/landing/ambient-video-bg";
 import { BrigidLogo } from "@/components/ui/brigid-logo";
 import {
   type AuthMode,
   LoginForm,
   type OAuthProvider,
+  OAuthRoleStep,
 } from "@/components/ui/login-form";
 import {
+  type PendingOAuthAccount,
   type Role,
   brigidLogin,
+  brigidOAuthCancel,
+  brigidOAuthFinalize,
+  brigidOAuthPending,
   brigidSignup,
 } from "@/lib/brigid-api";
 
@@ -21,15 +26,54 @@ function LoginFormContainer() {
   const searchParams = useSearchParams();
   const queryMode: AuthMode =
     searchParams.get("mode") === "signup" ? "signup" : "login";
+  const queryStep = searchParams.get("step");
   const queryError = searchParams.get("error") ?? "";
 
   const [modeOverride, setModeOverride] = useState<AuthMode | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<OAuthProvider | null>(null);
   const [errorOverride, setErrorOverride] = useState<string | null>(null);
+  const [pendingOAuth, setPendingOAuth] = useState<PendingOAuthAccount | null>(
+    null,
+  );
+  const [pendingLoading, setPendingLoading] = useState(queryStep === "role");
 
   const mode = modeOverride ?? queryMode;
   const error = errorOverride ?? queryError;
+
+  useEffect(() => {
+    if (queryStep !== "role") {
+      return;
+    }
+    let active = true;
+    void brigidOAuthPending()
+      .then((found) => {
+        if (!active) return;
+        if (!found) {
+          setErrorOverride(
+            "Your OAuth sign-up session expired. Please sign up again.",
+          );
+          router.replace("/login?mode=signup");
+        } else {
+          setPendingOAuth(found);
+        }
+      })
+      .catch((err) => {
+        if (!active) return;
+        setErrorOverride(
+          err instanceof Error
+            ? err.message
+            : "Could not load your OAuth sign-up session.",
+        );
+        router.replace("/login?mode=signup");
+      })
+      .finally(() => {
+        if (active) setPendingLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [queryStep, router]);
 
   function handleModeChange(nextMode: AuthMode) {
     setModeOverride(nextMode);
@@ -69,18 +113,60 @@ function LoginFormContainer() {
     }
   }
 
-  function handleOAuth(
-    provider: OAuthProvider,
-    activeMode: AuthMode,
-    nextRole?: Role,
-  ) {
+  function handleOAuth(provider: OAuthProvider, activeMode: AuthMode) {
     setErrorOverride("");
     setOauthLoading(provider);
-    const params = new URLSearchParams({ intent: activeMode });
-    if (activeMode === "signup" && nextRole) {
-      params.set("role", nextRole);
+    window.location.href = `/api/auth/oauth/${provider}?intent=${encodeURIComponent(activeMode)}`;
+  }
+
+  async function handleFinalizeOAuth(role: Role) {
+    setErrorOverride("");
+    setSubmitting(true);
+    try {
+      await brigidOAuthFinalize(role);
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem("brigid_has_session", "1");
+      }
+      router.push("/chat");
+      router.refresh();
+    } catch (err) {
+      setErrorOverride(
+        err instanceof Error
+          ? err.message
+          : "Could not complete OAuth sign up. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
     }
-    window.location.href = `/api/auth/oauth/${provider}?${params.toString()}`;
+  }
+
+  async function handleCancelOAuth() {
+    setErrorOverride("");
+    await brigidOAuthCancel();
+    setPendingOAuth(null);
+    setModeOverride("signup");
+    router.replace("/login?mode=signup");
+  }
+
+  if (queryStep === "role") {
+    if (pendingLoading) {
+      return (
+        <div className="login-glass-card w-full max-w-sm rounded-2xl p-8 text-center text-sm text-[#F1F7FF]/75">
+          Loading account details...
+        </div>
+      );
+    }
+    if (pendingOAuth) {
+      return (
+        <OAuthRoleStep
+          pending={pendingOAuth}
+          onConfirm={handleFinalizeOAuth}
+          onCancel={handleCancelOAuth}
+          error={error}
+          submitting={submitting}
+        />
+      );
+    }
   }
 
   return (

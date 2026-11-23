@@ -143,6 +143,38 @@ export async function brigidSignup(
   });
 }
 
+export type PendingOAuthAccount = {
+  provider: "google" | "github";
+  email: string;
+  name: string;
+};
+
+export async function brigidOAuthPending(): Promise<PendingOAuthAccount | null> {
+  const response = await fetch("/api/auth/oauth/pending", {
+    cache: "no-store",
+  });
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error("Could not verify your OAuth sign-up session.");
+  }
+  return (await response.json()) as PendingOAuthAccount;
+}
+
+export async function brigidOAuthCancel(): Promise<void> {
+  await fetch("/api/auth/oauth/pending", {
+    method: "DELETE",
+    cache: "no-store",
+  });
+}
+
+export async function brigidOAuthFinalize(role: Role): Promise<LoginResult> {
+  return brigidRequest<LoginResult>("/api/auth/oauth/finalize", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ role }),
+  });
+}
+
 export async function brigidLogout(): Promise<{ status: string }> {
   return brigidRequest<{ status: string }>("/api/brigid/logout", {
     method: "POST",

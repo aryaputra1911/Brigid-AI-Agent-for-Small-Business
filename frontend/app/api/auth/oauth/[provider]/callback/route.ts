@@ -1,16 +1,17 @@
 import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 
-import type { Role } from "@/lib/brigid-api";
 import { isLocalRequest } from "@/lib/local-request";
 import {
   type AuthIntent,
+  OAUTH_PENDING_COOKIE,
   OAUTH_STATE_COOKIE,
   type OAuthProvider,
   buildLoginErrorUrl,
   getOAuthCredentials,
   parseOAuthProvider,
   providerDisplayName,
+  signPendingOAuth,
 } from "@/lib/oauth";
 
 const BACKEND = process.env.BRIGID_API_ORIGIN ?? "http://127.0.0.1:8000";
@@ -187,7 +188,6 @@ export async function GET(request: NextRequest, context: Context) {
     state: string;
     intent: AuthIntent;
     provider: OAuthProvider;
-    role?: Role;
   } | null = null;
   if (rawCookie) {
     try {
@@ -195,7 +195,6 @@ export async function GET(request: NextRequest, context: Context) {
         state: string;
         intent: AuthIntent;
         provider: OAuthProvider;
-        role?: Role;
       };
     } catch {
       storedState = null;
@@ -276,7 +275,7 @@ export async function GET(request: NextRequest, context: Context) {
       headers["X-Brigid-Internal-Secret"] = internalSecret;
     }
 
-    const backendRes = await fetch(new URL("/api/oauth/complete", BACKEND), {
+    const backendRes = await fetch(new URL("/api/oauth/prepare", BACKEND), {
       method: "POST",
       headers,
       body: JSON.stringify({
@@ -285,7 +284,6 @@ export async function GET(request: NextRequest, context: Context) {
         email: profile.email,
         name: profile.name,
         intent,
-        role: storedState.role ?? "owner",
       }),
       cache: "no-store",
     });
@@ -301,6 +299,38 @@ export async function GET(request: NextRequest, context: Context) {
       return redirectWithClearCookie(
         buildLoginErrorUrl(origin, intent, detail),
       );
+    }
+
+    const prepareJson = (await backendRes.json()) as { status?: string };
+    if (prepareJson.status === "needs_role") {
+      const signedPending = signPendingOAuth({
+        provider,
+        providerUserId: profile.providerUserId,
+        email: profile.email,
+        name: profile.name,
+      });
+      if (!signedPending) {
+        return redirectWithClearCookie(
+          buildLoginErrorUrl(
+            origin,
+            intent,
+            "Could not initialize role selection. Please retry.",
+          ),
+        );
+      }
+      const roleUrl = new URL("/login", origin);
+      roleUrl.searchParams.set("mode", "signup");
+      roleUrl.searchParams.set("step", "role");
+      const response = NextResponse.redirect(roleUrl);
+      response.cookies.delete(OAUTH_STATE_COOKIE);
+      response.cookies.set(OAUTH_PENDING_COOKIE, signedPending, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 600,
+        secure: request.nextUrl.protocol === "https:",
+      });
+      return response;
     }
 
     const successUrl = new URL("/chat", origin);
