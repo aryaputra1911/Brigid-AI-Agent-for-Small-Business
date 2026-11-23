@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { CornerButton } from "./corner-button";
+import { toAuthAwareHref, useLandingSignedIn } from "./landing-interactions";
 
 interface Scenario {
   prompt: string;
@@ -44,6 +45,7 @@ const scenarios: Scenario[] = [
 
 export function RreScenarioSlider() {
   const [index, setIndex] = useState(0);
+  const signedIn = useLandingSignedIn();
   const current = scenarios[index];
 
   const prev = () => {
@@ -99,7 +101,10 @@ export function RreScenarioSlider() {
           <p className="rre-slider__role">{current.routeLabel}</p>
         </div>
         <div className="rre-slider__cta">
-          <CornerButton href={current.href} variant="light">
+          <CornerButton
+            href={toAuthAwareHref(current.href, signedIn)}
+            variant="light"
+          >
             TRY IN WORKSPACE
           </CornerButton>
         </div>

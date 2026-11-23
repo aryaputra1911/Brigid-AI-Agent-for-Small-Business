@@ -9,37 +9,86 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type ReactNode,
 } from "react";
 import { hasStoredSession } from "@/lib/brigid-api";
+import { CornerButton } from "./corner-button";
 
 function subscribeSession(onStoreChange: () => void) {
   window.addEventListener("storage", onStoreChange);
   return () => window.removeEventListener("storage", onStoreChange);
 }
 
+export function useLandingSignedIn(): boolean {
+  return useSyncExternalStore(subscribeSession, hasStoredSession, () => false);
+}
+
+export function toAuthAwareHref(href: string, signedIn: boolean): string {
+  if (signedIn) return href;
+  return `/login?next=${encodeURIComponent(href)}`;
+}
+
+export function SystemLink({
+  href,
+  children,
+  className,
+  prefetch,
+}: {
+  href: string;
+  children: ReactNode;
+  className?: string;
+  prefetch?: boolean;
+}) {
+  const signedIn = useLandingSignedIn();
+  return (
+    <Link
+      href={toAuthAwareHref(href, signedIn)}
+      className={className}
+      prefetch={prefetch}
+    >
+      {children}
+    </Link>
+  );
+}
+
+export function SystemCornerButton({
+  href,
+  variant = "dark",
+  children,
+  className,
+  ariaLabel,
+}: {
+  href: string;
+  variant?: "dark" | "light";
+  children: ReactNode;
+  className?: string;
+  ariaLabel?: string;
+}) {
+  const signedIn = useLandingSignedIn();
+  return (
+    <CornerButton
+      href={toAuthAwareHref(href, signedIn)}
+      variant={variant}
+      className={className}
+      ariaLabel={ariaLabel}
+    >
+      {children}
+    </CornerButton>
+  );
+}
+
 export function LandingHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const signedIn = useSyncExternalStore(
-    subscribeSession,
-    hasStoredSession,
-    () => false,
-  );
+  const signedIn = useLandingSignedIn();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
   const navItems = useMemo(
     () => [
-      { href: signedIn ? "/chat" : "/login?next=%2Fchat", label: "CHAT" },
-      {
-        href: signedIn ? "/approvals" : "/login?next=%2Fapprovals",
-        label: "APPROVALS",
-      },
-      {
-        href: signedIn ? "/mandate" : "/login?next=%2Fmandate",
-        label: "MANDATE",
-      },
-      { href: "/chat?demo=1", label: "TRY DEMO" },
+      { href: toAuthAwareHref("/chat", signedIn), label: "CHAT" },
+      { href: toAuthAwareHref("/approvals", signedIn), label: "APPROVALS" },
+      { href: toAuthAwareHref("/mandate", signedIn), label: "MANDATE" },
       { href: "/login", label: "LOGIN" },
     ],
     [signedIn],

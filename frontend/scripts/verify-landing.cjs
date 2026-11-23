@@ -182,12 +182,16 @@ async function main() {
         .getByRole("navigation", { name: "Mobile navigation" })
         .isVisible(),
     );
-    for (const label of ["CHAT", "APPROVALS", "MANDATE", "TRY DEMO", "LOGIN"]) {
+    for (const label of ["CHAT", "APPROVALS", "MANDATE", "LOGIN"]) {
       assert(
         await drawer.getByRole("link", { name: label, exact: true }).isVisible(),
         `Missing drawer link ${label}`,
       );
     }
+    assert.equal(
+      await drawer.getByRole("link", { name: "TRY DEMO", exact: true }).count(),
+      0,
+    );
     assert.equal(
       await drawer
         .getByRole("link", { name: "CHAT", exact: true })
@@ -206,19 +210,36 @@ async function main() {
         .getAttribute("href"),
       "/login?next=%2Fmandate",
     );
-    assert.equal(
-      await drawer
-        .getByRole("link", { name: "TRY DEMO", exact: true })
-        .getAttribute("href"),
-      "/chat?demo=1",
-    );
     await page.keyboard.press("Escape");
     assert.equal(await drawer.count(), 0);
     assert.equal(await menuButton.getAttribute("aria-expanded"), "false");
     assert(
       await menuButton.evaluate((el) => el === document.activeElement),
     );
-    check("Mobile drawer opens from Menu, lists auth-gated + TRY DEMO links, closes on Escape and restores focus");
+    check("Mobile drawer opens from Menu, lists auth-gated links without TRY DEMO, closes on Escape and restores focus");
+
+    // Verify all landing page workspace links point to /login?next=... when logged out
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(origin);
+    const primaryNav = page.getByRole("navigation", { name: "Primary navigation" });
+    assert.equal(
+      await primaryNav.getByRole("link", { name: "TRY DEMO", exact: true }).count(),
+      0,
+    );
+    for (const [linkName, expectedHref] of [
+      ["OPEN WORKSPACE", "/login?next=%2Fchat"],
+      ["REVIEW APPROVALS", "/login?next=%2Fapprovals"],
+      ["DRAFT A MANDATE", "/login?next=%2Fmandate"],
+      ["TRY IN WORKSPACE", "/login?next=%2Fchat"],
+      ["OPEN CHAT", "/login?next=%2Fchat"],
+    ]) {
+      const actualHref = await page
+        .getByRole("link", { name: linkName, exact: true })
+        .first()
+        .getAttribute("href");
+      assert.equal(actualHref, expectedHref, `Expected ${linkName} -> ${expectedHref}, got ${actualHref}`);
+    }
+    check("All landing page workspace links require login when signed out and TRY DEMO is removed");
 
     // Verify unauthenticated direct visit to /chat, /approvals, /mandate redirects to /login
     for (const protectedPath of ["/chat", "/approvals", "/mandate"]) {
@@ -238,42 +259,6 @@ async function main() {
       `**/login?next=${encodeURIComponent("/chat?prompt=Review%20overdue%20supplier%20invoices")}`,
     );
     check("Footer launcher preserves encoded prompt across login redirect when logged out");
-
-    // Verify TRY DEMO enters /chat directly without login and sets Demo account on /profile with red Sign out badge
-    await page.goto(origin);
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page
-      .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("link", { name: "TRY DEMO", exact: true })
-      .click();
-    await page.waitForURL("**/chat");
-    await page.locator("#message-input").waitFor();
-    await page.getByRole("link", { name: "Profile", exact: true }).click();
-    await page.waitForURL("**/profile");
-    await page.getByText("Demo", { exact: true }).waitFor();
-    const signOutBtn = page.getByRole("button", { name: "Sign out", exact: true });
-    await signOutBtn.waitFor();
-    const signOutRgb = await signOutBtn.evaluate((el) => {
-      const style = getComputedStyle(el);
-      const canvas = document.createElement("canvas");
-      canvas.width = 1;
-      canvas.height = 1;
-      const ctx = canvas.getContext("2d");
-      ctx.fillStyle = style.backgroundColor;
-      ctx.fillRect(0, 0, 1, 1);
-      const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
-      return { r, g, b, a, borderRadius: style.borderRadius };
-    });
-    assert(
-      signOutRgb.a > 0 &&
-        signOutRgb.r > 120 &&
-        signOutRgb.r > signOutRgb.g * 2 &&
-        signOutRgb.r > signOutRgb.b * 2,
-      `Expected red sign out badge, got ${JSON.stringify(signOutRgb)}`,
-    );
-    await signOutBtn.click();
-    await page.waitForURL("**/login");
-    check("TRY DEMO enters /chat without login, shows Demo account and red Sign out badge on /profile");
 
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join("; ")}`);
     assert.deepEqual(
