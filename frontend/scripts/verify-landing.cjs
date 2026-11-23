@@ -28,6 +28,32 @@ async function main() {
     await page.route("**/api/brigid/**", (route) => {
       const action = new URL(route.request().url()).pathname.split("/").at(-1);
       calls.push(action);
+      if (action === "demo") {
+        return route.fulfill({
+          json: {
+            token: "demo-token",
+            user: {
+              user_id: "user-owner",
+              role: "owner",
+              business_id: "biz-toko-sari",
+              name: "Demo",
+            },
+          },
+        });
+      }
+      if (action === "me") {
+        return route.fulfill({
+          json: {
+            user_id: "user-owner",
+            role: "owner",
+            business_id: "biz-toko-sari",
+            name: "Demo",
+          },
+        });
+      }
+      if (action === "logout") {
+        return route.fulfill({ json: { status: "logged_out" } });
+      }
       assert(["info", "pending"].includes(action), `Unexpected API ${action}`);
       return route.fulfill({
         json:
@@ -156,19 +182,98 @@ async function main() {
         .getByRole("navigation", { name: "Mobile navigation" })
         .isVisible(),
     );
+    for (const label of ["CHAT", "APPROVALS", "MANDATE", "TRY DEMO", "LOGIN"]) {
+      assert(
+        await drawer.getByRole("link", { name: label, exact: true }).isVisible(),
+        `Missing drawer link ${label}`,
+      );
+    }
+    assert.equal(
+      await drawer
+        .getByRole("link", { name: "CHAT", exact: true })
+        .getAttribute("href"),
+      "/login?next=%2Fchat",
+    );
+    assert.equal(
+      await drawer
+        .getByRole("link", { name: "APPROVALS", exact: true })
+        .getAttribute("href"),
+      "/login?next=%2Fapprovals",
+    );
+    assert.equal(
+      await drawer
+        .getByRole("link", { name: "MANDATE", exact: true })
+        .getAttribute("href"),
+      "/login?next=%2Fmandate",
+    );
+    assert.equal(
+      await drawer
+        .getByRole("link", { name: "TRY DEMO", exact: true })
+        .getAttribute("href"),
+      "/chat?demo=1",
+    );
     await page.keyboard.press("Escape");
     assert.equal(await drawer.count(), 0);
     assert.equal(await menuButton.getAttribute("aria-expanded"), "false");
     assert(
       await menuButton.evaluate((el) => el === document.activeElement),
     );
-    check("Mobile drawer opens from Menu, closes on Escape and restores focus");
+    check("Mobile drawer opens from Menu, lists auth-gated + TRY DEMO links, closes on Escape and restores focus");
 
+    // Verify unauthenticated direct visit to /chat, /approvals, /mandate redirects to /login
+    for (const protectedPath of ["/chat", "/approvals", "/mandate"]) {
+      await page.goto(`${origin}${protectedPath}`);
+      await page.waitForURL(
+        `**/login?next=${encodeURIComponent(protectedPath)}`,
+      );
+      await page.getByRole("heading", { name: "Welcome Back" }).waitFor();
+    }
+    check("Unauthenticated access to /chat, /approvals, /mandate redirects to /login");
+
+    // Verify footer prompt launcher redirects through /login?next=... when logged out
+    await page.goto(origin);
     await page.locator("#rre-footer-prompt").fill("Review overdue supplier invoices");
     await launcher.getByRole("button", { name: "OPEN CHAT" }).click();
-    await page.waitForURL("**/chat?prompt=Review%20overdue%20supplier%20invoices");
+    await page.waitForURL(
+      `**/login?next=${encodeURIComponent("/chat?prompt=Review%20overdue%20supplier%20invoices")}`,
+    );
+    check("Footer launcher preserves encoded prompt across login redirect when logged out");
+
+    // Verify TRY DEMO enters /chat directly without login and sets Demo account on /profile with red Sign out badge
+    await page.goto(origin);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page
+      .getByRole("navigation", { name: "Primary navigation" })
+      .getByRole("link", { name: "TRY DEMO", exact: true })
+      .click();
+    await page.waitForURL("**/chat");
     await page.locator("#message-input").waitFor();
-    check("Footer launcher opens Chat with the encoded prompt query");
+    await page.getByRole("link", { name: "Profile", exact: true }).click();
+    await page.waitForURL("**/profile");
+    await page.getByText("Demo", { exact: true }).waitFor();
+    const signOutBtn = page.getByRole("button", { name: "Sign out", exact: true });
+    await signOutBtn.waitFor();
+    const signOutRgb = await signOutBtn.evaluate((el) => {
+      const style = getComputedStyle(el);
+      const canvas = document.createElement("canvas");
+      canvas.width = 1;
+      canvas.height = 1;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = style.backgroundColor;
+      ctx.fillRect(0, 0, 1, 1);
+      const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+      return { r, g, b, a, borderRadius: style.borderRadius };
+    });
+    assert(
+      signOutRgb.a > 0 &&
+        signOutRgb.r > 120 &&
+        signOutRgb.r > signOutRgb.g * 2 &&
+        signOutRgb.r > signOutRgb.b * 2,
+      `Expected red sign out badge, got ${JSON.stringify(signOutRgb)}`,
+    );
+    await signOutBtn.click();
+    await page.waitForURL("**/login");
+    check("TRY DEMO enters /chat without login, shows Demo account and red Sign out badge on /profile");
 
     assert.deepEqual(pageErrors, [], `page errors: ${pageErrors.join("; ")}`);
     assert.deepEqual(

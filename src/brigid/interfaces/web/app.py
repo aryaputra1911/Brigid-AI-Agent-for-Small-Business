@@ -409,6 +409,13 @@ def create_web_app(
             raise HTTPException(401, "Account role is not available in this business.")
         return issue_session(request, response, found, account.name)
 
+    @api.post("/api/demo")
+    def demo_login(request: Request, response: Response) -> dict:
+        found = principals.get("owner")
+        if found is None:
+            raise HTTPException(404, "No owner in this business.")
+        return issue_session(request, response, found, "Demo")
+
     @api.post("/api/logout")
     def logout(request: Request, response: Response) -> dict:
         # The CSRF middleware still applies: callers must send a JSON content type. The

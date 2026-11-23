@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useWorkspace } from "@/components/workspace-provider";
 import { Settings3, type SettingsRow } from "@/components/ui/settings-3";
-import { Button } from "@/components/ui/button";
 import "./finance-pages.css";
 
 export function ProfilePage() {
@@ -90,14 +89,14 @@ export function ProfilePage() {
                 {user ? "Switch account" : "Sign in"}
               </Link>
               {user && (
-                <Button
+                <button
                   type="button"
-                  variant="outline"
                   disabled={signingOut}
                   onClick={() => void handleSignOut()}
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-red-400/60 bg-red-700/90 px-5 py-2.5 text-sm font-medium text-white shadow-[inset_0_1px_0_rgba(254,202,202,0.38),inset_0_-1px_0_rgba(127,29,29,0.45),0_10px_24px_rgba(0,0,0,0.42)] backdrop-blur-xl backdrop-saturate-150 transition-all hover:border-red-300/85 hover:bg-red-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {signingOut ? "Signing out..." : "Sign out"}
-                </Button>
+                </button>
               )}
             </div>
           </div>

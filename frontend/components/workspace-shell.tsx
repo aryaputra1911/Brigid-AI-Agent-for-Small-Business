@@ -13,6 +13,8 @@ import { LiquidBottomNav } from "@/components/liquid-bottom-nav";
 import { useMediaQuery } from "@/lib/use-media-query";
 import "./workspace.css";
 
+const AUTH_REQUIRED_PATHS = new Set(["/chat", "/approvals", "/mandate"]);
+
 const destinations: { href: string; label: string; icon: ChatIconName }[] = [
   { href: "/chat", label: "Chat", icon: "chat" },
   { href: "/invoices", label: "Invoices", icon: "invoice" },
@@ -27,6 +29,10 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const {
     info,
+    user,
+    sessionChecked,
+    demoError,
+    retryDemo,
     role,
     busy,
     resetting,
@@ -37,6 +43,15 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
     changeRole,
     resetConversation,
   } = useWorkspace();
+  const requiresAuth = AUTH_REQUIRED_PATHS.has(pathname);
+
+  useEffect(() => {
+    if (!requiresAuth || !sessionChecked || user || demoError) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("demo") === "1") return;
+    const target = `${pathname}${window.location.search}`;
+    router.replace(`/login?next=${encodeURIComponent(target)}`);
+  }, [requiresAuth, sessionChecked, user, demoError, pathname, router]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [sidebarState, setSidebarState] = useState("auto");
@@ -474,7 +489,36 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
           </div>
         )}
         <main id="main-content" className="paper-content" tabIndex={-1}>
-          {children}
+          {requiresAuth && !user ? (
+            demoError ? (
+              <div className="paper-chat-state state-panel" role="alert">
+                <h1>Unable to start demo</h1>
+                <p>{demoError}</p>
+                <button
+                  className="button"
+                  type="button"
+                  onClick={() => void retryDemo()}
+                >
+                  Retry demo
+                </button>
+              </div>
+            ) : (
+              <div className="paper-chat-state state-panel" role="status">
+                <h1>
+                  {sessionChecked
+                    ? "Redirecting to sign in"
+                    : "Checking session"}
+                </h1>
+                <p>
+                  {sessionChecked
+                    ? "Please sign in to access this workspace page."
+                    : "Verifying your sign-in status."}
+                </p>
+              </div>
+            )
+          ) : (
+            children
+          )}
         </main>
       </div>
       {isMobile && !menuOpen && (

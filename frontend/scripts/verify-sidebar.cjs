@@ -40,15 +40,25 @@ async function main() {
     });
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
+    await page.addInitScript(() => {
+      window.sessionStorage.setItem("brigid_has_session", "1");
+    });
     await page.route("**/api/brigid/**", (route) =>
       route.fulfill({
-        json: route.request().url().includes("/info")
+        json: route.request().url().includes("/me")
           ? {
-              roles: ["owner"],
-              simulation: "Test simulation",
-              screening_model: false,
+              user_id: "user-owner",
+              role: "owner",
+              business_id: "biz-demo",
+              name: "Sari",
             }
-          : { requests: [] },
+          : route.request().url().includes("/info")
+            ? {
+                roles: ["owner"],
+                simulation: "Test simulation",
+                screening_model: false,
+              }
+            : { requests: [] },
       }),
     );
     await page.goto(`${origin}/chat`);

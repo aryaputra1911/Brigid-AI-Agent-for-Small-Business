@@ -3,20 +3,47 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { hasStoredSession } from "@/lib/brigid-api";
 
-const navItems = [
-  { href: "/chat", label: "CHAT" },
-  { href: "/approvals", label: "APPROVALS" },
-  { href: "/mandate", label: "MANDATE" },
-  { href: "/login", label: "LOGIN" },
-];
+function subscribeSession(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+}
 
 export function LandingHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const signedIn = useSyncExternalStore(
+    subscribeSession,
+    hasStoredSession,
+    () => false,
+  );
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+
+  const navItems = useMemo(
+    () => [
+      { href: signedIn ? "/chat" : "/login?next=%2Fchat", label: "CHAT" },
+      {
+        href: signedIn ? "/approvals" : "/login?next=%2Fapprovals",
+        label: "APPROVALS",
+      },
+      {
+        href: signedIn ? "/mandate" : "/login?next=%2Fmandate",
+        label: "MANDATE",
+      },
+      { href: "/chat?demo=1", label: "TRY DEMO" },
+      { href: "/login", label: "LOGIN" },
+    ],
+    [signedIn],
+  );
 
   useEffect(() => {
     const onScroll = () => {

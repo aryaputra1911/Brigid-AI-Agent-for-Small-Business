@@ -18,6 +18,9 @@ async function main() {
       const page = await context.newPage();
       const errors = [];
       page.on("pageerror", (error) => errors.push(error.message));
+      await context.addInitScript(() => {
+        window.sessionStorage.setItem("brigid_has_session", "1");
+      });
       let receiveChat;
       const nextChat = () =>
         new Promise((resolve) => {
@@ -33,13 +36,20 @@ async function main() {
         }
         await route.fulfill({
           json:
-            action === "info"
+            action === "me"
               ? {
-                  roles: ["owner"],
-                  simulation: "Test simulation",
-                  screening_model: false,
+                  user_id: "user-owner",
+                  role: "owner",
+                  business_id: "biz-demo",
+                  name: "Sari",
                 }
-              : { requests: [] },
+              : action === "info"
+                ? {
+                    roles: ["owner"],
+                    simulation: "Test simulation",
+                    screening_model: false,
+                  }
+                : { requests: [] },
         });
       });
       await page.goto(`${origin}/chat`);

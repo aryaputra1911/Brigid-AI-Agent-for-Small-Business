@@ -37,6 +37,9 @@ async function main() {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  await context.addInitScript(() => {
+    window.sessionStorage.setItem("brigid_has_session", "1");
+  });
   let failInfo = false,
     failChat = false,
     failReset = false,
@@ -50,7 +53,14 @@ async function main() {
     const action = new URL(route.request().url()).pathname.split("/").at(-1);
     let status = 200,
       body = {};
-    if (action === "info") {
+    if (action === "me") {
+      body = {
+        user_id: "user-owner",
+        role: "owner",
+        business_id: "biz-demo",
+        name: "Sari",
+      };
+    } else if (action === "info") {
       status = failInfo ? 503 : 200;
       body = failInfo
         ? { detail: "Test service unavailable" }

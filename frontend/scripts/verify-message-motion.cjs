@@ -12,6 +12,7 @@ async function main() {
       const errors = [];
       page.on("pageerror", (error) => errors.push(error.message));
       await page.addInitScript(() => {
+        window.sessionStorage.setItem("brigid_has_session", "1");
         window.__messageAnimations = [];
         window.__scrollSamples = [];
         const original = Element.prototype.animate;
@@ -39,7 +40,7 @@ async function main() {
         const action = new URL(route.request().url()).pathname
           .split("/")
           .at(-1);
-        assert(["info", "pending", "chat"].includes(action));
+        assert(["info", "pending", "chat", "me"].includes(action));
         if (action === "chat") {
           chatCount++;
           await new Promise((resolve) => {
@@ -48,23 +49,30 @@ async function main() {
         }
         return route.fulfill({
           json:
-            action === "info"
+            action === "me"
               ? {
-                  roles: ["owner"],
-                  simulation: "Test simulation",
-                  screening_model: false,
+                  user_id: "user-owner",
+                  role: "owner",
+                  business_id: "biz-demo",
+                  name: "Sari",
                 }
-              : action === "pending"
-                ? { requests: [] }
-                : {
-                    reply: Array.from(
-                      { length: 65 },
-                      (_, i) =>
-                        `Test reply ${chatCount}, item ${i + 1}: review this record.`,
-                    ).join("\n"),
-                    blocked: false,
-                    new_requests: [],
-                  },
+              : action === "info"
+                ? {
+                    roles: ["owner"],
+                    simulation: "Test simulation",
+                    screening_model: false,
+                  }
+                : action === "pending"
+                  ? { requests: [] }
+                  : {
+                      reply: Array.from(
+                        { length: 65 },
+                        (_, i) =>
+                          `Test reply ${chatCount}, item ${i + 1}: review this record.`,
+                      ).join("\n"),
+                      blocked: false,
+                      new_requests: [],
+                    },
         });
       });
       await page.goto(
