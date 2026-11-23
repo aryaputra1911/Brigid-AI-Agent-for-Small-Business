@@ -107,6 +107,15 @@ class SignupBody(BaseModel):
     role: Role = "owner"
 
 
+class OAuthPrepareBody(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    provider: OAuthProvider
+    provider_user_id: str = Field(min_length=1, max_length=200)
+    email: str = Field(min_length=3, max_length=254)
+    name: str = Field(min_length=1, max_length=100)
+    intent: Literal["signup", "login"]
+
+
 class OAuthCompleteBody(BaseModel):
     model_config = ConfigDict(extra="forbid")
     provider: OAuthProvider
@@ -316,13 +325,54 @@ def create_web_app(
             raise HTTPException(409, str(error)) from None
         return issue_session(request, response, found, created.name)
 
-    @api.post("/api/oauth/complete")
-    def oauth_complete(body: OAuthCompleteBody, request: Request, response: Response) -> dict:
+    def check_internal_auth_secret(request: Request) -> None:
         internal_secret = os.environ.get("BRIGID_INTERNAL_AUTH_SECRET", "")
         if internal_secret:
             presented = request.headers.get("x-brigid-internal-secret", "")
             if not hmac.compare_digest(presented.encode(), internal_secret.encode()):
                 raise HTTPException(403, "Refused.")
+
+    @api.post("/api/oauth/prepare")
+    def oauth_prepare(body: OAuthPrepareBody, request: Request, response: Response) -> dict:
+        check_internal_auth_secret(request)
+        email = body.email.strip().lower()
+        if not _EMAIL_RE.match(email):
+            raise HTTPException(422, "A valid email address is required from the OAuth provider.")
+
+        if body.intent == "signup":
+            try:
+                status = accounts.check_oauth_signup_status(
+                    provider=body.provider,
+                    provider_user_id=body.provider_user_id,
+                    email=email,
+                    reserved_emails=demo_emails,
+                )
+            except AccountConflictError as error:
+                raise HTTPException(409, str(error)) from None
+            if status == "new":
+                return {
+                    "status": "needs_role",
+                    "provider": body.provider,
+                    "email": email,
+                    "name": body.name.strip() or email.split("@")[0],
+                }
+
+        account = accounts.authenticate_oauth(body.provider, body.provider_user_id)
+        if account is None:
+            provider_label = "Google" if body.provider == "google" else "GitHub"
+            raise HTTPException(
+                401,
+                f"No account found for this {provider_label} account. Please sign up first.",
+            )
+        found = principals.get(account.role)
+        if found is None:
+            raise HTTPException(401, "Account role is not available in this business.")
+        session = issue_session(request, response, found, account.name)
+        return {"status": "authenticated", **session}
+
+    @api.post("/api/oauth/complete")
+    def oauth_complete(body: OAuthCompleteBody, request: Request, response: Response) -> dict:
+        check_internal_auth_secret(request)
 
         email = body.email.strip().lower()
         if not _EMAIL_RE.match(email):

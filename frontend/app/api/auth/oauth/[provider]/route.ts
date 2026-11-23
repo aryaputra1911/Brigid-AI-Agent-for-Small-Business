@@ -8,7 +8,6 @@ import {
   getOAuthCredentials,
   parseAuthIntent,
   parseOAuthProvider,
-  parseSignupRole,
   providerDisplayName,
 } from "@/lib/oauth";
 
@@ -24,7 +23,6 @@ export async function GET(request: NextRequest, context: Context) {
   const { provider: rawProvider } = await context.params;
   const provider = parseOAuthProvider(rawProvider);
   const intent = parseAuthIntent(request.nextUrl.searchParams.get("intent"));
-  const role = parseSignupRole(request.nextUrl.searchParams.get("role"));
   const origin = request.nextUrl.origin;
 
   if (!provider) {
@@ -69,7 +67,7 @@ export async function GET(request: NextRequest, context: Context) {
   const response = NextResponse.redirect(authUrl);
   response.cookies.set(
     OAUTH_STATE_COOKIE,
-    JSON.stringify({ state, intent, provider, role }),
+    JSON.stringify({ state, intent, provider }),
     {
       httpOnly: true,
       sameSite: "lax",

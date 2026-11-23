@@ -1,18 +1,41 @@
 "use client";
 
-import { ArrowRight, ChevronDown, Lock, Mail, Shield, User } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronDown,
+  Lock,
+  Mail,
+  Shield,
+  User,
+} from "lucide-react";
 import type React from "react";
 import { useState } from "react";
-import type { Role } from "@/lib/brigid-api";
+import type { PendingOAuthAccount, Role } from "@/lib/brigid-api";
 import "./login-form.css";
 
 export type AuthMode = "login" | "signup";
 export type OAuthProvider = "google" | "github";
 
-const SIGNUP_ROLES: Array<{ value: Role; label: string }> = [
-  { value: "owner", label: "Owner" },
-  { value: "bookkeeper", label: "Bookkeeper" },
-  { value: "staff", label: "Staff" },
+const SIGNUP_ROLES: Array<{
+  value: Role;
+  label: string;
+  summary: string;
+}> = [
+  {
+    value: "owner",
+    label: "Owner",
+    summary: "Full access: approvals, mandate, invoices, and transactions.",
+  },
+  {
+    value: "bookkeeper",
+    label: "Bookkeeper",
+    summary: "Invoices and bank transactions (cannot draft mandate).",
+  },
+  {
+    value: "staff",
+    label: "Staff",
+    summary: "Receivable invoices only.",
+  },
 ];
 
 export interface LoginFormProps {
@@ -25,7 +48,7 @@ export interface LoginFormProps {
     name?: string,
     role?: Role,
   ) => Promise<void> | void;
-  onOAuth?: (provider: OAuthProvider, mode: AuthMode, role?: Role) => void;
+  onOAuth?: (provider: OAuthProvider, mode: AuthMode) => void;
   error?: string;
   submitting?: boolean;
   oauthLoading?: OAuthProvider | null;
@@ -34,11 +57,7 @@ export interface LoginFormProps {
 
 function GoogleIcon() {
   return (
-    <svg
-      className="h-4 w-4 shrink-0"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
+    <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="#EA4335"
         d="M12 10.2v3.92h5.46c-.24 1.26-.96 2.33-2.04 3.04l3.3 2.56c1.92-1.77 3.03-4.38 3.03-7.48 0-.72-.06-1.41-.19-2.04H12Z"
@@ -71,9 +90,149 @@ function GitHubIcon() {
   );
 }
 
+function RoleSelectField({
+  id,
+  value,
+  onChange,
+  disabled,
+}: {
+  id: string;
+  value: Role;
+  onChange: (role: Role) => void;
+  disabled: boolean;
+}) {
+  const selected =
+    SIGNUP_ROLES.find((item) => item.value === value) ?? SIGNUP_ROLES[0];
+
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        className="mb-1.5 flex items-center text-xs text-[#F1F7FF]/75"
+      >
+        <Shield className="mr-2" size={15} aria-hidden="true" />
+        Role
+      </label>
+      <div className="relative">
+        <select
+          id={id}
+          value={value}
+          onChange={(event) => onChange(event.target.value as Role)}
+          disabled={disabled}
+          className="login-glass-input block min-h-[44px] w-full cursor-pointer appearance-none border-0 border-b-2 border-white/35 bg-transparent py-2.5 pr-8 text-sm text-[#F1F7FF] focus:border-[#d3e7f1] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {SIGNUP_ROLES.map((item) => (
+            <option
+              key={item.value}
+              value={item.value}
+              className="bg-[#120b18] text-[#F1F7FF]"
+            >
+              {item.label}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[#F1F7FF]/75"
+          size={16}
+          aria-hidden="true"
+        />
+      </div>
+      <p className="mt-1.5 text-xs text-[#F1F7FF]/70">{selected.summary}</p>
+    </div>
+  );
+}
+
+/**
+ * Role selection card shown to new Google/GitHub users right after OAuth verification.
+ */
+export function OAuthRoleStep({
+  pending,
+  onConfirm,
+  onCancel,
+  error = "",
+  submitting = false,
+  className = "",
+}: {
+  pending: PendingOAuthAccount;
+  onConfirm: (role: Role) => Promise<void> | void;
+  onCancel: () => Promise<void> | void;
+  error?: string;
+  submitting?: boolean;
+  className?: string;
+}): React.JSX.Element {
+  const [role, setRole] = useState<Role>("owner");
+  const providerLabel = pending.provider === "google" ? "Google" : "GitHub";
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void onConfirm(role);
+  }
+
+  return (
+    <div
+      className={`login-glass-card w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl text-[#F1F7FF] ${className}`}
+    >
+      <div className="text-center space-y-2">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-[#F1F7FF]">
+          {pending.provider === "google" ? <GoogleIcon /> : <GitHubIcon />}
+          <span>{providerLabel} verified</span>
+        </div>
+        <h1 className="text-2xl font-bold text-[#F1F7FF]">Choose Your Role</h1>
+        <p className="text-sm text-[#F1F7FF]/80">
+          Finish signing up as{" "}
+          <span className="font-semibold text-white">{pending.name}</span> (
+          {pending.email})
+        </p>
+      </div>
+
+      <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+        <RoleSelectField
+          id="oauth_signup_role"
+          value={role}
+          onChange={setRole}
+          disabled={submitting}
+        />
+
+        {error && (
+          <p
+            id="login-error-text"
+            role="alert"
+            className="text-xs text-red-300"
+          >
+            {error}
+          </p>
+        )}
+
+        <div className="space-y-2.5">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="login-glass-btn group w-full min-h-[44px] flex items-center justify-center py-3 px-4 rounded-lg text-[#F1F7FF] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
+          >
+            {submitting ? "Creating account..." : "Complete Sign Up"}
+            <ArrowRight
+              className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform"
+              aria-hidden="true"
+            />
+          </button>
+
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={() => void onCancel()}
+            className="login-oauth-btn flex min-h-[44px] w-full items-center justify-center rounded-lg border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-medium text-[#F1F7FF] hover:bg-white/16 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:opacity-60"
+          >
+            Use another account
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 /**
  * Glassmorphism-style authentication form supporting email/password sign-in,
- * account sign-up, and Google/GitHub OAuth.
+ * account sign-up with role selection, and Google/GitHub OAuth.
  */
 export function LoginForm({
   mode: controlledMode,
@@ -146,7 +305,7 @@ export function LoginForm({
   function handleOAuth(provider: OAuthProvider) {
     if (busy) return;
     setLocalError("");
-    onOAuth?.(provider, mode, isSignup ? role : undefined);
+    onOAuth?.(provider, mode);
   }
 
   return (
@@ -193,9 +352,7 @@ export function LoginForm({
           {isSignup ? "Create Account" : "Welcome Back"}
         </h1>
         <p className="mt-2 text-sm text-[#F1F7FF]/75">
-          {isSignup
-            ? "Sign up to start using Brigid"
-            : "Sign in to continue"}
+          {isSignup ? "Sign up to start using Brigid" : "Sign in to continue"}
         </p>
       </div>
 
@@ -228,43 +385,12 @@ export function LoginForm({
         )}
 
         {isSignup && (
-          <div className="relative z-0">
-            <label
-              htmlFor="signup_role"
-              className="mb-1.5 flex items-center text-xs text-[#F1F7FF]/75"
-            >
-              <Shield
-                className="mr-2"
-                size={15}
-                aria-hidden="true"
-              />
-              Role
-            </label>
-            <div className="relative">
-              <select
-                id="signup_role"
-                value={role}
-                onChange={(event) => setRole(event.target.value as Role)}
-                disabled={busy}
-                className="login-glass-input block min-h-[44px] w-full cursor-pointer appearance-none border-0 border-b-2 border-white/35 bg-transparent py-2.5 pr-8 text-sm text-[#F1F7FF] focus:border-[#d3e7f1] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {SIGNUP_ROLES.map((item) => (
-                  <option
-                    key={item.value}
-                    value={item.value}
-                    className="bg-[#120b18] text-[#F1F7FF]"
-                  >
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[#F1F7FF]/75"
-                size={16}
-                aria-hidden="true"
-              />
-            </div>
-          </div>
+          <RoleSelectField
+            id="signup_role"
+            value={role}
+            onChange={setRole}
+            disabled={busy}
+          />
         )}
 
         <div className="relative z-0">
