@@ -40,6 +40,11 @@ CREATE TABLE IF NOT EXISTS review_items (
     status TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS counters (name TEXT PRIMARY KEY, value INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS idx_mandates_active ON mandates (active);
+CREATE INDEX IF NOT EXISTS idx_executions_executed_at ON executions (executed_at);
+CREATE INDEX IF NOT EXISTS idx_proposal_events_user_at ON proposal_events (user_id, at);
+CREATE INDEX IF NOT EXISTS idx_review_items_inv_reason_status
+    ON review_items (invoice_id, reason_code, status);
 """
 
 
@@ -66,6 +71,9 @@ class GuardStore:
             Path(path).parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(str(path), check_same_thread=False, isolation_level=None)
         self._conn.row_factory = sqlite3.Row
+        if path != ":memory:":
+            self._conn.execute("PRAGMA journal_mode=WAL;")
+            self._conn.execute("PRAGMA synchronous=NORMAL;")
         self._conn.executescript(_SCHEMA)
         self._lock = threading.RLock()
 

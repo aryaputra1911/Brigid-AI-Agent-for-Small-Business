@@ -115,7 +115,7 @@ const NIMBUS_CSS = `
 .nimbus-nav{--n-tint:rgba(255,255,255,.14);--n-fg:#0B132B;--n-fg-soft:rgba(11,19,43,.6);--n-rim:rgba(255,255,255,.7);--n-focus:#00A2FF;
   position:relative;display:inline-flex;align-items:center;gap:2px;padding:6px;border-radius:999px;isolation:isolate;
   font-family:inherit;-webkit-font-smoothing:antialiased;user-select:none;-webkit-tap-highlight-color:transparent}
-.nimbus-nav[data-tone="dark"]{--n-tint:rgba(14,10,18,.48);--n-fg:#F1F7FF;--n-fg-soft:rgba(241,247,255,.72);--n-rim:rgba(255,255,255,.32);--n-focus:#d3e7f1}
+.nimbus-nav[data-tone="dark"]{--n-tint:rgba(10,10,10,.48);--n-fg:#F1F7FF;--n-fg-soft:rgba(241,247,255,.72);--n-rim:rgba(255,255,255,.32);--n-focus:#d3e7f1}
 .nimbus-glass{position:absolute;inset:0;border-radius:inherit;z-index:-2;overflow:hidden;background:var(--n-tint);
   -webkit-backdrop-filter:blur(10px) saturate(1.2) brightness(1.08);backdrop-filter:blur(10px) saturate(1.2) brightness(1.08);
   box-shadow:inset 0 1px 1px var(--n-rim),inset 0 0 0 1px rgba(255,255,255,.2),0 12px 32px -14px rgba(0,40,90,.5),0 2px 6px rgba(0,40,90,.1)}

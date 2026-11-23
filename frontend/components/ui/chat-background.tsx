@@ -26,8 +26,8 @@ export function ChatBackground() {
           intensity={0.25}
           noise={0.08}
           shape="corners"
-          colors={["#07020a", "#111b27", "#1e3648", "#d3e7f1"]}
-          colorBack="#07020a"
+          colors={["#000000", "#111b27", "#1e3648", "#d3e7f1"]}
+          colorBack="#000000"
           minPixelRatio={1}
           maxPixelCount={mobile ? 90_000 : 180_000}
           style={{ width: "100%", height: "100%" }}

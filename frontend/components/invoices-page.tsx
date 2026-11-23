@@ -10,6 +10,7 @@ import {
 } from "@/lib/brigid-api";
 import { useWorkspace } from "@/components/workspace-provider";
 import { FinanceState } from "@/components/finance-page-ui";
+import { Bars } from "@/components/loading-ui/bars";
 import "./finance-pages.css";
 
 function formatAmount(amount: string | number, currency: string): string {
@@ -82,7 +83,6 @@ export function InvoicesPage() {
   return (
     <div className="paper-finance-page">
       <header className="paper-finance-heading">
-        <span className="paper-finance-kicker">Ledger</span>
         <h1>Invoices</h1>
         <p>
           Review payable and receivable invoices. Open any invoice to inspect
@@ -100,48 +100,48 @@ export function InvoicesPage() {
         </div>
       </header>
 
-      <div className="brigid-filter-bar" role="region" aria-label="Filters">
-        {!isStaff && (
+      {state !== "loading" && (
+        <div className="brigid-filter-bar" role="region" aria-label="Filters">
+          {!isStaff && (
+            <div className="brigid-filter-group">
+              <label htmlFor="invoice-kind-filter">Kind</label>
+              <select
+                id="invoice-kind-filter"
+                value={kind}
+                onChange={(event) => {
+                  setState("loading");
+                  setKind(event.target.value as InvoiceKind | "");
+                }}
+              >
+                <option value="">All kinds</option>
+                <option value="payable">Payable</option>
+                <option value="receivable">Receivable</option>
+              </select>
+            </div>
+          )}
           <div className="brigid-filter-group">
-            <label htmlFor="invoice-kind-filter">Kind</label>
+            <label htmlFor="invoice-status-filter">Status</label>
             <select
-              id="invoice-kind-filter"
-              value={kind}
+              id="invoice-status-filter"
+              value={status}
               onChange={(event) => {
                 setState("loading");
-                setKind(event.target.value as InvoiceKind | "");
+                setStatus(event.target.value as InvoiceStatus | "");
               }}
             >
-              <option value="">All kinds</option>
-              <option value="payable">Payable</option>
-              <option value="receivable">Receivable</option>
+              <option value="">All statuses</option>
+              <option value="open">Open</option>
+              <option value="paid">Paid</option>
+              <option value="void">Void</option>
             </select>
           </div>
-        )}
-        <div className="brigid-filter-group">
-          <label htmlFor="invoice-status-filter">Status</label>
-          <select
-            id="invoice-status-filter"
-            value={status}
-            onChange={(event) => {
-              setState("loading");
-              setStatus(event.target.value as InvoiceStatus | "");
-            }}
-          >
-            <option value="">All statuses</option>
-            <option value="open">Open</option>
-            <option value="paid">Paid</option>
-            <option value="void">Void</option>
-          </select>
         </div>
-      </div>
+      )}
 
       {state === "loading" && (
-        <FinanceState
-          icon="rules"
-          title="Loading invoices"
-          description="Fetching invoice records from your workspace."
-        />
+        <div className="flex min-h-[220px] items-center justify-center">
+          <Bars className="h-6 w-6 text-white/75" />
+        </div>
       )}
 
       {state === "error" && (

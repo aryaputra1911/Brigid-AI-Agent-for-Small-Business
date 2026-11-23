@@ -9,6 +9,7 @@ const navItems = [
   { href: "/chat", label: "CHAT" },
   { href: "/approvals", label: "APPROVALS" },
   { href: "/mandate", label: "MANDATE" },
+  { href: "/login", label: "LOGIN" },
 ];
 
 export function LandingHeader() {
@@ -51,42 +52,44 @@ export function LandingHeader() {
   };
 
   return (
-    <header
-      className={`rre-header ${scrolled ? "is-scrolled" : ""}`}
-      role="banner"
-    >
-      <div className="rre-header__inner">
-        <Link href="#top" className="rre-brand" aria-label="Brigid home">
-          <Image
-            src="/brand/brigid.svg"
-            alt=""
-            width={28}
-            height={28}
-            className="rre-brand__mark"
-          />
-          <span className="rre-brand__name">BRIGID</span>
-        </Link>
+    <>
+      <header
+        className={`rre-header ${scrolled ? "is-scrolled" : ""}`}
+        role="banner"
+      >
+        <div className="rre-header__inner">
+          <Link href="#top" className="rre-brand" aria-label="Brigid home">
+            <Image
+              src="/brand/brigid.svg"
+              alt=""
+              width={28}
+              height={28}
+              className="rre-brand__mark"
+            />
+            <span className="rre-brand__name">BRIGID</span>
+          </Link>
 
-        <nav className="rre-nav" aria-label="Primary navigation">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="rre-nav__link">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+          <nav className="rre-nav" aria-label="Primary navigation">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href} className="rre-nav__link">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-        <button
-          ref={triggerRef}
-          type="button"
-          className="rre-menu-btn"
-          aria-expanded={menuOpen}
-          aria-controls="rre-mobile-drawer"
-          onClick={() => setMenuOpen(true)}
-        >
-          <Menu size={18} strokeWidth={1.75} aria-hidden="true" />
-          <span>Menu</span>
-        </button>
-      </div>
+          <button
+            ref={triggerRef}
+            type="button"
+            className="rre-menu-btn"
+            aria-expanded={menuOpen}
+            aria-controls="rre-mobile-drawer"
+            onClick={() => setMenuOpen(true)}
+          >
+            <Menu size={18} strokeWidth={1.75} aria-hidden="true" />
+            <span>Menu</span>
+          </button>
+        </div>
+      </header>
 
       {menuOpen && (
         <div
@@ -141,6 +144,6 @@ export function LandingHeader() {
           </p>
         </div>
       )}
-    </header>
+    </>
   );
 }

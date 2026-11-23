@@ -16,8 +16,8 @@ export function FinanceHeading({
   id: string;
   title: string;
   description: string;
-  kicker: string;
-  icon: ChatIconName;
+  kicker?: string;
+  icon?: ChatIconName;
   role: string;
   headingRef?: Ref<HTMLHeadingElement>;
   stackContext?: boolean;
@@ -25,10 +25,12 @@ export function FinanceHeading({
 }) {
   return (
     <header className="paper-finance-heading">
-      <span className="paper-finance-kicker">
-        <ChatIcon name={icon} />
-        {kicker}
-      </span>
+      {kicker && (
+        <span className="paper-finance-kicker">
+          {icon && <ChatIcon name={icon} />}
+          {kicker}
+        </span>
+      )}
       <h1 id={id} ref={headingRef} tabIndex={-1}>
         {title}
       </h1>
@@ -61,7 +63,7 @@ export function FinanceState({
 }: {
   title: string;
   description: string;
-  icon: ChatIconName;
+  icon?: ChatIconName;
   tone?: "neutral" | "error";
   role?: "alert" | "status";
   children?: ReactNode;
@@ -71,9 +73,11 @@ export function FinanceState({
       className={`paper-finance-state paper-finance-state-${tone}`}
       role={role}
     >
-      <span className="paper-finance-state-icon">
-        <ChatIcon name={icon} />
-      </span>
+      {icon && (
+        <span className="paper-finance-state-icon">
+          <ChatIcon name={icon} />
+        </span>
+      )}
       <h2>{title}</h2>
       <p>{description}</p>
       {children}

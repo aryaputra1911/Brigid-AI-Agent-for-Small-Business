@@ -562,7 +562,7 @@ function ChatComposerAttachments({
         <li
           key={attachment.id}
           data-slot="chat-composer-attachment"
-          className="flex h-7 max-w-56 items-center gap-1.5 rounded-full border border-white/20 bg-[#100914] pr-1 pl-2.5 text-xs text-white"
+          className="flex h-7 max-w-56 items-center gap-1.5 rounded-full border border-white/20 bg-[#111111] pr-1 pl-2.5 text-xs text-white"
         >
           <PaperclipIcon className="size-3 shrink-0 text-white/60" />
           <span className="truncate">{attachment.name}</span>
@@ -680,7 +680,7 @@ function ChatComposerDropZone({
       {dragging ? (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-[#d3e7f1] bg-[#100914]/90 text-sm font-medium text-white"
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl border-2 border-dashed border-[#d3e7f1] bg-[#111111]/90 text-sm font-medium text-white"
         >
           {label}
         </div>

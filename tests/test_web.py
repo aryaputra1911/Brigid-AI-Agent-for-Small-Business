@@ -267,3 +267,34 @@ def test_the_owner_confirms_exactly_the_request_named(ready, owner, ground_truth
     assert [p.invoice_id for p in ready.env.list_payments()] == [second.id]
     waiting = client.get("/api/pending", params={"role": "owner"}).json()["requests"]
     assert [r["subject_id"] for r in waiting] == [by_invoice[first.number]]
+
+
+def test_list_endpoints_flag_suspicious_records_without_calling_screening_model(world, monkeypatch):
+    client, app = client_for(world)
+    assert (
+        client.post(
+            "/api/login", json={"email": "owner@brigid.demo", "password": "brigid123"}
+        ).status_code
+        == 200
+    )
+
+    calls = 0
+
+    def fail_if_called(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        raise AssertionError("screen_untrusted should not be called per record on read endpoints")
+
+    monkeypatch.setattr(app.guard, "screen_untrusted", fail_if_called)
+    monkeypatch.setattr(app.guard._sentinel, "screen", fail_if_called)
+
+    invoices_res = client.get("/api/invoices")
+    tx_res = client.get("/api/transactions")
+
+    assert invoices_res.status_code == 200
+    assert tx_res.status_code == 200
+    assert calls == 0
+    by_id = {inv["id"]: inv for inv in invoices_res.json()["invoices"]}
+    assert by_id["inv-0094"]["needs_review"] is True
+    assert all("needs_review" in tx for tx in tx_res.json()["transactions"])
+
