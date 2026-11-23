@@ -42,6 +42,19 @@ function LoginFormContainer() {
   const error = errorOverride ?? queryError;
 
   useEffect(() => {
+    function resetPendingButtons() {
+      setOauthLoading(null);
+      setSubmitting(false);
+    }
+    window.addEventListener("pageshow", resetPendingButtons);
+    window.addEventListener("popstate", resetPendingButtons);
+    return () => {
+      window.removeEventListener("pageshow", resetPendingButtons);
+      window.removeEventListener("popstate", resetPendingButtons);
+    };
+  }, []);
+
+  useEffect(() => {
     if (queryStep !== "role") {
       return;
     }
