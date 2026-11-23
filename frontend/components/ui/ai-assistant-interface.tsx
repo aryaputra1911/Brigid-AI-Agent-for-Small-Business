@@ -321,7 +321,7 @@ export function AIAssistantInterface() {
         }}
       >
         {infoError && (
-          <div className="paper-chat-state state-panel" role="alert">
+          <div className="paper-chat-state" role="alert">
             <h1 id="chat-title">Unable to connect</h1>
             <p>{infoError}</p>
             <button
@@ -329,12 +329,14 @@ export function AIAssistantInterface() {
               type="button"
               onClick={() => void retryInfo()}
             >
+              <ChatIcon name="refresh" />
               Retry connection
             </button>
           </div>
         )}
         {!infoError && !info && (
-          <div className="paper-chat-state state-panel" role="status">
+          <div className="paper-chat-state" role="status">
+            <BrigidLogo className="paper-chat-state-mark" state="processing" />
             <h1 id="chat-title">Connecting to Brigid</h1>
             <p>Loading roles and approval requests.</p>
           </div>

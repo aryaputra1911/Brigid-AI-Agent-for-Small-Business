@@ -491,7 +491,7 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
         <main id="main-content" className="paper-content" tabIndex={-1}>
           {requiresAuth && !user ? (
             demoError ? (
-              <div className="paper-chat-state state-panel" role="alert">
+              <div className="paper-chat-state" role="alert">
                 <h1>Unable to start demo</h1>
                 <p>{demoError}</p>
                 <button
@@ -499,11 +499,16 @@ export function WorkspaceShell({ children }: { children: ReactNode }) {
                   type="button"
                   onClick={() => void retryDemo()}
                 >
+                  <ChatIcon name="refresh" />
                   Retry demo
                 </button>
               </div>
             ) : (
-              <div className="paper-chat-state state-panel" role="status">
+              <div className="paper-chat-state" role="status">
+                <BrigidLogo
+                  className="paper-chat-state-mark"
+                  state="processing"
+                />
                 <h1>
                   {sessionChecked
                     ? "Redirecting to sign in"
