@@ -517,3 +517,42 @@ def test_the_agent_loop_works_end_to_end_on_this_backend(ready, owner, bookkeepe
     tool_message = transport.requests[1]["body"]["messages"][-1]
     assert tool_message["role"] == "tool"
     assert json.loads(tool_message["content"])["untrusted_data"]["status"] == "executed"
+
+
+def test_tool_call_extra_content_is_preserved_across_turns():
+    """Gemini thinking models attach extra_content (e.g. thought_signature) to tool_calls
+    and reject subsequent turns if it is omitted."""
+    extra = {"google": {"thought_signature": "sig-abc123"}}
+    call_with_sig = {**tool_call("c1", "get_balance", {}), "extra_content": extra}
+    transport = Transport(
+        answer({"role": "assistant", "content": None, "tool_calls": [call_with_sig]}, "tool_calls"),
+        answer({"role": "assistant", "content": "Saldo Rp 10.000.000."}),
+    )
+    client = make(transport)
+    first = client.complete(
+        system="SYSTEM",
+        messages=[{"role": "user", "content": "cek saldo"}],
+        tools=[
+            {
+                "name": "get_balance",
+                "description": "Get balance",
+                "input_schema": {"type": "object", "properties": {}},
+            }
+        ],
+    )
+    client.complete(
+        system="SYSTEM",
+        messages=[
+            {"role": "user", "content": "cek saldo"},
+            {"role": "assistant", "content": first.content},
+            {
+                "role": "user",
+                "content": [{"type": "tool_result", "tool_use_id": "c1", "content": "10000000"}],
+            },
+        ],
+        tools=[],
+    )
+
+    sent_assistant = transport.requests[1]["body"]["messages"][2]
+    assert sent_assistant["role"] == "assistant"
+    assert sent_assistant["tool_calls"][0]["extra_content"] == extra
