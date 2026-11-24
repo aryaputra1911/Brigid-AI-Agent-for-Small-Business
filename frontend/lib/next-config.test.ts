@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { test } from "node:test";
 
 import nextConfig from "../next.config.ts";
@@ -51,3 +53,24 @@ test("every page sets strict CSP directives and Referrer-Policy", async () => {
 test("the dev server only trusts this computer", () => {
   assert.deepEqual(nextConfig.allowedDevOrigins, ["127.0.0.1"]);
 });
+
+test("invoice and transaction list rows disable automatic RSC viewport prefetching", () => {
+  const invoicesSource = readFileSync(
+    join(process.cwd(), "components/invoices-page.tsx"),
+    "utf8",
+  );
+  const transactionsSource = readFileSync(
+    join(process.cwd(), "components/transactions-page.tsx"),
+    "utf8",
+  );
+
+  assert.match(
+    invoicesSource,
+    /href=\{`\/invoices\/\$\{encodeURIComponent\(invoice\.id\)\}`\}[\s\S]*?prefetch=\{false\}/,
+  );
+  assert.match(
+    transactionsSource,
+    /href=\{`\/transactions\/\$\{encodeURIComponent\(tx\.id\)\}`\}[\s\S]*?prefetch=\{false\}/,
+  );
+});
+

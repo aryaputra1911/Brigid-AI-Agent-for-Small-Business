@@ -200,6 +200,7 @@ export function TransactionsPage() {
             <li key={tx.id}>
               <Link
                 href={`/transactions/${encodeURIComponent(tx.id)}`}
+                prefetch={false}
                 className="brigid-list-card"
               >
                 <div className="brigid-list-card-main">
