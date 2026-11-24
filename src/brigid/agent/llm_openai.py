@@ -78,18 +78,18 @@ def to_openai_messages(system: str, messages: list[dict[str, Any]]) -> list[dict
             if _block(block, "type") == "text":
                 text_parts.append(_block(block, "text", ""))
             elif _block(block, "type") == "tool_use":
-                tool_calls.append(
-                    {
-                        "id": _block(block, "id"),
-                        "type": "function",
-                        "function": {
-                            "name": _block(block, "name"),
-                            "arguments": json.dumps(
-                                _block(block, "input") or {}, ensure_ascii=False
-                            ),
-                        },
-                    }
-                )
+                tool_call: dict[str, Any] = {
+                    "id": _block(block, "id"),
+                    "type": "function",
+                    "function": {
+                        "name": _block(block, "name"),
+                        "arguments": json.dumps(_block(block, "input") or {}, ensure_ascii=False),
+                    },
+                }
+                extra_content = _block(block, "extra_content")
+                if extra_content is not None:
+                    tool_call["extra_content"] = extra_content
+                tool_calls.append(tool_call)
         assistant: dict[str, Any] = {"role": "assistant", "content": "\n".join(text_parts) or None}
         if tool_calls:
             assistant["tool_calls"] = tool_calls
@@ -254,6 +254,7 @@ class OpenAICompatibleLLM:
 
         text = (message.get("content") or "").strip() if isinstance(message, dict) else ""
         tool_calls: list[ToolCall] = []
+        content: list[dict[str, Any]] = [{"type": "text", "text": text}] if text else []
         offered = {tool["name"] for tool in tools}
         for index, call in enumerate(message.get("tool_calls") or []):
             function = call.get("function") or {}
@@ -265,18 +266,21 @@ class OpenAICompatibleLLM:
             if not isinstance(arguments, dict):
                 # The registry refuses unknown arguments, so the model is told to try again.
                 arguments = {UNPARSEABLE_ARGUMENTS: str(raw)[:200]}
-            tool_calls.append(
-                ToolCall(
-                    id=call.get("id") or f"call_{index}",
-                    name=_tool_name(function.get("name") or "", offered),
-                    input=arguments,
-                )
+            tc = ToolCall(
+                id=call.get("id") or f"call_{index}",
+                name=_tool_name(function.get("name") or "", offered),
+                input=arguments,
             )
-
-        content: list[dict[str, Any]] = [{"type": "text", "text": text}] if text else []
-        content += [
-            {"type": "tool_use", "id": c.id, "name": c.name, "input": c.input} for c in tool_calls
-        ]
+            tool_calls.append(tc)
+            block: dict[str, Any] = {
+                "type": "tool_use",
+                "id": tc.id,
+                "name": tc.name,
+                "input": tc.input,
+            }
+            if "extra_content" in call:
+                block["extra_content"] = call["extra_content"]
+            content.append(block)
         return LLMResponse(
             stop_reason=_stop_reason(choice.get("finish_reason"), bool(tool_calls)),
             text=text,

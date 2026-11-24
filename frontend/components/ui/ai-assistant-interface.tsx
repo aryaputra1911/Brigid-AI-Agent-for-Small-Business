@@ -272,10 +272,10 @@ export function AIAssistantInterface() {
       value: draft,
       attachments: [],
       submitting: sending,
-      disabled: !role || busy,
-      canSubmit: Boolean(role && draft.trim() && !busy),
+      disabled: !role || Boolean(infoError) || busy,
+      canSubmit: Boolean(role && !infoError && draft.trim() && !busy),
     }),
-    [draft, sending, role, busy],
+    [draft, sending, role, infoError, busy],
   );
 
   const composerActions = useMemo(
@@ -353,7 +353,7 @@ export function AIAssistantInterface() {
                   key={prompt.icon}
                   text={prompt.text}
                   icon={prompt.icon}
-                  disabled={!role || busy}
+                  disabled={!role || Boolean(infoError) || busy}
                   meshDelayMs={index * 45}
                   onSelect={() => {
                     setDraft(`${prompt.text}.`);

@@ -563,3 +563,23 @@ def test_organiser_environment_is_an_explicit_empty_slot(owner):
         env.get_balance(owner)
     with pytest.raises(NotImplementedError):
         env.execute_payment(None)
+
+
+def test_repeated_reads_reuse_cached_records_until_the_database_changes(
+    env, owner, payable, make_approval
+):
+    first_invoices = env.list_invoices(owner, "payable")
+    second_invoices = env.list_invoices(owner, "payable")
+
+    assert first_invoices == second_invoices
+    assert first_invoices is not second_invoices
+    assert first_invoices[0] is second_invoices[0]
+
+    before_balance = env.get_balance(owner).amount
+    invoice, supplier = payable
+    assert env.execute_payment(make_approval(invoice, supplier)).status == "success"
+
+    after_balance = env.get_balance(owner).amount
+    updated_invoice = env.get_invoice(owner, invoice.id)
+    assert after_balance == before_balance - invoice.amount
+    assert updated_invoice.status == "paid"

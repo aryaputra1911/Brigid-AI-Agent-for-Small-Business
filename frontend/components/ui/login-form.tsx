@@ -566,7 +566,7 @@ export function LoginForm({
           type="button"
           disabled={busy}
           onClick={() => switchMode(isSignup ? "login" : "signup")}
-          className="inline-flex min-h-[44px] items-center cursor-pointer font-semibold text-[#d3e7f1] underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center px-1.5 cursor-pointer font-semibold text-[#d3e7f1] underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d3e7f1] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSignup ? "Sign in" : "Sign up"}
         </button>

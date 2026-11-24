@@ -248,7 +248,7 @@ async function main() {
     );
     assert.equal(
       await page.getByRole("button", { name: /coming soon/i }).count(),
-      7,
+      6,
     );
     for (const control of await page
       .getByRole("button", { name: /coming soon/i })
@@ -334,7 +334,10 @@ async function main() {
       .getByText("Only the owner can draft a mandate.", { exact: false })
       .waitFor();
     await page
-      .getByRole("button", { name: "Settings, acting as staff", exact: true })
+      .getByRole("button", {
+        name: "Settings and help, acting as staff",
+        exact: true,
+      })
       .click();
     await page
       .getByRole("combobox", { name: "Acting as" })
@@ -396,7 +399,7 @@ async function main() {
     assert.equal(await page.locator(".paper-sidebar-open").count(), 0);
     assert(
       await page
-        .locator(".paper-avatar")
+        .getByRole("button", { name: /^Settings and help, acting as/ })
         .evaluate((el) => el === document.activeElement),
     );
     await page.getByRole("button", { name: "Open navigation menu" }).click();

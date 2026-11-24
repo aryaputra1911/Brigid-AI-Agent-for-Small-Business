@@ -31,6 +31,7 @@ import threading
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from decimal import Decimal
+from functools import lru_cache
 from typing import Any, Literal
 
 from pydantic import AwareDatetime, BaseModel, Field, ValidationError
@@ -119,6 +120,30 @@ ACCOUNT_FIELDS = ("verified_account", "stated_account")
 # is treated as free text after all.
 _IDENTIFIER = re.compile(r"[\w.:/#*+-]{1,64}")
 _DIGIT = re.compile(r"\d")
+
+
+@lru_cache(maxsize=64)
+def _record_field_plan(
+    model_cls: type[BaseModel],
+) -> tuple[tuple[str, bool, bool], ...]:
+    return tuple(
+        (name, name in ACCOUNT_FIELDS, name in STRUCTURAL_FIELDS) for name in model_cls.model_fields
+    )
+
+
+@lru_cache(maxsize=4096)
+def _is_identifier(text: str) -> bool:
+    return _IDENTIFIER.fullmatch(text) is not None
+
+
+@lru_cache(maxsize=16)
+def _parse_mandate(payload: str) -> Mandate | None:
+    try:
+        return Mandate.model_validate_json(payload)
+    except ValidationError:
+        return None
+
+
 BOOK_CATEGORY_FOR_PAYMENTS = "supplier_payment"
 
 _INTERNAL_ERROR = (
@@ -375,10 +400,7 @@ class GuardService:
         payload = self._store.active_mandate_payload()
         if payload is None:
             return None
-        try:
-            return Mandate.model_validate_json(payload)
-        except ValidationError:
-            return None
+        return _parse_mandate(payload)
 
     def active_mandate(self) -> Mandate | None:
         """The current mandate, or None when there is none or it fails verification."""
@@ -472,12 +494,14 @@ class GuardService:
         for index, record in enumerate(records):
             if not isinstance(record, BaseModel):
                 continue
-            for name, content in record:
+            values = record.__dict__
+            for name, is_account, is_structural in _record_field_plan(type(record)):
+                content = values.get(name)
                 if not isinstance(content, str) or not content.strip():
                     continue
-                if name in ACCOUNT_FIELDS:
+                if is_account:
                     self._outgoing.add_account(content)
-                if name not in STRUCTURAL_FIELDS or not _IDENTIFIER.fullmatch(content):
+                if not is_structural or not _is_identifier(content):
                     slots.append((index, name, content))
         if not slots:
             return ScreenedRecords(value)
@@ -508,10 +532,13 @@ class GuardService:
                 withheld += 1
             else:
                 unscreened = True
-        cleaned = [
-            record.model_copy(update=updates[index]) if index in updates else record
-            for index, record in enumerate(records)
-        ]
+        if updates:
+            cleaned = [
+                record.model_copy(update=updates[index]) if index in updates else record
+                for index, record in enumerate(records)
+            ]
+        else:
+            cleaned = list(records)
         return ScreenedRecords(
             value=cleaned if isinstance(value, list) else cleaned[0],
             withheld=withheld,
@@ -648,7 +675,7 @@ class GuardService:
             ), None
         except ToolFailure:
             return Deny(reason_code="INTERNAL_ERROR", user_message=_UNREACHABLE), None
-        return evaluate(proposal, mandate, principal, view, now), view
+        return evaluate(proposal, mandate, principal, view, now, authority_checked=True), view
 
     def _build_view(
         self,

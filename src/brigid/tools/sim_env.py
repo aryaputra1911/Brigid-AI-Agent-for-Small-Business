@@ -233,6 +233,8 @@ class SimEnvironment:
             r["id"]: (r["role"], r["business_id"])
             for r in self._conn.execute("SELECT id, role, business_id FROM users")
         }
+        self._cache_changes: int = -1
+        self._cache: dict[tuple[object, ...], object] = {}
 
     @classmethod
     def create(
@@ -332,11 +334,23 @@ class SimEnvironment:
 
     # --- Reads ---------------------------------------------------------------------------
 
+    def _read_cache(self) -> dict[tuple[object, ...], object]:
+        changes = self._conn.total_changes
+        if changes != self._cache_changes:
+            self._cache.clear()
+            self._cache_changes = changes
+        return self._cache
+
     def _balance(self) -> Decimal:
+        cache = self._read_cache()
+        cached = cache.get(("balance",))
+        if isinstance(cached, Decimal):
+            return cached
         total = self._business.opening_balance
         for row in self._conn.execute("SELECT amount, direction FROM bank_transactions"):
             amount = Decimal(row["amount"])
             total += amount if row["direction"] == "in" else -amount
+        cache[("balance",)] = total
         return total
 
     def get_balance(self, p: Principal) -> Money:
@@ -355,12 +369,19 @@ class SimEnvironment:
                 raise ValueError("start must not be after end")
             if not 1 <= limit <= MAX_TRANSACTION_LIMIT:
                 raise ValueError(f"limit must be between 1 and {MAX_TRANSACTION_LIMIT}")
+            cache = self._read_cache()
+            key = ("list_transactions", start, end, limit)
+            cached = cache.get(key)
+            if isinstance(cached, tuple):
+                return list(cached)
             rows = self._conn.execute(
                 "SELECT * FROM bank_transactions WHERE date BETWEEN ? AND ? "
                 "ORDER BY date, id LIMIT ?",
                 (start.isoformat(), end.isoformat(), limit),
             )
-            return [BankTransaction.model_validate(dict(row)) for row in rows]
+            items = tuple(BankTransaction.model_validate(dict(row)) for row in rows)
+            cache[key] = items
+            return list(items)
 
     def get_transaction(self, p: Principal, transaction_id: str) -> BankTransaction:
         with self._lock:
@@ -391,6 +412,11 @@ class SimEnvironment:
             else:
                 self._authorize(p, "owner", "bookkeeper", "staff")
             self._maybe_fail("list_invoices")
+            cache = self._read_cache()
+            key = ("list_invoices", kind, status, due_before)
+            cached = cache.get(key)
+            if isinstance(cached, tuple):
+                return list(cached)
             query, params = "SELECT * FROM invoices WHERE kind = ?", [kind]
             if status is not None:
                 query += " AND status = ?"
@@ -399,7 +425,9 @@ class SimEnvironment:
                 query += " AND due_date < ?"
                 params.append(due_before.isoformat())
             rows = self._conn.execute(query + " ORDER BY due_date, id", params)
-            return [Invoice.model_validate(dict(row)) for row in rows]
+            items = tuple(Invoice.model_validate(dict(row)) for row in rows)
+            cache[key] = items
+            return list(items)
 
     def get_invoice(self, p: Principal, invoice_id: str) -> Invoice:
         with self._lock:
@@ -417,8 +445,15 @@ class SimEnvironment:
             return invoice
 
     def _supplier(self, supplier_id: str) -> Supplier | None:
+        cache = self._read_cache()
+        key = ("supplier", supplier_id)
+        if key in cache:
+            cached = cache[key]
+            return cached if isinstance(cached, Supplier) else None
         row = self._conn.execute("SELECT * FROM suppliers WHERE id = ?", (supplier_id,)).fetchone()
-        return None if row is None else Supplier.model_validate(dict(row))
+        supplier = None if row is None else Supplier.model_validate(dict(row))
+        cache[key] = supplier
+        return supplier
 
     def get_supplier(self, p: Principal, supplier_id: str) -> Supplier:
         with self._lock:
@@ -435,6 +470,11 @@ class SimEnvironment:
             self._maybe_fail("get_book_entries")
             if start > end:
                 raise ValueError("start must not be after end")
+            cache = self._read_cache()
+            key = ("book_entries", start, end, p.role)
+            cached = cache.get(key)
+            if isinstance(cached, tuple):
+                return list(cached)
             rows = self._conn.execute(
                 "SELECT id, date, amount, direction, category, description, invoice_id, "
                 "reconciled FROM book_entries WHERE date BETWEEN ? AND ? ORDER BY date, id",
@@ -443,7 +483,9 @@ class SimEnvironment:
             entries = [BookEntry.model_validate(dict(row)) for row in rows]
             if p.role == "staff":
                 entries = [e for e in entries if e.category in self._staff_book_categories]
-            return entries
+            items = tuple(entries)
+            cache[key] = items
+            return list(items)
 
     # --- Writes --------------------------------------------------------------------------
 

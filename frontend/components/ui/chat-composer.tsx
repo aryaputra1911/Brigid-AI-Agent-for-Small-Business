@@ -290,7 +290,7 @@ function ChatComposerInput({
   disabled,
   onChange,
   onKeyDown,
-  "aria-label": ariaLabel = "Message",
+  "aria-label": ariaLabel,
   ...props
 }: React.ComponentProps<"textarea">) {
   const {

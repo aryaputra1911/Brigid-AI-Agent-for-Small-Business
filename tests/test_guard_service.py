@@ -924,3 +924,24 @@ def test_secrets_never_reach_the_audit_log_or_a_decision(
         account = ready.env.get_supplier(owner, supplier_id).verified_account
         assert account not in log_text
         assert account not in decisions
+
+
+def test_propose_payment_verifies_the_active_mandate_once_per_decision(
+    ready, bookkeeper, small, monkeypatch
+):
+    from brigid.guard import mandate as mandate_module
+
+    calls = 0
+    original = mandate_module.mandate_problem
+
+    def counted(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr("brigid.guard.policy.mandate_problem", counted)
+
+    decision = ready.guard.propose_payment(bookkeeper, small.id)
+
+    assert decision.status == "executed"
+    assert calls == 1

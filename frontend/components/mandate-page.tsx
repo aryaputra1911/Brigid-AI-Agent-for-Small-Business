@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { useWorkspace } from "@/components/workspace-provider";
-import { FinanceHeading, FinanceState } from "@/components/finance-page-ui";
+import {
+  FinanceHeading,
+  FinanceNotice,
+  FinanceState,
+} from "@/components/finance-page-ui";
 import { ChatIcon } from "@/components/ui/chat-icon";
 
 export function MandatePage() {
@@ -73,12 +77,7 @@ export function MandatePage() {
       </div>
       <div className="paper-mandate-action-area">
         {mandateNotice && (
-          <div
-            className={`paper-finance-notice paper-finance-notice-${mandateNotice.tone}`}
-            role={mandateNotice.tone === "error" ? "alert" : "status"}
-          >
-            {mandateNotice.text}
-          </div>
+          <FinanceNotice text={mandateNotice.text} tone={mandateNotice.tone} />
         )}
         {infoError ? (
           <FinanceState

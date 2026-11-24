@@ -185,6 +185,7 @@ export function InvoicesPage() {
             <li key={invoice.id}>
               <Link
                 href={`/invoices/${encodeURIComponent(invoice.id)}`}
+                prefetch={false}
                 className="brigid-list-card"
               >
                 <div className="brigid-list-card-main">
