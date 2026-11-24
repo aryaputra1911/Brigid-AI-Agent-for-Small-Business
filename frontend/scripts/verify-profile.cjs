@@ -44,7 +44,9 @@ async function main() {
     await page.goto(
       `${process.env.BRIGID_TEST_ORIGIN || "http://127.0.0.1:3000"}/mandate`,
     );
-    const avatar = page.locator(".paper-avatar");
+    const avatar = page.getByRole("button", {
+      name: /^Settings and help, acting as/,
+    });
     const popup = page.getByRole("dialog", { name: "Settings and help" });
     await page
       .getByRole("button", { name: "Draft mandate", exact: true })
@@ -81,7 +83,7 @@ async function main() {
       return [
         ["h2", ".paper-settings", "color", 4.5],
         [".paper-settings-heading p", ".paper-settings", "color", 4.5],
-        [".paper-settings-note", ".paper-settings-role", "color", 4.5],
+        [".paper-settings-role label", ".paper-settings-role", "color", 4.5],
         ["select", "select", "color", 4.5],
         ["select", "select", "borderTopColor", 3],
       ].map(([selector, background, property, minimum]) => {

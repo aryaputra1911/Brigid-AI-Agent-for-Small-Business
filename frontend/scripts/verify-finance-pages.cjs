@@ -184,7 +184,7 @@ async function main() {
       ["secondary text", ".paper-finance-heading > p", "body"],
       ["amount", ".paper-request-amount p", ".paper-request-amount"],
       ["risk warning", ".paper-request-risk h3", ".paper-request-risk"],
-      ["pending pill", ".paper-finance-pill", ".paper-finance-pill"],
+      ["context count", ".paper-finance-context strong", "body"],
       ["confirm", ".paper-action-primary", ".paper-action-primary"],
       ["decline", ".paper-action-decline", ".paper-action-decline"],
       [
@@ -364,7 +364,10 @@ async function main() {
     );
     await page.goto(`${origin}/mandate`);
     await page
-      .getByRole("button", { name: "Settings, acting as owner", exact: true })
+      .getByRole("button", {
+        name: "Settings and help, acting as owner",
+        exact: true,
+      })
       .click();
     await page
       .getByRole("combobox", { name: "Acting as" })

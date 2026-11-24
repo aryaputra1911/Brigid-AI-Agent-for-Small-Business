@@ -72,9 +72,14 @@ async function main() {
     );
     const controls = [
       page.getByRole("button", { name: "New chat", exact: true }),
-      ...["Chat", "Approvals", "Mandate"].map((name) =>
-        page.getByRole("link", { name, exact: true }),
-      ),
+      ...[
+        "Chat",
+        "Invoices",
+        "Transactions",
+        "Approvals",
+        "Mandate",
+        "Profile",
+      ].map((name) => page.getByRole("link", { name, exact: true })),
     ];
     const boxes = await Promise.all(
       controls.map((control) => control.boundingBox()),
@@ -89,13 +94,13 @@ async function main() {
       await page
         .locator(".paper-nav-active")
         .evaluate((el) => getComputedStyle(el).backgroundColor),
-      "rgb(211, 231, 241)",
+      "rgba(211, 231, 241, 0.22)",
     );
     assert.equal(
       await page
         .locator(".paper-nav-active")
         .evaluate((el) => getComputedStyle(el).color),
-      "rgb(7, 2, 10)",
+      "rgb(255, 255, 255)",
     );
     await page.screenshot({ path: path.join(output, "sidebar-collapsed.png") });
     const expand = await sidebarWidthTransition(page);
