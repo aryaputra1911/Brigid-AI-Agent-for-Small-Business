@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -9,9 +10,14 @@ import type { Role } from "@/lib/brigid-api";
 import { useWorkspace } from "@/components/workspace-provider";
 import { ChatIcon, type ChatIconName } from "@/components/ui/chat-icon";
 import { BrigidLogo } from "@/components/ui/brigid-logo";
-import { LiquidBottomNav } from "@/components/liquid-bottom-nav";
 import { useMediaQuery } from "@/lib/use-media-query";
 import "./workspace.css";
+
+const LiquidBottomNav = dynamic(
+  () =>
+    import("@/components/liquid-bottom-nav").then((mod) => mod.LiquidBottomNav),
+  { ssr: false },
+);
 
 const AUTH_REQUIRED_PATHS = new Set(["/chat", "/approvals", "/mandate"]);
 

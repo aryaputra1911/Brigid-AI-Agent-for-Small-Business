@@ -74,3 +74,17 @@ test("invoice and transaction list rows disable automatic RSC viewport prefetchi
   );
 });
 
+test("workspace shell lazy-loads the mobile bottom navigation via next/dynamic", () => {
+  const shellSource = readFileSync(
+    join(process.cwd(), "components/workspace-shell.tsx"),
+    "utf8",
+  );
+
+  assert.match(shellSource, /import dynamic from "next\/dynamic"/);
+  assert.match(
+    shellSource,
+    /const LiquidBottomNav = dynamic\([\s\S]*?import\("@\/components\/liquid-bottom-nav"\)[\s\S]*?ssr:\s*false/,
+  );
+});
+
+
