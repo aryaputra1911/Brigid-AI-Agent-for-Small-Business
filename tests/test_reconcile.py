@@ -87,7 +87,7 @@ def test_money_in_never_matches_money_out():
 
 
 def test_a_matching_reference_beats_a_closer_date():
-    bank = [tx("b1", day(10), 1000, reference="INV-77"), tx("b2", day(10), 1000)]
+    bank = [tx("b1", day(10), 1000, reference="  INV-77  "), tx("b2", day(10), 1000)]
     books = [
         entry("e1", day(10), 1000, description="something else"),
         entry("e2", day(12), 1000, description="Bayar Supplier A inv-77"),

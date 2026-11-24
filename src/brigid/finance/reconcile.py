@@ -153,12 +153,14 @@ def reconcile(
     free_books = dict(all_books)
     matched: list[tuple[BankTransaction, BookEntry]] = []
     mismatched: list[tuple[BankTransaction, BookEntry]] = []
+    bank_references = {tx.id: tx.reference.strip().casefold() for tx in all_bank.values()}
+    book_descriptions = {entry.id: entry.description.casefold() for entry in all_books.values()}
 
     def reference_matches(tx: BankTransaction, entry: BookEntry) -> bool:
-        reference = tx.reference.strip().casefold()
+        reference = bank_references[tx.id]
         return (
             len(reference) >= config.min_reference_length
-            and reference in entry.description.casefold()
+            and reference in book_descriptions[entry.id]
         )
 
     def run_pass(

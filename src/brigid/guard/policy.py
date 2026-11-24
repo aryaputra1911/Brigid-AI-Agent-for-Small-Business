@@ -30,6 +30,7 @@ import datetime as dt
 import hashlib
 from dataclasses import dataclass
 from decimal import Decimal
+from functools import lru_cache
 from typing import Literal
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
@@ -198,6 +199,7 @@ def _deny(code: ReasonCode, message: str | None = None, *, flag: bool = False) -
     return Deny(reason_code=code, user_message=message or _MESSAGES[code], flag_for_review=flag)
 
 
+@lru_cache(maxsize=1024)
 def _normalised_number(number: str) -> str:
     return "".join(ch for ch in number.casefold() if ch.isalnum())
 

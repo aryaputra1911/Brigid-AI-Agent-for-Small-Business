@@ -14,6 +14,7 @@ from brigid.guard.policy import (
     PaymentProposal,
     PaymentTerms,
     PolicyView,
+    _normalised_number,
     amount_above_usual,
     check_authority,
     evaluate,
@@ -659,3 +660,19 @@ def test_amount_above_usual_needs_a_history_to_compare_against():
     assert not amount_above_usual(invoice(amount=650_000), supplier())
     assert not amount_above_usual(invoice(amount=650_001), supplier(avg_invoice_amount=0))
     assert not amount_above_usual(invoice(amount=650_001), None)
+
+
+def test_find_duplicate_reuses_cached_normalised_invoice_numbers():
+    _normalised_number.cache_clear()
+    others = tuple(
+        invoice(f"inv-{idx}", number=f"INV / 2026 - {idx:03d}", amount=100_000 + idx)
+        for idx in range(1, 6)
+    )
+
+    assert find_duplicate(others[0], others) is None
+    first_misses = _normalised_number.cache_info().misses
+    assert find_duplicate(others[1], others) is None
+    info = _normalised_number.cache_info()
+
+    assert info.misses == first_misses
+    assert info.hits >= len(others)
