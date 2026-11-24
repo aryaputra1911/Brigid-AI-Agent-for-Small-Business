@@ -30,6 +30,7 @@ export function BrigidLogo({
           alt=""
           width={32}
           height={32}
+          style={{ width: "32px", height: "auto" }}
           unoptimized
         />
       </span>
