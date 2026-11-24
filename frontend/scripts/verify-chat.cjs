@@ -399,7 +399,7 @@ async function main() {
     assert.equal(await page.locator(".paper-sidebar-open").count(), 0);
     assert(
       await page
-        .locator(".paper-avatar")
+        .getByRole("button", { name: /^Settings and help, acting as/ })
         .evaluate((el) => el === document.activeElement),
     );
     await page.getByRole("button", { name: "Open navigation menu" }).click();
