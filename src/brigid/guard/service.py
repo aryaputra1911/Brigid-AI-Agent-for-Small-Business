@@ -648,7 +648,7 @@ class GuardService:
             ), None
         except ToolFailure:
             return Deny(reason_code="INTERNAL_ERROR", user_message=_UNREACHABLE), None
-        return evaluate(proposal, mandate, principal, view, now), view
+        return evaluate(proposal, mandate, principal, view, now, authority_checked=True), view
 
     def _build_view(
         self,

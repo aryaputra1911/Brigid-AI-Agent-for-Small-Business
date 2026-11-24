@@ -310,10 +310,15 @@ def _evaluate(
     principal: Principal,
     view: PolicyView,
     now: dt.datetime,
+    *,
+    authority_checked: bool = False,
 ) -> Decision:
-    refused = _check_authority(proposal, mandate, principal, view.public_key, view.business_id, now)
-    if refused is not None:
-        return refused
+    if not authority_checked:
+        refused = _check_authority(
+            proposal, mandate, principal, view.public_key, view.business_id, now
+        )
+        if refused is not None:
+            return refused
     authority = mandate.role_authority[principal.role]
 
     # 3. The invoice.
@@ -433,9 +438,13 @@ def evaluate(
     principal: Principal,
     view: PolicyView,
     now: dt.datetime,
+    *,
+    authority_checked: bool = False,
 ) -> Decision:
     """Apply the policy to one proposal. Never raises: any error is a denial."""
     try:
-        return _evaluate(proposal, mandate, principal, view, now)
+        return _evaluate(
+            proposal, mandate, principal, view, now, authority_checked=authority_checked
+        )
     except Exception:
         return _deny("INTERNAL_ERROR")
