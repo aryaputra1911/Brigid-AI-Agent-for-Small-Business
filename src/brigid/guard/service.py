@@ -136,6 +136,14 @@ def _is_identifier(text: str) -> bool:
     return _IDENTIFIER.fullmatch(text) is not None
 
 
+@lru_cache(maxsize=16)
+def _parse_mandate(payload: str) -> Mandate | None:
+    try:
+        return Mandate.model_validate_json(payload)
+    except ValidationError:
+        return None
+
+
 BOOK_CATEGORY_FOR_PAYMENTS = "supplier_payment"
 
 _INTERNAL_ERROR = (
@@ -392,10 +400,7 @@ class GuardService:
         payload = self._store.active_mandate_payload()
         if payload is None:
             return None
-        try:
-            return Mandate.model_validate_json(payload)
-        except ValidationError:
-            return None
+        return _parse_mandate(payload)
 
     def active_mandate(self) -> Mandate | None:
         """The current mandate, or None when there is none or it fails verification."""
