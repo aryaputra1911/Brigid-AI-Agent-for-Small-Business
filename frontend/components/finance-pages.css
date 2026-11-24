@@ -504,6 +504,32 @@
 .paper-mandate-action-area {
   margin-top: 24px;
 }
+.paper-inline-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 22px;
+  overflow-wrap: anywhere;
+}
+.paper-inline-notice-success {
+  color: #b9eccf;
+}
+.paper-inline-notice-error {
+  color: #ffb4a2;
+}
+.paper-inline-notice-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  color: currentColor;
+}
 .paper-mandate-create {
   display: flex;
   align-items: center;

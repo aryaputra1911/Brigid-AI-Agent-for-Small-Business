@@ -84,3 +84,24 @@ export function FinanceState({
     </div>
   );
 }
+
+/** Inline status/error notice rendered with distinct tone styling and icon. */
+export function FinanceNotice({
+  text,
+  tone,
+}: {
+  text: string;
+  tone: "success" | "error";
+}) {
+  return (
+    <div
+      className={`paper-inline-notice paper-inline-notice-${tone}`}
+      role={tone === "error" ? "alert" : "status"}
+    >
+      <span className="paper-inline-notice-icon" aria-hidden="true">
+        <ChatIcon name={tone === "error" ? "close" : "check"} />
+      </span>
+      <span>{text}</span>
+    </div>
+  );
+}

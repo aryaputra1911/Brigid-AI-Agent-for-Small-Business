@@ -6,7 +6,11 @@ import { useRef } from "react";
 import { useWorkspace } from "@/components/workspace-provider";
 import type { PendingRequest } from "@/lib/brigid-api";
 import { ChatIcon } from "@/components/ui/chat-icon";
-import { FinanceHeading, FinanceState } from "@/components/finance-page-ui";
+import {
+  FinanceHeading,
+  FinanceNotice,
+  FinanceState,
+} from "@/components/finance-page-ui";
 import { useMediaQuery } from "@/lib/use-media-query";
 
 function formatAmount(value: string | number, currency: string): string {
@@ -66,12 +70,7 @@ export function ApprovalsPage() {
         )}
       </FinanceHeading>
       {queueNotice && (
-        <div
-          className={`paper-finance-notice paper-finance-notice-${queueNotice.tone}`}
-          role={queueNotice.tone === "error" ? "alert" : "status"}
-        >
-          {queueNotice.text}
-        </div>
+        <FinanceNotice text={queueNotice.text} tone={queueNotice.tone} />
       )}
       {infoError && (
         <FinanceState
