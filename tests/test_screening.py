@@ -18,7 +18,7 @@ from brigid.app import build_app
 from brigid.config import ConfigError, load_settings
 from brigid.guard.audit import verify_chain
 from brigid.guard.sentinel import SCREENING_FAILED, WITHHELD_TEXT, Sentinel
-from brigid.guard.service import STRUCTURAL_FIELDS
+from brigid.guard.service import STRUCTURAL_FIELDS, _is_identifier, _record_field_plan
 from brigid.interfaces.cli import run_cli
 from brigid.models import BankTransaction, BookEntry, Invoice, PaymentResult, Supplier
 from conftest import (
@@ -879,3 +879,21 @@ def test_an_ordinary_review_note_is_kept(world, owner, ground_truth):
     )
 
     assert world.guard.review_items(owner)[0].reason == "The document names a different account."
+
+
+def test_screen_records_caches_identifier_checks_and_field_plans(world):
+    _record_field_plan.cache_clear()
+    _is_identifier.cache_clear()
+    records = [record for record, _ in RECORDS]
+
+    first = world.guard.screen_records(records)
+    first_plan_misses = _record_field_plan.cache_info().misses
+    first_id_misses = _is_identifier.cache_info().misses
+    second = world.guard.screen_records(records)
+
+    assert first.value == records
+    assert second.value == records
+    assert _record_field_plan.cache_info().misses == first_plan_misses
+    assert _record_field_plan.cache_info().hits >= len(records)
+    assert _is_identifier.cache_info().misses == first_id_misses
+    assert _is_identifier.cache_info().hits > 0
